@@ -10,6 +10,7 @@
 #define DETECTOR_CONSTRUCTION_H
 
 #include <G4VUserDetectorConstruction.hh>
+#include <memory>
 
 class G4GenericMessenger;
 
