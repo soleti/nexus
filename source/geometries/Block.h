@@ -34,10 +34,12 @@ namespace nexus {
     void Construct();
 
   private:
-    G4double box_x_;              // Box three dimensions
+    G4double world_z_;             // World dimensions
+    G4double world_xy_;
+    G4double box_x_;               // Box three dimensions
     G4double box_y_;
     G4double box_z_;
-    G4String box_material_;       // Box material
+    G4String box_material_;        // Box material
     G4String box_optical_coating_; // Box optical coating
 
     /// Messenger for the definition of control commands

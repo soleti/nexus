@@ -15,8 +15,10 @@
 #include <G4OpticalSurface.hh>
 #include <G4LogicalSkinSurface.hh>
 #include <G4LogicalVolume.hh>
+#include <G4PVPlacement.hh>
 #include <G4NistManager.hh>
 #include <G4Box.hh>
+#include <G4VisAttributes.hh>
 
 using namespace nexus;
 
@@ -25,7 +27,9 @@ REGISTER_CLASS(Block, GeometryBase)
 namespace nexus {
 
   Block::Block():
-    GeometryBase(), 
+    GeometryBase(),
+    world_z_ (3. * m),
+    world_xy_ (2. *m),
     box_x_(0),
     box_y_(0),
     box_z_(0),
@@ -71,6 +75,25 @@ namespace nexus {
   void Block::Construct()
   {
 
+    // WORLD /////////////////////////////////////////////////
+
+    G4String world_name = "WORLD";
+
+    G4Material* world_mat = G4NistManager::Instance()->FindOrBuildMaterial("G4_AIR");
+
+    world_mat->SetMaterialPropertiesTable(opticalprops::Vacuum());
+
+    G4Box* world_solid_vol =
+     new G4Box(world_name, world_xy_/2., world_xy_/2., world_z_/2.);
+
+    G4LogicalVolume* world_logic_vol =
+      new G4LogicalVolume(world_solid_vol, world_mat, world_name);
+    world_logic_vol->SetVisAttributes(G4VisAttributes::GetInvisible());
+    GeometryBase::SetLogicalVolume(world_logic_vol);
+
+
+    // BLOCK //////////////////////////////////////////////////
+
     G4String block_name = "BLOCK";
     G4Material* block_mat = G4NistManager::Instance()->FindOrBuildMaterial(box_material_);
 
@@ -80,9 +103,12 @@ namespace nexus {
     G4LogicalVolume* block_logic_vol =
       new G4LogicalVolume(block_solid_vol, block_mat, block_name);
 
-    GeometryBase::SetLogicalVolume(block_logic_vol);
+    new G4PVPlacement(0, G4ThreeVector(0.,0.,0.),
+                      block_logic_vol, block_name, world_logic_vol,
+                      false, 0, false);
 
-    G4OpticalSurface* opsur = new G4OpticalSurface("PERFECT_OPSURF");
+    G4OpticalSurface* opsur = 
+      new G4OpticalSurface("PERFECT_OPSURF", unified, polished, dielectric_metal);
     opsur->SetMaterialPropertiesTable(opticalprops::PerfectAbsorber());
 
     new G4LogicalSkinSurface("PERFECT_OPSURF", block_logic_vol, opsur);
