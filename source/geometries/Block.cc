@@ -9,8 +9,14 @@
 #include "Block.h"
 
 #include "FactoryBase.h"
+#include "OpticalMaterialProperties.h"
 
 #include <G4GenericMessenger.hh>
+#include <G4OpticalSurface.hh>
+#include <G4LogicalSkinSurface.hh>
+#include <G4LogicalVolume.hh>
+#include <G4NistManager.hh>
+#include <G4Box.hh>
 
 using namespace nexus;
 
@@ -23,22 +29,16 @@ namespace nexus {
     box_x_(0),
     box_y_(0),
     box_z_(0),
-    box_material_("Pb"),
+    box_material_("G4_Pb"),
     box_optical_coating_("Teflon")
   {
     msg_ = new G4GenericMessenger(this, "/Geometry/Block/",
       "Control commands of geometry Block.");
 
-    msg_->DeclareProperty("box_material", box_material_,
+    msg_->DeclareProperty("material", box_material_,
       "Material of the block.");
-    msg_->DeclareProperty("box_optical_coating", box_optical_coating_,
+    msg_->DeclareProperty("optical_coating", box_optical_coating_,
       "Block optical coating.");
-    msg_->DeclareProperty("box_x", box_x_,
-      "Block x dimension.");
-    msg_->DeclareProperty("box_y", box_y_,
-      "Block y dimension.");
-    msg_->DeclareProperty("box_z", box_z_,
-      "Block z dimension.");
 
     G4GenericMessenger::Command& box_x_cmd =
       msg_->DeclareProperty("box_x", box_x_, "Block x dimension.");
@@ -71,20 +71,35 @@ namespace nexus {
   void Block::Construct()
   {
 
+    G4String block_name = "BLOCK";
+    G4Material* block_mat = G4NistManager::Instance()->FindOrBuildMaterial(box_material_);
+
+    G4Box* block_solid_vol =
+      new G4Box("block", box_x_, box_y_, box_z_);
+
+    G4LogicalVolume* block_logic_vol =
+      new G4LogicalVolume(block_solid_vol, block_mat, block_name);
+
+    GeometryBase::SetLogicalVolume(block_logic_vol);
+
+    G4OpticalSurface* opsur = new G4OpticalSurface("PERFECT_OPSURF");
+    opsur->SetMaterialPropertiesTable(opticalprops::PerfectAbsorber());
+
+    new G4LogicalSkinSurface("PERFECT_OPSURF", block_logic_vol, opsur);
   }
 
 
 
   G4ThreeVector Block::GenerateVertex(const G4String& region) const
   {
-    G4ThreeVector vertex(0.,0.,0.);
+    G4ThreeVector vertex(0.,0.,20. * cm);
 
     // WORLD
     if (region == "CENTER") {
       return vertex;
     }
     else {
-      G4Exception("[BlackBox]", "GenerateVertex()", FatalException,
+      G4Exception("[Block]", "GenerateVertex()", FatalException,
 		  "Unknown vertex generation region!");
     }
     return vertex;

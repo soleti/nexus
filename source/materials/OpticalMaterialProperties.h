@@ -24,6 +24,8 @@ namespace opticalprops {
 
   G4MaterialPropertiesTable* Vacuum();
 
+  G4MaterialPropertiesTable* PerfectAbsorber();
+
   G4MaterialPropertiesTable* GlassEpoxy();
 
   G4MaterialPropertiesTable* FusedSilica();

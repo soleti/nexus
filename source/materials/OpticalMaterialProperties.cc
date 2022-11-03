@@ -695,6 +695,26 @@ namespace opticalprops {
   }
 
 
+ /// Perfect absorber (for efficiency tests) ///
+  G4MaterialPropertiesTable* PerfectAbsorber()
+  {
+    G4MaterialPropertiesTable* mpt = new G4MaterialPropertiesTable();
+
+    std::vector<G4double> energies = {
+      optPhotMinE_, optPhotMaxE_
+    };
+    std::vector<G4double> efficiency = {
+      1., 1.
+    };
+    std::vector<G4double> reflectivity = {
+      0., 0.
+    };
+    mpt->AddProperty("EFFICIENCY", energies, efficiency);
+    mpt->AddProperty("REFLECTIVITY", energies, reflectivity);
+
+    return mpt;
+  }
+
 
   /// PTFE (== TEFLON) ///
   G4MaterialPropertiesTable* PTFE()
