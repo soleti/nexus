@@ -1,0 +1,25 @@
+### -----------------------------------------------------------
+### This init macro simulates the response of a SensL SiPM DICE
+### board in the black box.
+### -----------------------------------------------------------
+
+/Generator/SingleParticle/particle opticalphoton
+/Generator/SingleParticle/min_energy 7 eV
+/Generator/SingleParticle/max_energy 7 eV
+/Generator/SingleParticle/momentum 0 0 -1
+/Generator/SingleParticle/region CENTER
+
+/Geometry/Block/material G4_Pb
+/Geometry/Block/box_x 10 cm
+/Geometry/Block/box_y 10 cm
+/Geometry/Block/box_z 10 cm
+
+/run/verbose 0
+/event/verbose 0
+/tracking/verbose 0
+/process/em/verbose 0
+
+### JOB CONTROL
+/nexus/random_seed            -1
+/nexus/persistency/start_id   0
+/nexus/persistency/outputFile black_box.next
