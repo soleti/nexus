@@ -1,0 +1,15 @@
+/Generator/SingleParticle/particle opticalphoton
+/Generator/SingleParticle/min_energy 7 eV
+/Generator/SingleParticle/max_energy 7 eV
+/Generator/SingleParticle/momentum 0 -1 -0.2
+/Generator/SingleParticle/region CENTER
+
+/run/verbose 1
+/event/verbose 1
+/tracking/verbose 1
+/process/em/verbose 0
+
+### JOB CONTROL
+/nexus/random_seed            -1
+/nexus/persistency/start_id   0
+/nexus/persistency/outputFile generic_wls.next
