@@ -77,24 +77,35 @@ namespace nexus {
 
    // BLOCK //////////////////////////////////////////////////
 
-    G4String block_name = "BLOCK";
     G4Material* block_mat = G4NistManager::Instance()->FindOrBuildMaterial("G4_Pb");
 
-    G4Box* block_solid_vol =
+    G4Box* block_solid_vol_right =
       new G4Box("block", 1 * mm, 1 * mm, 1 * mm);
 
-    G4LogicalVolume* block_logic_vol =
-      new G4LogicalVolume(block_solid_vol, block_mat, block_name);
+    G4LogicalVolume* block_logic_vol_right =
+      new G4LogicalVolume(block_solid_vol_right, block_mat, "BLOCK_RIGHT");
 
     new G4PVPlacement(0, G4ThreeVector(0,0,-0.6*cm),
-                      block_logic_vol, block_name, world_logic_vol,
+                      block_logic_vol_right, "BLOCK_RIGHT", world_logic_vol,
                       false, 0, false);
 
     G4OpticalSurface* opsur =
       new G4OpticalSurface("PERFECT_OPSURF", unified, polished, dielectric_metal);
     opsur->SetMaterialPropertiesTable(opticalprops::PerfectAbsorber());
 
-    new G4LogicalSkinSurface("PERFECT_OPSURF", block_logic_vol, opsur);
+    new G4LogicalSkinSurface("PERFECT_OPSURF", block_logic_vol_right, opsur);
+
+    G4Box* block_solid_vol_left =
+      new G4Box("block", 1 * mm, 1 * mm, 1 * mm);
+
+    G4LogicalVolume* block_logic_vol_left =
+      new G4LogicalVolume(block_solid_vol_left, block_mat, "BLOCK_LEFT");
+
+    new G4PVPlacement(0, G4ThreeVector(0,0,0.6*cm),
+                      block_logic_vol_left, "BLOCK_LEFT", world_logic_vol,
+                      false, 0, false);
+
+    new G4LogicalSkinSurface("PERFECT_OPSURF", block_logic_vol_left, opsur);
 
   }
 

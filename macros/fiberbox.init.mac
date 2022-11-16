@@ -17,4 +17,4 @@
 /nexus/RegisterTrackingAction OpticalTrackingAction
 /nexus/RegisterSteppingAction AnalysisSteppingAction
 
-/nexus/RegisterMacro macros/generic_wls.config.mac
+/nexus/RegisterMacro macros/fiberbox.config.mac
