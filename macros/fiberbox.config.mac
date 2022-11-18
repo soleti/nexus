@@ -1,12 +1,15 @@
 /Generator/SingleParticle/particle opticalphoton
-/Generator/SingleParticle/min_energy 7 eV
-/Generator/SingleParticle/max_energy 7 eV
-/Generator/SingleParticle/momentum 0 -1 -0.2
+/Generator/SingleParticle/min_energy 3.54 eV
+/Generator/SingleParticle/max_energy 3.54 eV
 /Generator/SingleParticle/region CENTER
 
-/run/verbose 1
-/event/verbose 1
-/tracking/verbose 1
+/Geometry/FiberBox/radius 1 cm
+/Geometry/FiberBox/length 5 cm
+/Geometry/FiberBox/fiber_radius 1 mm
+
+#/run/verbose 1
+#/event/verbose 1
+#/tracking/verbose 1
 /process/em/verbose 0
 
 ### JOB CONTROL

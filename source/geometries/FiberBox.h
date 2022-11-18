@@ -11,6 +11,9 @@
 
 #include "GeometryBase.h"
 #include "GenericWLSFiber.h"
+#include "PmtR11410.h"
+#include "CylinderPointSampler2020.h"
+#include "MaterialsList.h"
 
 class G4Material;
 class G4GenericMessenger;
@@ -37,8 +40,12 @@ namespace nexus {
   private:
     G4double world_z_;             // World dimensions
     G4double world_xy_;
-    GenericWLSFiber* fiber_;
+    G4double radius_;
+    G4double fiber_radius_;
+    G4double length_;
 
+    GenericWLSFiber* fiber_;
+    CylinderPointSampler2020* inside_cylinder_;
     /// Messenger for the definition of control commands
     G4GenericMessenger* msg_;
   };
