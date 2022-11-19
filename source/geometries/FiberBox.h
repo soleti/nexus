@@ -43,6 +43,9 @@ namespace nexus {
     G4double radius_;
     G4double fiber_radius_;
     G4double length_;
+    G4String coating_;
+    G4String fiber_type_;
+    G4bool coated_;
 
     GenericWLSFiber* fiber_;
     CylinderPointSampler2020* inside_cylinder_;
