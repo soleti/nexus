@@ -5,7 +5,7 @@
 
 /control/execute macros/physics/DefaultPhysicsList.mac
 /tracking/verbose 1
-/nexus/RegisterGeometry FiberBox
+/nexus/RegisterGeometry FiberBarrel
 /nexus/RegisterGenerator SingleParticleGenerator
 /nexus/RegisterPersistencyManager PersistencyManager
 
@@ -17,4 +17,4 @@
 /nexus/RegisterTrackingAction OpticalTrackingAction
 /nexus/RegisterSteppingAction AnalysisSteppingAction
 
-/nexus/RegisterMacro macros/fiberbox.config.mac
+/nexus/RegisterMacro macros/FiberBarrel.config.mac

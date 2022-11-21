@@ -1,13 +1,13 @@
 // ----------------------------------------------------------------------------
-// nexus | FiberBox.h
+// nexus | FiberBarrel.h
 //
 // Box-shaped box of material with a coating.
 //
 // The NEXT Collaboration
 // ----------------------------------------------------------------------------
 
-#ifndef FiberBox_H
-#define FiberBox_H
+#ifndef FiberBarrel_H
+#define FiberBarrel_H
 
 #include "GeometryBase.h"
 #include "GenericWLSFiber.h"
@@ -24,13 +24,13 @@ namespace nexus {
 
   /// Spherical chamber filled with xenon (liquid or gas)
 
-  class FiberBox: public GeometryBase
+  class FiberBarrel: public GeometryBase
   {
   public:
     /// Constructor
-    FiberBox();
+    FiberBarrel();
     /// Destructor
-    ~FiberBox();
+    ~FiberBarrel();
 
     /// Return vertex within region <region> of the chamber
     G4ThreeVector GenerateVertex(const G4String& region) const;

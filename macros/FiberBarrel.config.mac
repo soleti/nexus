@@ -3,18 +3,18 @@
 /Generator/SingleParticle/max_energy 7 eV
 /Generator/SingleParticle/region CENTER
 
-/Geometry/FiberBox/radius 0.5 cm
-/Geometry/FiberBox/length 2 cm
-/Geometry/FiberBox/fiber_radius 1 mm
-/Geometry/FiberBox/coating TPH
-/Geometry/FiberBox/fiber_type B2
+/Geometry/FiberBarrel/radius 1 m
+/Geometry/FiberBarrel/length 2 m
+/Geometry/FiberBarrel/fiber_radius 1 mm
+/Geometry/FiberBarrel/coating TPH
+/Geometry/FiberBarrel/fiber_type B2
 
-#/run/verbose 1
-#/event/verbose 1
-#/tracking/verbose 1
+/run/verbose 1
+/event/verbose 1
+/tracking/verbose 1
 /process/em/verbose 0
 
 ### JOB CONTROL
 /nexus/random_seed            -1
 /nexus/persistency/start_id   0
-/nexus/persistency/outputFile generic_wls.next
+/nexus/persistency/outputFile FiberBarrel.next

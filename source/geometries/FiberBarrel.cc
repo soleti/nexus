@@ -1,15 +1,16 @@
 // ----------------------------------------------------------------------------
-// nexus | FiberBox.cc
+// nexus | FiberBarrel.cc
 //
 // Box containing optical fibers
 //
 // The NEXT Collaboration
 // ----------------------------------------------------------------------------
 
-#include "FiberBox.h"
+#include "FiberBarrel.h"
 
 #include "FactoryBase.h"
 #include "OpticalMaterialProperties.h"
+#include "Visibilities.h"
 
 #include <G4GenericMessenger.hh>
 #include <G4OpticalSurface.hh>
@@ -23,11 +24,11 @@
 
 using namespace nexus;
 
-REGISTER_CLASS(FiberBox, GeometryBase)
+REGISTER_CLASS(FiberBarrel, GeometryBase)
 
 namespace nexus {
 
-  FiberBox::FiberBox():
+  FiberBarrel::FiberBarrel():
     GeometryBase(),
     radius_ (1 * cm),
     fiber_radius_(1 * mm),
@@ -36,8 +37,8 @@ namespace nexus {
     fiber_type_ ("Y11"),
     coated_(true)
   {
-    msg_ = new G4GenericMessenger(this, "/Geometry/FiberBox/",
-      "Control commands of geometry FiberBox.");
+    msg_ = new G4GenericMessenger(this, "/Geometry/FiberBarrel/",
+      "Control commands of geometry FiberBarrel.");
 
     G4GenericMessenger::Command&  radius_cmd =
       msg_->DeclareProperty("radius", radius_,
@@ -62,14 +63,14 @@ namespace nexus {
 
 
 
-  FiberBox::~FiberBox()
+  FiberBarrel::~FiberBarrel()
   {
     delete msg_;
   }
 
 
 
-  void FiberBox::Construct()
+  void FiberBarrel::Construct()
   {
     inside_cylinder_ = new CylinderPointSampler2020(0, radius_, length_/2, 0, 2 * M_PI);
 
@@ -120,6 +121,10 @@ namespace nexus {
 
     fiber_->Construct();
     G4LogicalVolume* fiber_logic = fiber_->GetLogicalVolume();
+    if (fiber_type_ == "Y11")
+      fiber_logic->SetVisAttributes(nexus::LightGreenAlpha());
+    if (fiber_type_ == "B2")
+      fiber_logic->SetVisAttributes(nexus::LightBlueAlpha());
 
     G4int n_fibers = (radius_ * 2 * M_PI) / fiber_radius_;
 
@@ -143,7 +148,7 @@ namespace nexus {
 
     // PLACEMENT /////////////////////////////////////////////
 
-    for (G4int itheta=0; itheta <= n_fibers; itheta++) {
+    for (G4int itheta=0; itheta < n_fibers; itheta++) {
 
       G4float theta = 2 * M_PI / n_fibers * itheta;
       G4double x = radius_ * std::cos(theta) * mm;
@@ -152,10 +157,10 @@ namespace nexus {
                         fiber_logic, "B2", world_logic_vol,
                         false, itheta, false);
       new G4PVPlacement(0, G4ThreeVector(x,y,length_/2 + disk_z),
-                        disk_logic_vol, "DISK", world_logic_vol,
+                        disk_logic_vol, "DISK1", world_logic_vol,
                         false, itheta, false);
       new G4PVPlacement(0, G4ThreeVector(x,y,-(length_/2 + disk_z)),
-                        disk_logic_vol, "DISK", world_logic_vol,
+                        disk_logic_vol, "DISK2", world_logic_vol,
                         false, n_fibers+itheta, false);
     }
 
@@ -163,7 +168,7 @@ namespace nexus {
 
 
 
-  G4ThreeVector FiberBox::GenerateVertex(const G4String& region) const
+  G4ThreeVector FiberBarrel::GenerateVertex(const G4String& region) const
   {
     G4ThreeVector vertex(0.,0.,0.);
 
@@ -172,7 +177,7 @@ namespace nexus {
       return inside_cylinder_->GenerateVertex("VOLUME");;
     }
     else {
-      G4Exception("[FiberBox]", "GenerateVertex()", FatalException,
+      G4Exception("[FiberBarrel]", "GenerateVertex()", FatalException,
 		  "Unknown vertex generation region!");
     }
     return vertex;
