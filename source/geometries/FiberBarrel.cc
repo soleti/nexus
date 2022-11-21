@@ -73,8 +73,8 @@ namespace nexus {
   void FiberBarrel::Construct()
   {
 
-    G4cout << "*** Barrel Fiber prototype" << G4endl;
-    G4cout << "Using " << fiber_type_ << " fibers";
+    G4cout << "[FiberBarrel] *** Barrel Fiber prototype ***" << G4endl;
+    G4cout << "[FiberBarrel] Using " << fiber_type_ << " fibers";
     if (coated_)
       G4cout << " with " << coating_ << " coating";
     G4cout << G4endl;
@@ -95,7 +95,7 @@ namespace nexus {
       this_fiber_optical = opticalprops::B2();
     } else {
       G4Exception("[FiberBarrel]", "Construct()",
-                  FatalException, "Invalid fiber type, can be Y11 or B2");
+                  FatalException, "Invalid fiber type, must be Y11 or B2");
     }
 
     G4Material *this_coating = nullptr;
@@ -109,7 +109,7 @@ namespace nexus {
         this_coating_optical = opticalprops::TPH();
       } else {
         G4Exception("[FiberBarrel]", "Construct()",
-                    FatalException, "Invalid coating, can be TPB or TPH");
+                    FatalException, "Invalid coating, must be TPB or TPH");
       }
     }
 
@@ -143,7 +143,8 @@ namespace nexus {
     else if (fiber_type_ == "B2")
       fiber_logic->SetVisAttributes(nexus::LightBlueAlpha());
 
-    G4int n_fibers = (radius_ * 2 * M_PI) / fiber_radius_;
+    G4int n_fibers = floor((radius_ * 2 * M_PI) / fiber_radius_);
+    G4cout << "[FiberBarrel] Barrel with " << n_fibers << " fibers" << G4endl;
 
     // FAKE DETECTOR /////////////////////////////////////////////
 
@@ -170,14 +171,16 @@ namespace nexus {
       G4float theta = 2 * M_PI / n_fibers * itheta;
       G4double x = radius_ * std::cos(theta) * mm;
       G4double y = radius_ * std::sin(theta) * mm;
+      std::string label = std::to_string(itheta);
+
       new G4PVPlacement(0, G4ThreeVector(x,y),
-                        fiber_logic, "B2", world_logic_vol,
+                        fiber_logic, "B2-"+label, world_logic_vol,
                         false, itheta, false);
       new G4PVPlacement(0, G4ThreeVector(x,y,length_/2 + disk_z),
-                        disk_logic_vol, "DISK1", world_logic_vol,
+                        disk_logic_vol, "DISKL-" + label, world_logic_vol,
                         false, itheta, false);
       new G4PVPlacement(0, G4ThreeVector(x,y,-(length_/2 + disk_z)),
-                        disk_logic_vol, "DISK2", world_logic_vol,
+                        disk_logic_vol, "DISKR-" + label, world_logic_vol,
                         false, n_fibers+itheta, false);
     }
 
