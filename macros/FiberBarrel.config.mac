@@ -1,10 +1,10 @@
 /Generator/SingleParticle/particle opticalphoton
 /Generator/SingleParticle/min_energy 7 eV
 /Generator/SingleParticle/max_energy 7 eV
-/Generator/SingleParticle/region CENTER
+/Generator/SingleParticle/region INSIDE_BARREL
 
-/Geometry/FiberBarrel/radius 1 m
-/Geometry/FiberBarrel/length 2 m
+/Geometry/FiberBarrel/radius 1 cm
+/Geometry/FiberBarrel/length 2 cm
 /Geometry/FiberBarrel/fiber_radius 1 mm
 /Geometry/FiberBarrel/coating TPH
 /Geometry/FiberBarrel/fiber_type B2

@@ -72,16 +72,30 @@ namespace nexus {
 
   void FiberBarrel::Construct()
   {
+
+    G4cout << "*** Barrel Fiber prototype" << G4endl;
+    G4cout << "Using " << fiber_type_ << " fibers";
+    if (coated_)
+      G4cout << " with " << coating_ << " coating";
+    G4cout << G4endl;
+
     inside_cylinder_ = new CylinderPointSampler2020(0, radius_, length_/2, 0, 2 * M_PI);
 
     world_z_ = length_ * 2;
     world_xy_ = radius_ * 2;
 
-    G4Material *this_fiber = materials::Y11();
-    G4MaterialPropertiesTable *this_fiber_optical = opticalprops::Y11();
-    if (fiber_type_ == "B2") {
+
+    G4Material *this_fiber = nullptr;
+    G4MaterialPropertiesTable *this_fiber_optical = nullptr;
+    if (fiber_type_ == "Y11") {
+      this_fiber = materials::Y11();
+      this_fiber_optical = opticalprops::Y11();
+    } else if (fiber_type_ == "B2") {
       this_fiber = materials::B2();
       this_fiber_optical = opticalprops::B2();
+    } else {
+      G4Exception("[FiberBarrel]", "Construct()",
+                  FatalException, "Invalid fiber type, can be Y11 or B2");
     }
 
     G4Material *this_coating = nullptr;
@@ -93,6 +107,9 @@ namespace nexus {
       } else if (coating_ == "TPH") {
         this_coating = materials::TPH();
         this_coating_optical = opticalprops::TPH();
+      } else {
+        G4Exception("[FiberBarrel]", "Construct()",
+                    FatalException, "Invalid coating, can be TPB or TPH");
       }
     }
 
@@ -123,7 +140,7 @@ namespace nexus {
     G4LogicalVolume* fiber_logic = fiber_->GetLogicalVolume();
     if (fiber_type_ == "Y11")
       fiber_logic->SetVisAttributes(nexus::LightGreenAlpha());
-    if (fiber_type_ == "B2")
+    else if (fiber_type_ == "B2")
       fiber_logic->SetVisAttributes(nexus::LightBlueAlpha());
 
     G4int n_fibers = (radius_ * 2 * M_PI) / fiber_radius_;
@@ -173,7 +190,7 @@ namespace nexus {
     G4ThreeVector vertex(0.,0.,0.);
 
     // WORLD
-    if (region == "CENTER") {
+    if (region == "INSIDE_BARREL") {
       return inside_cylinder_->GenerateVertex("VOLUME");;
     }
     else {
