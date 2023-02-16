@@ -3,11 +3,11 @@
 /Generator/SingleParticle/max_energy 7 eV
 /Generator/SingleParticle/region INSIDE_BARREL
 
-/Geometry/FiberBarrel/radius 1 cm
-/Geometry/FiberBarrel/length 3 cm
+/Geometry/FiberBarrel/radius 1 m
+/Geometry/FiberBarrel/length 3 m
 /Geometry/FiberBarrel/fiber_radius 1 mm
-/Geometry/FiberBarrel/coating TPB
-/Geometry/FiberBarrel/fiber_type Y11
+/Geometry/FiberBarrel/coating TPH
+/Geometry/FiberBarrel/fiber_type B2
 
 /run/verbose 1
 /event/verbose 1
