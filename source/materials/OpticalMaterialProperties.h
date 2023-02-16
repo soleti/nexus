@@ -67,6 +67,8 @@ namespace opticalprops {
 
   G4MaterialPropertiesTable* PTFE();
 
+  G4MaterialPropertiesTable* PolishedAl();
+
   G4MaterialPropertiesTable* EJ280();
 
   G4MaterialPropertiesTable* EJ286();
@@ -78,6 +80,8 @@ namespace opticalprops {
   G4MaterialPropertiesTable* Pethylene();
 
   G4MaterialPropertiesTable* FPethylene();
+
+  G4MaterialPropertiesTable* BorosilicateGlass();
 
   G4MaterialPropertiesTable* PMMA();
 
