@@ -2,6 +2,8 @@
 #define ESSBeam_H
 
 #include "GeometryBase.h"
+class G4GenericMessenger;
+namespace nexus { class SpherePointSampler; }
 
 class G4GenericMessenger;
 
@@ -27,8 +29,6 @@ namespace nexus {
     // Messenger for the definition of control commands
     G4GenericMessenger* _msg;
 
-    G4bool _ess;
-    
   };
 }
 

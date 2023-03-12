@@ -1,0 +1,24 @@
+/Generator/SingleParticle/particle proton
+/Generator/SingleParticle/min_energy 2 GeV
+/Generator/SingleParticle/max_energy 2 GeV
+/Generator/SingleParticle/region SINGLE_POINT
+
+/run/verbose 1
+/event/verbose 1
+/tracking/verbose 1
+/process/em/verbose 0
+
+/PhysicsList/RegisterPhysics G4EmStandardPhysics_option4
+/PhysicsList/RegisterPhysics G4DecayPhysics
+/PhysicsList/RegisterPhysics G4RadioactiveDecayPhysics
+/PhysicsList/RegisterPhysics G4HadronElasticPhysicsHP
+/PhysicsList/RegisterPhysics G4HadronPhysicsQGSP_BERT
+/PhysicsList/RegisterPhysics G4StoppingPhysics
+/PhysicsList/RegisterPhysics G4IonPhysics
+/PhysicsList/RegisterPhysics NexusPhysics
+/PhysicsList/RegisterPhysics G4StepLimiterPhysics
+
+### JOB CONTROL
+/nexus/random_seed            2
+/nexus/persistency/start_id   0
+/nexus/persistency/outputFile ESSBeam.next
