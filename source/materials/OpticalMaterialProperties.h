@@ -39,6 +39,8 @@ namespace opticalprops {
 
   G4MaterialPropertiesTable* OptCoupler();
 
+  G4MaterialPropertiesTable* GdLS();
+
   G4MaterialPropertiesTable* GAr(G4double sc_yield,
                                 G4double e_lifetime=1000.*ms);
 

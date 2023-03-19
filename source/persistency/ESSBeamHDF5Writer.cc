@@ -143,10 +143,13 @@ void ESSBeamHDF5Writer::WriteParticleInfo(int evt_number, int particle_indx, con
   _ipart++;
 }
 
-void ESSBeamHDF5Writer::WriteSensorPosInfo(unsigned int sensor_id, float x, float y, float z)
+
+void ESSBeamHDF5Writer::WriteSensorPosInfo(unsigned int sensor_id, const char* sensor_name, float x, float y, float z)
 {
   sns_pos_t snsPos;
   snsPos.sensor_id = sensor_id;
+  memset(snsPos.sensor_name, 0, STRLEN);
+  strcpy(snsPos.sensor_name, sensor_name);
   snsPos.x = x;
   snsPos.y = y;
   snsPos.z = z;

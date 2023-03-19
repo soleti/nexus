@@ -451,6 +451,48 @@ namespace materials {
   }
 
 
+  G4Material* LAB() // linear alkylbenzene
+  {
+    G4String name = "LAB";
+
+    // Check whether material exists already in the materials table
+    G4Material* mat = G4Material::GetMaterial(name, false);
+
+    if (mat == 0) {
+      G4NistManager* nist = G4NistManager::Instance();
+
+      G4Element* H = nist->FindOrBuildElement("H");
+      G4Element* C = nist->FindOrBuildElement("C");
+
+      mat = new G4Material(name, 0.853*g/cm3, 2, kStateLiquid);
+      mat->AddElement(H, 26);
+      mat->AddElement(C, 16);
+    }
+
+    return mat;
+  }
+
+
+  G4Material* GdLS() // Gadolinium-loaded Liquid scintillator
+  {
+    G4String name = "GdLS";
+
+    // Check whether material exists already in the materials table
+    G4Material* mat = G4Material::GetMaterial(name, false);
+
+    if (mat == 0) {
+      G4NistManager* nist = G4NistManager::Instance();
+
+      G4Element* Gd = nist->FindOrBuildElement("Gd");
+
+      mat = new G4Material(name, 0.853*g/cm3, 2, kStateLiquid);
+      mat->AddMaterial(materials::LAB(), 0.999);
+      mat->AddElement(Gd, 0.001);
+    }
+
+    return mat;
+  }
+
 
   G4Material* PS() // polystyrene
   {

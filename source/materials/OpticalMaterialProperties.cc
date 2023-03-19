@@ -453,6 +453,110 @@ namespace opticalprops {
     return mpt;
   }
 
+  /// Gd-loaded linear alkylbenzene ///
+  G4MaterialPropertiesTable* GdLS()
+  {
+
+    G4MaterialPropertiesTable* mpt = new G4MaterialPropertiesTable();
+
+    // REFRACTIVE INDEX https://arxiv.org/pdf/1105.2101.pdf
+    std::vector<G4double> ri_energy = {
+      optPhotMinE_,
+      h_Planck * c_light / (959.87 * nm),
+      h_Planck * c_light / (738.98 * nm),
+      h_Planck * c_light / (573.91 * nm),
+      h_Planck * c_light / (450.98 * nm),
+      h_Planck * c_light / (329.10 * nm),
+      h_Planck * c_light / (241.53 * nm),
+      h_Planck * c_light / (222.19 * nm),
+      optPhotMaxE_
+    };
+
+    std::vector<G4double> rIndex = {
+      1.47,
+      1.47,
+      1.48,
+      1.48,
+      1.50,
+      1.53,
+      1.62,
+      1.71,
+      1.71
+    };
+
+    mpt->AddProperty("RINDEX", ri_energy, rIndex);
+
+    // ABSORPTION LENGTH https://arxiv.org/pdf/1402.6694.pdf
+    std::vector<G4double> lab_abs_energy = {
+      optPhotMinE_,
+      h_Planck * c_light / (7.88e+2 * nm), h_Planck * c_light / (7.71e+2 * nm),
+      h_Planck * c_light / (7.59e+2 * nm), h_Planck * c_light / (7.46e+2 * nm),
+      h_Planck * c_light / (7.26e+2 * nm), h_Planck * c_light / (7.13e+2 * nm),
+      h_Planck * c_light / (7.01e+2 * nm), h_Planck * c_light / (6.65e+2 * nm),
+      h_Planck * c_light / (6.48e+2 * nm), h_Planck * c_light / (6.23e+2 * nm),
+      h_Planck * c_light / (6.08e+2 * nm), h_Planck * c_light / (5.68e+2 * nm),
+      h_Planck * c_light / (5.36e+2 * nm), h_Planck * c_light / (5.11e+2 * nm),
+      h_Planck * c_light / (4.81e+2 * nm), h_Planck * c_light / (4.63e+2 * nm),
+      h_Planck * c_light / (4.39e+2 * nm), h_Planck * c_light / (4.17e+2 * nm),
+      h_Planck * c_light / (4.09e+2 * nm), h_Planck * c_light / (4.06e+2 * nm),
+      h_Planck * c_light / (4.04e+2 * nm), h_Planck * c_light / (4.03e+2 * nm),
+      optPhotMaxE_
+    };
+
+    std::vector<G4double> lab_absorption = {
+      8.82e-3, 2.08e-2,
+      4.37e-2, 3.63e-2,
+      1.12e-2, 2.17e-2,
+      9.56e-3, 5.07e-3,
+      8.81e-3, 4.92e-3,
+      6.18e-3, 2.94e-3,
+      1.12e-3, 1.28e-4,
+      1.69e-4, 1.94e-4,
+      2.08e-3, 6.24e-3,
+      2.98e-2, 6.19e-2,
+      8.27e-2, 9.84e-2
+    };
+
+    float measuredAbsLength = 15 * m;
+    float measuredAbsValue = 0.0015;
+
+    std::vector<G4double> absLength {noAbsLength_};
+    for (auto &abs_value : lab_absorption)
+      absLength.push_back(measuredAbsValue / abs_value * measuredAbsLength);
+    absLength.push_back(noAbsLength_);
+
+    mpt->AddProperty("ABSLENGTH", lab_abs_energy, absLength);
+
+    // EMISSION SPECTRUM
+    std::vector<G4double> lab_emission_energy = {
+      h_Planck * c_light / (5.46e+2 * nm), h_Planck * c_light / (5.00e+2 * nm),
+      h_Planck * c_light / (4.66e+2 * nm), h_Planck * c_light / (4.51e+2 * nm),
+      h_Planck * c_light / (4.41e+2 * nm), h_Planck * c_light / (4.22e+2 * nm),
+      h_Planck * c_light / (4.10e+2 * nm), h_Planck * c_light / (4.00e+2 * nm),
+      h_Planck * c_light / (3.93e+2 * nm), h_Planck * c_light / (3.83e+2 * nm),
+      h_Planck * c_light / (3.59e+2 * nm)
+    };
+
+    std::vector<G4double> lab_emission_intensity = {
+      7.14e+3, 3.27e+4,
+      1.08e+5, 2.11e+5,
+      2.32e+5, 4.23e+5,
+      3.51e+5, 4.33e+5,
+      2.63e+5, 4.90e+4,
+      1.22e+4
+    };
+
+    mpt->AddProperty("SCINTILLATIONCOMPONENT1", lab_emission_energy, lab_emission_intensity);
+    mpt->AddProperty("ELSPECTRUM"             , lab_emission_energy, lab_emission_intensity, 1);
+
+    // CONST PROPERTIES https://www.osti.gov/servlets/purl/1514707
+    mpt->AddConstProperty("SCINTILLATIONYIELD", 11590. / MeV );
+    mpt->AddConstProperty("SCINTILLATIONTIMECONSTANT1",   7.63 * ns);
+    mpt->AddConstProperty("RESOLUTIONSCALE",    1.0);
+
+    return mpt;
+  }
+
 
 
   /// Gaseous Argon ///

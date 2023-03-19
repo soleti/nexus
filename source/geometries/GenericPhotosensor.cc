@@ -14,6 +14,8 @@
 #include "Visibilities.h"
 
 #include <G4Box.hh>
+#include <G4Tubs.hh>
+
 #include <G4LogicalVolume.hh>
 #include <G4PVPlacement.hh>
 #include <G4Material.hh>
@@ -35,8 +37,8 @@ GenericPhotosensor::GenericPhotosensor(G4String name,
   width_              (width),           // Width of the Sensitive Area
   height_             (height),          // Height of the Sensitive Area
   thickness_          (thickness),       // Thickness of the whole sensor
-  window_thickness_   (0.2 * mm),        // Window thickness    (similar to Sensl SiPMs)
-  sensarea_thickness_ (0.2 * mm),        // Sensitive thickness (similar to Sensl SiPMs)
+  window_thickness_   (6 * mm),        // Window thickness    (similar to Sensl SiPMs)
+  sensarea_thickness_ (0.1 * mm),        // Sensitive thickness (similar to Sensl SiPMs)
   wls_thickness_      (1. * micrometer), // WLS thickness = 1 micron by definition)
   with_wls_coating_   (false),
   window_rindex_      (nullptr),
@@ -137,8 +139,9 @@ void GenericPhotosensor::Construct()
   // PHOTOSENSOR CASE //////////////////////////////////
   G4String name = name_ + "_CASE";
 
-  G4Box* case_solid_vol =
-    new G4Box(name, width_/2., height_/2., thickness_/2.);
+  G4Tubs* case_solid_vol = new G4Tubs(name, 0, width_ / 2., thickness_ / 2., 0, twopi);
+  // G4Box* case_solid_vol =
+  //   new G4Box(name, width_/2., height_/2., thickness_/2.);
 
   G4LogicalVolume* case_logic_vol =
     new G4LogicalVolume(case_solid_vol, case_mat_, name);
@@ -149,8 +152,10 @@ void GenericPhotosensor::Construct()
   // OPTICAL WINDOW ////////////////////////////////////////
   name = name_ + "_WINDOW";
 
-  G4Box* window_solid_vol =
-    new G4Box(name, reduced_width_/2., reduced_height_/2., window_thickness_/2.);
+  G4Tubs* window_solid_vol = new G4Tubs(name, 0, reduced_width_ / 2., window_thickness_ / 2., 0, twopi);
+
+  // G4Box* window_solid_vol =
+  //   new G4Box(name, reduced_width_/2., reduced_height_/2., window_thickness_/2.);
 
   G4LogicalVolume* window_logic_vol =
     new G4LogicalVolume(window_solid_vol, window_mat_, name);
@@ -164,8 +169,10 @@ void GenericPhotosensor::Construct()
   // PHOTOSENSITIVE AREA /////////////////////////////////////////////
   name = name_ + "_SENSAREA";
 
-  G4Box* sensarea_solid_vol =
-    new G4Box(name, reduced_width_/2., reduced_height_/2., sensarea_thickness_/2.);
+  G4Tubs* sensarea_solid_vol = new G4Tubs(name, 0, reduced_width_ / 2., sensarea_thickness_ / 2., 0, twopi);
+
+  // G4Box* sensarea_solid_vol =
+  //   new G4Box(name, reduced_width_/2., reduced_height_/2., sensarea_thickness_/2.);
 
   G4LogicalVolume* sensarea_logic_vol =
     new G4LogicalVolume(sensarea_solid_vol, sensitive_mat_, name);
@@ -205,10 +212,10 @@ void GenericPhotosensor::Construct()
   // VISIBILITIES /////////////////////////////////////////////
   if (visibility_) {
     window_logic_vol  ->SetVisAttributes(G4VisAttributes::GetInvisible());
-    G4VisAttributes red = Red();
-    red.SetForceSolid(true);
-    sensarea_logic_vol->SetVisAttributes(red);
-    case_logic_vol->SetVisAttributes(G4VisAttributes::GetInvisible());
+    G4VisAttributes blue = nexus::Blue();
+    blue.SetForceSolid(true);
+    sensarea_logic_vol->SetVisAttributes(blue);
+    case_logic_vol->SetVisAttributes(nexus::LightGrey());
   }
   else {
     window_logic_vol  ->SetVisAttributes(G4VisAttributes::GetInvisible());

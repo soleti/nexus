@@ -24,6 +24,8 @@ namespace nexus {
 
     /// Set whether to store or not the current event
     void StoreCurrentEvent(G4bool);
+    void StoreHits(G4HCofThisEvent*);
+    void StoreSensorHits(G4VHitsCollection*);
     void InteractingEvent(G4bool);
 
     ///
@@ -63,8 +65,11 @@ namespace nexus {
     G4bool _first_evt; ///< true only for the first event of the run
 
     ESSBeamHDF5Writer* _h5writer;  ///< Event writer to hdf5 file
-
+    std::vector<G4int>* ihits_;
+    std::map<G4int, std::vector<G4int>* > hit_map_;
     G4double _bin_size, _tof_bin_size;
+    std::vector<G4int> sns_posvec_;
+    std::map<G4String, G4double> sensdet_bin_;
 
   };
 

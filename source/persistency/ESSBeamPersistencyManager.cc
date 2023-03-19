@@ -8,6 +8,7 @@
 #include "GeometryBase.h"
 #include "PersistencyManagerBase.h"
 #include "FactoryBase.h"
+#include "SensorSD.h"
 
 #include "ESSBeamHDF5Writer.h"
 
@@ -110,6 +111,9 @@ G4bool ESSBeamPersistencyManager::Store(const G4Event* event)
 
   // Store the trajectories of the event as Gate particles
   StoreTrajectories(event->GetTrajectoryContainer());
+  ihits_ = nullptr;
+  hit_map_.clear();
+  StoreHits(event->GetHCofThisEvent());
 
   _nevt++;
 
@@ -120,6 +124,90 @@ G4bool ESSBeamPersistencyManager::Store(const G4Event* event)
 }
 
 
+void ESSBeamPersistencyManager::StoreHits(G4HCofThisEvent* hce)
+{
+  if (!hce) return;
+
+  G4SDManager* sdmgr = G4SDManager::GetSDMpointer();
+  G4HCtable* hct = sdmgr->GetHCtable();
+
+  // Loop through the hits collections
+  for (auto i=0; i<hct->entries(); i++) {
+
+    // Collection are identified univocally (in principle) using
+    // their id number, and this can be obtained using the collection
+    // and sensitive detector names.
+    G4String hcname = hct->GetHCname(i);
+    G4String sdname = hct->GetSDname(i);
+    int hcid = sdmgr->GetCollectionID(sdname+"/"+hcname);
+
+    // Fetch collection using the id number
+    G4VHitsCollection* hits = hce->GetHC(hcid);
+
+    if (hcname == SensorSD::GetCollectionUniqueName()) {
+      StoreSensorHits(hits);
+    } else {
+      G4String msg =
+        "Collection of hits '" + sdname + "/" + hcname
+        + "' is of an unknown type and will not be stored.";
+      G4Exception("[PersistencyManager]", "StoreHits()", JustWarning, msg);
+    }
+  }
+
+}
+
+void ESSBeamPersistencyManager::StoreSensorHits(G4VHitsCollection* hc)
+{
+  SensorHitsCollection* hits = dynamic_cast<SensorHitsCollection*>(hc);
+  if (!hits) return;
+
+  std::string sdname = hits->GetSDname();
+
+  std::map<G4String, G4double>::const_iterator sensdet_it = sensdet_bin_.find(sdname);
+  if (sensdet_it == sensdet_bin_.end()) {
+    for (size_t j=0; j<hits->entries(); j++) {
+      SensorHit* hit = dynamic_cast<SensorHit*>(hits->GetHit(j));
+      if (!hit) continue;
+      G4double bin_size = hit->GetBinSize();
+      sensdet_bin_[sdname] = bin_size;
+      break;
+    }
+  }
+
+  for (size_t i=0; i<hits->entries(); i++) {
+
+    SensorHit* hit = dynamic_cast<SensorHit*>(hits->GetHit(i));
+    if (!hit) continue;
+
+    G4ThreeVector xyz = hit->GetPosition();
+    G4double binsize = hit->GetBinSize();
+
+    const std::map<G4double, G4int>& wvfm = hit->GetHistogram();
+    std::map<G4double, G4int>::const_iterator it;
+    std::vector< std::pair<unsigned int,float> > data;
+    G4double amplitude = 0.;
+
+    for (it = wvfm.begin(); it != wvfm.end(); ++it) {
+      unsigned int time_bin = (unsigned int)((*it).first/binsize+0.5);
+      unsigned int charge = (unsigned int)((*it).second+0.5);
+
+      data.push_back(std::make_pair(time_bin, charge));
+      amplitude = amplitude + (*it).second;
+
+      _h5writer->WriteSensorDataInfo(_nevt, (unsigned int)hit->GetPmtID(),
+                                     time_bin, charge);
+    }
+
+    std::vector<G4int>::iterator pos_it =
+      std::find(sns_posvec_.begin(), sns_posvec_.end(), hit->GetPmtID());
+    if (pos_it == sns_posvec_.end()) {
+      _h5writer->WriteSensorPosInfo((unsigned int)hit->GetPmtID(), sdname.c_str(),
+				    (float)xyz.x(), (float)xyz.y(), (float)xyz.z());
+      sns_posvec_.push_back(hit->GetPmtID());
+    }
+
+  }
+}
 
 void ESSBeamPersistencyManager::StoreTrajectories(G4TrajectoryContainer* tc)
 {
@@ -134,7 +222,8 @@ void ESSBeamPersistencyManager::StoreTrajectories(G4TrajectoryContainer* tc)
     if ((trj->GetParticleName() != "nu_mu") &&
         (trj->GetParticleName() != "anti_nu_mu")  &&
         (trj->GetParticleName() != "nu_e") &&
-        (trj->GetParticleName() != "anti_nu_e")) {
+        (trj->GetParticleName() != "anti_nu_e") &&
+        (trj->GetParticleName() != "gamma")) {
       continue;
     }
 

@@ -78,6 +78,12 @@ namespace materials {
   // Fused silica (synthetic quartz)
   G4Material* FusedSilica();
 
+  // LAB (Linear alkylbenzene)
+  G4Material* LAB();
+
+  // Gadolinium-loaded liquid scintillator
+  G4Material* GdLS();
+
   // PS (Polystyrene)
   G4Material* PS();
 

@@ -194,7 +194,7 @@ namespace nexus {
 
     // WORLD
     if (region == "INSIDE_BARREL") {
-      return inside_cylinder_->GenerateVertex("VOLUME");;
+      return inside_cylinder_->GenerateVertex("VOLUME");
     }
     else {
       G4Exception("[FiberBarrel]", "GenerateVertex()", FatalException,

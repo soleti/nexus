@@ -1,24 +1,29 @@
-/Generator/SingleParticle/particle proton
-/Generator/SingleParticle/min_energy 2 GeV
-/Generator/SingleParticle/max_energy 2 GeV
-/Generator/SingleParticle/region SINGLE_POINT
+/Generator/CORSIKAGenerator/corsika_file DAT000001
+/Generator/CORSIKAGenerator/region DETECTOR
 
-/run/verbose 1
-/event/verbose 1
-/tracking/verbose 1
+#/Generator/SingleParticle/particle neutron
+#/Generator/SingleParticle/min_energy 4 MeV
+#/Generator/SingleParticle/max_energy 4 MeV
+#/Generator/SingleParticle/momentum 0 -1 0
+#/Generator/SingleParticle/region DETECTOR
+
+/run/verbose 0
+/event/verbose 0
+/tracking/verbose 0
 /process/em/verbose 0
 
 /PhysicsList/RegisterPhysics G4EmStandardPhysics_option4
 /PhysicsList/RegisterPhysics G4DecayPhysics
 /PhysicsList/RegisterPhysics G4RadioactiveDecayPhysics
 /PhysicsList/RegisterPhysics G4HadronElasticPhysicsHP
-/PhysicsList/RegisterPhysics G4HadronPhysicsQGSP_BERT
+/PhysicsList/RegisterPhysics G4HadronPhysicsQGSP_BERT_HP
 /PhysicsList/RegisterPhysics G4StoppingPhysics
 /PhysicsList/RegisterPhysics G4IonPhysics
 /PhysicsList/RegisterPhysics NexusPhysics
 /PhysicsList/RegisterPhysics G4StepLimiterPhysics
+#/PhysicsList/RegisterPhysics G4OpticalPhysics
 
 ### JOB CONTROL
-/nexus/random_seed            2
+/nexus/random_seed            4
 /nexus/persistency/start_id   0
 /nexus/persistency/outputFile ESSBeam.next
