@@ -60,7 +60,7 @@ namespace nexus {
     G4Box* lab_solid =
       new G4Box("LAB", size/2., size/2., size/2.);
 
-    G4Material* air = G4NistManager::Instance()->FindOrBuildMaterial("G4_AIR");
+    G4Material* air = G4NistManager::Instance()->FindOrBuildMaterial("G4_Galactic");
 
     G4LogicalVolume* lab_logic = new G4LogicalVolume(lab_solid, air, "LAB");
 
@@ -156,10 +156,49 @@ namespace nexus {
 
     G4LogicalVolume* pmt_logic = pmt_->GetLogicalVolume();
 
-    G4int rows = 6;
-    G4int angles = 15;
+    G4int angles = 10;
     G4double step = 2. * pi / angles;
 
+
+    G4RotationMatrix *rot_z = new G4RotationMatrix();
+      rot_z->rotateY(180 * deg);
+
+    for (G4int itheta=0; itheta < angles; itheta++) {
+      G4float theta = twopi / angles * itheta;
+      std::string label = std::to_string(theta);
+      G4double x = (detector_diam_ / 2. - 50 * cm) * std::sin(theta) * mm;
+      G4double y = (detector_diam_ / 2. - 50 * cm) * std::cos(theta) * mm;
+      new G4PVPlacement(0, G4ThreeVector(x, y, -detector_height_ / 2 + 5 * cm),
+                        pmt_logic, "PMTDownout" + label, detector_logic,
+                        false, 100+itheta, false);
+      new G4PVPlacement(G4Transform3D(*rot_z, G4ThreeVector(x, y, detector_height_ / 2 - 5 * cm)),
+                        pmt_logic, "PMTUpout" + label, detector_logic,
+                        false, 400+itheta, false);
+    }
+
+    angles = 5;
+    for (G4int itheta=0; itheta < angles; itheta++) {
+      G4float theta = twopi / angles * itheta;
+      std::string label = std::to_string(theta);
+      G4double x = (detector_diam_ / 2. - 120 * cm) * std::sin(theta) * mm;
+      G4double y = (detector_diam_ / 2. - 120 * cm) * std::cos(theta) * mm;
+      new G4PVPlacement(0, G4ThreeVector(x, y, -detector_height_ / 2 + 5 * cm),
+                        pmt_logic, "PMTDownmid" + label, detector_logic,
+                        false, 200+itheta, false);
+      new G4PVPlacement(G4Transform3D(*rot_z, G4ThreeVector(x, y, detector_height_ / 2 - 5 * cm)),
+                        pmt_logic, "PMTUpmid" + label, detector_logic,
+                        false, 500+itheta, false);
+    }
+
+    new G4PVPlacement(0, G4ThreeVector(0, 0, -detector_height_ / 2 + 5 * cm),
+                      pmt_logic, "PMTDown0", detector_logic,
+                      false, 300, false);
+    new G4PVPlacement(G4Transform3D(*rot_z, G4ThreeVector(0, 0, detector_height_ / 2 - 5 * cm)),
+                      pmt_logic, "PMTUp0", detector_logic,
+                      false, 600, false);
+
+    angles = 10;
+    G4int rows = 5;
     for (G4int irow = 0; irow < rows; irow++) {
       G4RotationMatrix *rot = new G4RotationMatrix();
       rot->rotateX(90 * deg);

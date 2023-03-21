@@ -1,12 +1,13 @@
 /control/execute macros/physics/DefaultPhysicsList.mac
 /nexus/RegisterGeometry ESSBeam
 /nexus/RegisterGenerator CORSIKAGenerator
+#/nexus/RegisterGenerator SingleParticleGenerator
 /nexus/RegisterPersistencyManager ESSBeamPersistencyManager
 
 
 ### ACTIONS
 /nexus/RegisterRunAction DefaultRunAction
-/nexus/RegisterTrackingAction OpticalTrackingAction
+/nexus/RegisterTrackingAction DefaultTrackingAction
 /nexus/RegisterSteppingAction AnalysisSteppingAction
 
 /nexus/RegisterMacro macros/ESSBeam.config.mac

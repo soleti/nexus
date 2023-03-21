@@ -219,13 +219,13 @@ void ESSBeamPersistencyManager::StoreTrajectories(G4TrajectoryContainer* tc)
     Trajectory* trj = dynamic_cast<Trajectory*>((*tc)[i]);
     if (!trj) continue;
 
-    if ((trj->GetParticleName() != "nu_mu") &&
-        (trj->GetParticleName() != "anti_nu_mu")  &&
-        (trj->GetParticleName() != "nu_e") &&
-        (trj->GetParticleName() != "anti_nu_e") &&
-        (trj->GetParticleName() != "gamma")) {
-      continue;
-    }
+    // if ((trj->GetParticleName() != "nu_mu") &&
+    //     (trj->GetParticleName() != "anti_nu_mu")  &&
+    //     (trj->GetParticleName() != "nu_e") &&
+    //     (trj->GetParticleName() != "anti_nu_e") &&
+    //     (trj->GetParticleName() != "gamma")) {
+    //   continue;
+    // }
 
     G4int trackid = trj->GetTrackID();
 

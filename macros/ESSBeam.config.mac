@@ -1,10 +1,12 @@
 /Generator/CORSIKAGenerator/corsika_file DAT000001
 /Generator/CORSIKAGenerator/region DETECTOR
+/Generator/CORSIKAGenerator/plane_y_size 10 m
+/Generator/CORSIKAGenerator/plane_x_size 10 m
 
-#/Generator/SingleParticle/particle neutron
-#/Generator/SingleParticle/min_energy 4 MeV
-#/Generator/SingleParticle/max_energy 4 MeV
-#/Generator/SingleParticle/momentum 0 -1 0
+
+#/Generator/SingleParticle/particle gamma
+#/Generator/SingleParticle/min_energy 8 MeV
+#/Generator/SingleParticle/max_energy 8 MeV
 #/Generator/SingleParticle/region DETECTOR
 
 /run/verbose 0
