@@ -56,6 +56,8 @@ namespace materials {
 			              G4double percXe=98,
 			              G4int mass_num=4);
 
+  // Concrete
+  G4Material* Concrete();
 
   // Stainless Steel (grade 304L)
   G4Material* Steel();

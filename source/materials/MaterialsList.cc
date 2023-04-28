@@ -288,7 +288,40 @@ namespace materials {
   }
 
 
+  G4Material* Concrete()
+  {
 
+    G4String name = "Concrete";
+
+    G4Material* mat = G4Material::GetMaterial(name, false);
+
+    if (mat == 0) {
+
+      mat = new G4Material(name, 2.5*g/cm3, 6);
+
+      G4NistManager* nist = G4NistManager::Instance();
+
+      G4Element* O = nist->FindOrBuildElement("O");
+      mat->AddElement(O, 0.52);
+
+      G4Element* Si = nist->FindOrBuildElement("Si");
+      mat->AddElement(Si, 0.325);
+
+      G4Element* Ca = nist->FindOrBuildElement("Ca");
+      mat->AddElement(Ca, 0.06);
+
+      G4Element* Na = nist->FindOrBuildElement("Na");
+      mat->AddElement(Na, 0.015);
+
+      G4Element* Fe = nist->FindOrBuildElement("Fe");
+      mat->AddElement(Na, 0.04);
+
+      G4Element* Al = nist->FindOrBuildElement("Fe");
+      mat->AddElement(Na, 0.04);
+    }
+
+    return mat;
+  }
 
 
   G4Material* Steel()

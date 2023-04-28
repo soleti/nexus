@@ -1,7 +1,7 @@
 /control/execute macros/physics/DefaultPhysicsList.mac
 /nexus/RegisterGeometry ESSBeam
-/nexus/RegisterGenerator CORSIKAGenerator
-#/nexus/RegisterGenerator SingleParticleGenerator
+#/nexus/RegisterGenerator CORSIKAGenerator
+/nexus/RegisterGenerator SingleParticleGenerator
 /nexus/RegisterPersistencyManager ESSBeamPersistencyManager
 
 

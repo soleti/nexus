@@ -200,7 +200,7 @@ void CORSIKAGenerator::GeneratePrimaryVertex(G4Event* event)
       else if(!strncmp(buf_.ch+4*iword, event_marker.data(), 4)) {
         ++event_count_;
         current_event_number_ = lrint(buf_.fl[1+iword]);
-        G4cout << "[CORSIKAGenerator] Event " << current_event_number_ << G4endl;
+        // G4cout << "[CORSIKAGenerator] Event " << current_event_number_ << G4endl;
         particles_map.erase(particles_map.begin(), particles_map.end());
         // ++_primaries;
       } else if(!strncmp(buf_.ch+4*iword, "EVTE", 4)) {
