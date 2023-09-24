@@ -1,0 +1,46 @@
+/Generator/SingleParticle/particle opticalphoton
+/Generator/SingleParticle/min_energy 7 eV
+/Generator/SingleParticle/max_energy 7 eV
+/Generator/SingleParticle/region VOLUME
+
+# barrel______________________________________________________
+/Geometry/FibBarrMeth/length 2. cm
+/Geometry/FibBarrMeth/radius 0.5 cm # NEXT100 diam = 138cm
+
+#/Geometry/FibBarrMeth/length 2. cm
+#/Geometry/FibBarrMeth/radius .5 cm
+
+# teflon______________________________________________________
+/Geometry/FibBarrMeth/teflon_thickness 5. mm
+
+/Geometry/FibBarrMeth/caps_visibility false
+/Geometry/FibBarrMeth/teflon_visibility false
+
+# sensor______________________________________________________
+/Geometry/FibBarrMeth/sensor_type PERFECT
+#/Geometry/FibBarrMeth/sensor_type SiPM_FBK
+#/Geometry/FibBarrMeth/sensor_type SiPM_Hamamatsu
+#/Geometry/FibBarrMeth/sensor_type PMT
+
+/Geometry/FibBarrMeth/sensor_visibility true
+
+# fibers______________________________________________________
+/Geometry/FibBarrMeth/fiber_diameter 1 mm
+/Geometry/FibBarrMeth/coated false
+/Geometry/FibBarrMeth/coating TPH
+/Geometry/FibBarrMeth/fiber_type B2
+
+# methacrylate______________________________________________________
+/Geometry/FibBarrMeth/methacrylate true
+#/Geometry/FibBarrMeth/window_thickness 5. mm
+/Geometry/FibBarrMeth/window_thickness 0.1 mm
+
+/run/verbose 1
+/event/verbose 0
+/tracking/verbose 0
+/process/em/verbose 0
+
+### JOB CONTROL
+/nexus/random_seed            1
+/nexus/persistency/start_id   0
+/nexus/persistency/outputFile FibBarrMeth.next

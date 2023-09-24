@@ -1,0 +1,33 @@
+/run/verbose 1
+/event/verbose 0
+/tracking/verbose 0
+
+/nexus/persistency/start_id   0
+
+/process/em/verbose 0
+
+# barrel______________________________________________________
+/Geometry/Fiber_barrel_meth/length 1.5 m
+/Geometry/Fiber_barrel_meth/radius_cyl 0.5 m
+
+# teflon______________________________________________________
+/Geometry/Fiber_barrel_meth/teflon_thickness 5. mm
+/Geometry/Fiber_barrel_meth/caps_visibility true
+/Geometry/Fiber_barrel_meth/teflon_visibility true
+
+# vertex______________________________________________________
+/Generator/SingleParticle/particle opticalphoton
+/Generator/SingleParticle/region VOLUME
+
+# fibers______________________________________________________
+/Geometry/Fiber_barrel_meth/diameter 1. mm
+/Geometry/Fiber_barrel_meth/coated true
+
+/Geometry/Fiber_barrel_meth/fiber_type B2
+/Generator/SingleParticle/max_energy 7 eV # Y11 with TPB or B2 with TPH (Xe scintillation)
+/Generator/SingleParticle/min_energy 7 eV # Y11 with TPB or B2 with TPH (Xe scintillation)
+/Geometry/Fiber_barrel_meth/sensor_type PERFECT
+
+/process/optical/processActivation Cerenkov false
+
+/nexus/persistency/outputFile Fiber_barrel_meth.next
