@@ -452,6 +452,55 @@ namespace opticalprops {
 
     return mpt;
   }
+  G4MaterialPropertiesTable* CsI()
+  {
+
+    G4MaterialPropertiesTable* mpt = new G4MaterialPropertiesTable();
+
+
+    std::vector<G4double> energy = {
+        optPhotMinE_,
+        h_Planck * c_light / (450 * nm),
+        h_Planck * c_light / (405 * nm),
+        h_Planck * c_light / (371 * nm),
+        h_Planck * c_light / (343 * nm),
+        h_Planck * c_light / (332 * nm),
+        h_Planck * c_light / (323 * nm),
+        h_Planck * c_light / (302 * nm),
+        h_Planck * c_light / (274 * nm),
+        optPhotMaxE_};
+
+    std::vector<G4double> rIndex = {
+        1.65, 1.65, 1.67, 1.69, 1.69, 1.70, 1.72, 1.72, 1.72, 1.72
+    };
+
+    mpt->AddProperty("RINDEX", energy, rIndex);
+
+    std::vector<G4double> absorption = {
+      5 * m, 5 * m, 5 * m, 5 * m, 5 * m, 5 * m, 5 * m, 5 * m, 5 * m, 5 * m
+    };
+
+    mpt->AddProperty("ABSLENGTH", energy, absorption);
+
+    std::vector<G4double> emission_intensity = {
+      0.0,  0.13, 0.17, 0.55, 0.98, 0.97, 0.83, 0.44, 0.16, 0.
+    };
+
+    mpt->AddProperty("SCINTILLATIONCOMPONENT1", energy, emission_intensity);
+    mpt->AddProperty("SCINTILLATIONCOMPONENT2", energy, emission_intensity);
+    // mpt->AddProperty("ELSPECTRUM"            , energy, emission_intensity, 1);
+    G4double csi_time_fast  =     6 * ns;
+    G4double csi_time_slow  =    28 * ns;
+    // CONST PROPERTIES https://www.osti.gov/servlets/purl/1514707
+    mpt->AddConstProperty("SCINTILLATIONYIELD", 10 / MeV);
+    mpt->AddConstProperty("SCINTILLATIONYIELD1", 0.57 );
+    mpt->AddConstProperty("SCINTILLATIONYIELD1", 0.43 );
+    mpt->AddConstProperty("SCINTILLATIONTIMECONSTANT1",   csi_time_fast);
+    mpt->AddConstProperty("SCINTILLATIONTIMECONSTANT2",   csi_time_slow);
+    mpt->AddConstProperty("RESOLUTIONSCALE",    1.0);
+
+    return mpt;
+  }
 
   /// Gd-loaded linear alkylbenzene ///
   G4MaterialPropertiesTable* GdLS()
@@ -550,14 +599,125 @@ namespace opticalprops {
     mpt->AddProperty("ELSPECTRUM"             , lab_emission_energy, lab_emission_intensity, 1);
 
     // CONST PROPERTIES https://www.osti.gov/servlets/purl/1514707
-    mpt->AddConstProperty("SCINTILLATIONYIELD", 11590. / MeV );
+    mpt->AddConstProperty("SCINTILLATIONYIELD", 1159.0*5 / MeV );
+    // mpt->AddConstProperty("SCINTILLATIONYIELD", 1. / MeV );
     mpt->AddConstProperty("SCINTILLATIONTIMECONSTANT1",   7.63 * ns);
     mpt->AddConstProperty("RESOLUTIONSCALE",    1.0);
 
     return mpt;
   }
 
+  /// LiquidO prototype ///
+  G4MaterialPropertiesTable* LiquidO()
+  {
 
+    G4MaterialPropertiesTable* mpt = new G4MaterialPropertiesTable();
+
+    // REFRACTIVE INDEX https://arxiv.org/pdf/1105.2101.pdf
+    std::vector<G4double> ri_energy = {
+      optPhotMinE_,
+      h_Planck * c_light / (959.87 * nm),
+      h_Planck * c_light / (738.98 * nm),
+      h_Planck * c_light / (573.91 * nm),
+      h_Planck * c_light / (450.98 * nm),
+      h_Planck * c_light / (329.10 * nm),
+      h_Planck * c_light / (241.53 * nm),
+      h_Planck * c_light / (222.19 * nm),
+      optPhotMaxE_
+    };
+
+    std::vector<G4double> rIndex = {
+      1.47,
+      1.47,
+      1.48,
+      1.48,
+      1.50,
+      1.53,
+      1.62,
+      1.71,
+      1.71
+    };
+
+    mpt->AddProperty("RINDEX", ri_energy, rIndex);
+
+    // ABSORPTION LENGTH https://arxiv.org/pdf/1402.6694.pdf
+    std::vector<G4double> lab_abs_energy = {
+      optPhotMinE_,
+      h_Planck * c_light / (7.88e+2 * nm), h_Planck * c_light / (7.71e+2 * nm),
+      h_Planck * c_light / (7.59e+2 * nm), h_Planck * c_light / (7.46e+2 * nm),
+      h_Planck * c_light / (7.26e+2 * nm), h_Planck * c_light / (7.13e+2 * nm),
+      h_Planck * c_light / (7.01e+2 * nm), h_Planck * c_light / (6.65e+2 * nm),
+      h_Planck * c_light / (6.48e+2 * nm), h_Planck * c_light / (6.23e+2 * nm),
+      h_Planck * c_light / (6.08e+2 * nm), h_Planck * c_light / (5.68e+2 * nm),
+      h_Planck * c_light / (5.36e+2 * nm), h_Planck * c_light / (5.11e+2 * nm),
+      h_Planck * c_light / (4.81e+2 * nm), h_Planck * c_light / (4.63e+2 * nm),
+      h_Planck * c_light / (4.39e+2 * nm), h_Planck * c_light / (4.17e+2 * nm),
+      h_Planck * c_light / (4.09e+2 * nm), h_Planck * c_light / (4.06e+2 * nm),
+      h_Planck * c_light / (4.04e+2 * nm), h_Planck * c_light / (4.03e+2 * nm),
+      optPhotMaxE_
+    };
+
+    std::vector<G4double> lab_absorption = {
+      8.82e-3, 2.08e-2,
+      4.37e-2, 3.63e-2,
+      1.12e-2, 2.17e-2,
+      9.56e-3, 5.07e-3,
+      8.81e-3, 4.92e-3,
+      6.18e-3, 2.94e-3,
+      1.12e-3, 1.28e-4,
+      1.69e-4, 1.94e-4,
+      2.08e-3, 6.24e-3,
+      2.98e-2, 6.19e-2,
+      8.27e-2, 9.84e-2
+    };
+
+    float measuredAbsLength = 15 * m;
+    float measuredAbsValue = 0.0015;
+
+    std::vector<G4double> absLength {noAbsLength_};
+    for (auto &abs_value : lab_absorption)
+      absLength.push_back(measuredAbsValue / abs_value * measuredAbsLength);
+    absLength.push_back(noAbsLength_);
+
+    std::vector<G4double> liquido_abs_e = {optPhotMinE_, optPhotMaxE_};
+    std::vector<G4double> liquido_abs = {5. * m, 5. * m};
+    mpt->AddProperty("ABSLENGTH", liquido_abs_e, liquido_abs);
+
+    // EMISSION SPECTRUM
+    std::vector<G4double> lab_emission_energy = {
+      h_Planck * c_light / (5.46e+2 * nm), h_Planck * c_light / (5.00e+2 * nm),
+      h_Planck * c_light / (4.66e+2 * nm), h_Planck * c_light / (4.51e+2 * nm),
+      h_Planck * c_light / (4.41e+2 * nm), h_Planck * c_light / (4.22e+2 * nm),
+      h_Planck * c_light / (4.10e+2 * nm), h_Planck * c_light / (4.00e+2 * nm),
+      h_Planck * c_light / (3.93e+2 * nm), h_Planck * c_light / (3.83e+2 * nm),
+      h_Planck * c_light / (3.59e+2 * nm)
+    };
+
+    std::vector<G4double> lab_emission_intensity = {
+      7.14e+3, 3.27e+4,
+      1.08e+5, 2.11e+5,
+      2.32e+5, 4.23e+5,
+      3.51e+5, 4.33e+5,
+      2.63e+5, 4.90e+4,
+      1.22e+4
+    };
+
+    mpt->AddProperty("SCINTILLATIONCOMPONENT1", lab_emission_energy, lab_emission_intensity);
+    mpt->AddProperty("ELSPECTRUM"             , lab_emission_energy, lab_emission_intensity, 1);
+
+    // CONST PROPERTIES https://www.osti.gov/servlets/purl/1514707
+    mpt->AddConstProperty("SCINTILLATIONYIELD", 11590. / MeV );
+    mpt->AddConstProperty("SCINTILLATIONTIMECONSTANT1",   7.63 * ns);
+    mpt->AddConstProperty("RESOLUTIONSCALE",    1.0);
+    std::vector<G4double> rayleigh_energy = {optPhotMinE_, optPhotMaxE_};
+    std::vector<G4double> rayleigh_length = {5. * mm, 5. * mm};
+    mpt->AddProperty("MIEHG", rayleigh_energy, rayleigh_length);
+    mpt->AddConstProperty("MIEHG_FORWARD",0.5);
+    mpt->AddConstProperty("MIEHG_BACKWARD",0.5);
+    mpt->AddConstProperty("MIEHG_FORWARD_RATIO",1);
+    mpt->AddProperty("RAYLEIGH",rayleigh_energy, rayleigh_length);
+    return mpt;
+  }
 
   /// Gaseous Argon ///
   G4MaterialPropertiesTable* GAr(G4double sc_yield,
@@ -876,6 +1036,14 @@ namespace opticalprops {
       optPhotMinE_,  2.8 * eV,  3.5 * eV,  4. * eV,
       6. * eV,       7.2 * eV,  optPhotMaxE_
     };
+    // std::vector<G4double> REFLECTIVITY = {
+    //   .975,  .975,  .975,  .975,
+    //   .975,  .975,  .975
+    // };
+    // std::vector<G4double> REFLECTIVITY = {
+    //   1., 1., 1., 1.,
+    //   1., 1., 1.
+    // };
     std::vector<G4double> REFLECTIVITY = {
       .98,  .98,  .98,  .98,
       .72,  .72,  .72
@@ -884,19 +1052,19 @@ namespace opticalprops {
 
     // REFLEXION BEHAVIOR
     std::vector<G4double> ENERGIES_2    = {optPhotMinE_, optPhotMaxE_};
-    // Specular reflection about the normal to a microfacet.
-    // Such a vector is chosen according to a gaussian distribution with
-    // sigma = SigmaAlhpa (in rad) and centered in the average normal.
-    std::vector<G4double> specularlobe  = {0., 0.};
-    // specular reflection about the average normal
-    std::vector<G4double> specularspike = {0., 0.};
-    // 180 degrees reflection.
-    std::vector<G4double> backscatter   = {0., 0.};
-    // 1 - the sum of these three last parameters is the percentage of Lambertian reflection
+    // // Specular reflection about the normal to a microfacet.
+    // // Such a vector is chosen according to a gaussian distribution with
+    // // sigma = SigmaAlhpa (in rad) and centered in the average normal.
+    // std::vector<G4double> specularlobe  = {0.5, 0.5};
+    // // specular reflection about the average normal
+    // std::vector<G4double> specularspike = {0, 0};
+    // // 180 degrees reflection.
+    // std::vector<G4double> backscatter   = {0., 0.};
+    // // 1 - the sum of these three last parameters is the percentage of Lambertian reflection
 
-    mpt->AddProperty("SPECULARLOBECONSTANT", ENERGIES_2, specularlobe);
-    mpt->AddProperty("SPECULARSPIKECONSTANT",ENERGIES_2, specularspike);
-    mpt->AddProperty("BACKSCATTERCONSTANT",  ENERGIES_2, backscatter);
+    // mpt->AddProperty("SPECULARLOBECONSTANT", ENERGIES_2, specularlobe);
+    // mpt->AddProperty("SPECULARSPIKECONSTANT",ENERGIES_2, specularspike);
+    // mpt->AddProperty("BACKSCATTERCONSTANT",  ENERGIES_2, backscatter);
 
     // REFRACTIVE INDEX
     std::vector<G4double> rIndex = {1.41, 1.41};

@@ -31,7 +31,7 @@ namespace nexus {
   FiberBarrel::FiberBarrel():
     GeometryBase(),
     radius_ (1 * cm),
-    fiber_radius_(1 * mm),
+    fiber_diameter_(1 * mm),
     length_ (2 * cm),
     coating_ ("TPB"),
     fiber_type_ ("Y11"),
@@ -50,10 +50,10 @@ namespace nexus {
                             "Barrel fiber length");
     length_cmd.SetUnitCategory("Length");
 
-    G4GenericMessenger::Command&  fiber_radius_cmd =
-      msg_->DeclareProperty("fiber_radius", fiber_radius_,
-                            "Fiber radius");
-    fiber_radius_cmd.SetUnitCategory("Length");
+    G4GenericMessenger::Command&  fiber_diameter_cmd =
+      msg_->DeclareProperty("fiber_diameter", fiber_diameter_,
+                            "Fiber diameter");
+    fiber_diameter_cmd.SetUnitCategory("Length");
 
     msg_->DeclareProperty("coating", coating_, "Fiber coating (TPB or PTH)");
     msg_->DeclareProperty("fiber_type", fiber_type_, "Fiber type (Y11 or B2)");
@@ -81,8 +81,8 @@ namespace nexus {
 
     inside_cylinder_ = new CylinderPointSampler2020(0, radius_, length_/2, 0, 2 * M_PI);
 
-    world_z_ = length_ * 2;
-    world_xy_ = radius_ * 2;
+    world_z_ = length_ * 4;
+    world_xy_ = radius_ * 4;
 
 
     G4Material *this_fiber = nullptr;
@@ -113,7 +113,7 @@ namespace nexus {
       }
     }
 
-    fiber_ = new GenericWLSFiber(fiber_type_, true, fiber_radius_, length_, true, coated_, this_coating, this_fiber, true);
+    fiber_ = new GenericWLSFiber(fiber_type_, true, fiber_diameter_, length_, true, coated_, this_coating, this_fiber, true);
 
     // WORLD /////////////////////////////////////////////////
 
@@ -131,6 +131,41 @@ namespace nexus {
     world_logic_vol->SetVisAttributes(G4VisAttributes::GetInvisible());
     GeometryBase::SetLogicalVolume(world_logic_vol);
 
+    // TEFLON PANELS ////////////////////////////////////////////
+    G4Tubs* teflon_panel =
+      new G4Tubs("TEFLON_PANEL", 0, radius_ - fiber_diameter_ / 2, 5 * mm, 0, twopi);
+    G4Material* teflon = G4NistManager::Instance()->FindOrBuildMaterial("G4_TEFLON");
+    teflon->SetMaterialPropertiesTable(opticalprops::PTFE());
+    G4LogicalVolume* teflon_logic =
+      new G4LogicalVolume(teflon_panel, teflon, "TEFLON");
+
+    G4OpticalSurface* opsur_teflon =
+      new G4OpticalSurface("TEFLON_OPSURF", unified, groundteflonair, dielectric_metal);
+    opsur_teflon->SetMaterialPropertiesTable(opticalprops::PTFE());
+
+    new G4LogicalSkinSurface("TEFLON_OPSURF", teflon_logic, opsur_teflon);
+
+    new G4PVPlacement(0, G4ThreeVector(0, 0, -length_/2 - 5 * mm),
+                      teflon_logic, "TEFLON1", world_logic_vol,
+                      true, 0, false);
+
+    new G4PVPlacement(0, G4ThreeVector(0, 0, length_/2 + 5 * mm),
+                      teflon_logic, "TEFLON2", world_logic_vol,
+                      true, 1, false);
+
+    // TEFLON CYLINDER
+
+    G4Tubs* teflon_cylinder =
+      new G4Tubs("TEFLON_CYLINDER", radius_ + fiber_diameter_ / 2, radius_ + fiber_diameter_ / 2 + 1 * cm, length_/2, 0, twopi);
+    G4LogicalVolume* teflon_cylinder_logic =
+      new G4LogicalVolume(teflon_cylinder, teflon, "TEFLON");
+
+    new G4LogicalSkinSurface("TEFLON_CYLINDER_OPSURF", teflon_cylinder_logic, opsur_teflon);
+
+    new G4PVPlacement(0, G4ThreeVector(0, 0),
+                      teflon_cylinder_logic, "TEFLON_CYLINDER", world_logic_vol,
+                      false, 0, false);
+
     // FIBER ////////////////////////////////////////////////////
 
     fiber_->SetCoreOpticalProperties(this_fiber_optical);
@@ -143,7 +178,7 @@ namespace nexus {
     else if (fiber_type_ == "B2")
       fiber_logic->SetVisAttributes(nexus::LightBlueAlpha());
 
-    G4int n_fibers = floor((radius_ * 2 * M_PI) / fiber_radius_);
+    G4int n_fibers = floor((radius_ * 2 * M_PI) / fiber_diameter_);
     G4cout << "[FiberBarrel] Barrel with " << n_fibers << " fibers" << G4endl;
 
     // FAKE DETECTOR /////////////////////////////////////////////
@@ -153,7 +188,7 @@ namespace nexus {
     G4double disk_z = 0.1 * mm;
 
     G4Tubs* disk_solid_vol =
-      new G4Tubs("disk", 0, fiber_radius_/2, disk_z, 0, 2 * M_PI);
+      new G4Tubs("disk", 0, fiber_diameter_/2, disk_z, 0, 2 * M_PI);
 
     G4LogicalVolume* disk_logic_vol =
       new G4LogicalVolume(disk_solid_vol, disk_mat, "DISK");
@@ -164,24 +199,44 @@ namespace nexus {
 
     new G4LogicalSkinSurface("PERFECT_OPSURF", disk_logic_vol, opsur);
 
+    // ALUMINIZED ENDCAP
+
+    G4Material* fiber_end_mat = G4NistManager::Instance()->FindOrBuildMaterial("G4_Al");
+
+    G4double fiber_end_z = 350 * nm;
+
+    G4Tubs* fiber_end_solid_vol =
+      new G4Tubs("fiber_end", 0, fiber_diameter_ / 2, fiber_end_z, 0, 2 * M_PI);
+
+    G4LogicalVolume* fiber_end_logic_vol =
+      new G4LogicalVolume(fiber_end_solid_vol, fiber_end_mat, "FIBER_END");
+    // G4OpticalSurface* opsur_al =
+    //   new G4OpticalSurface("POLISHED_AL_OPSURF", unified, polished, dielectric_metal);
+    G4OpticalSurface* opsur_al =
+      new G4OpticalSurface("POLISHED_AL_OPSURF", glisur, ground, dielectric_metal);
+    opsur_al->SetPolish(0.75);
+    opsur_al->SetMaterialPropertiesTable(opticalprops::PolishedAl());
+
+    new G4LogicalSkinSurface("POLISHED_AL_OPSURF", fiber_end_logic_vol, opsur_al);
+
     // PLACEMENT /////////////////////////////////////////////
 
     for (G4int itheta=0; itheta < n_fibers; itheta++) {
 
-      G4float theta = 2 * M_PI / n_fibers * itheta;
+      G4double theta = 2 * M_PI / n_fibers * itheta;
       G4double x = radius_ * std::cos(theta) * mm;
       G4double y = radius_ * std::sin(theta) * mm;
       std::string label = std::to_string(itheta);
 
       new G4PVPlacement(0, G4ThreeVector(x,y),
                         fiber_logic, "B2-"+label, world_logic_vol,
-                        false, itheta, false);
+                        true, itheta, false);
       new G4PVPlacement(0, G4ThreeVector(x,y,length_/2 + disk_z),
                         disk_logic_vol, "DISKL-" + label, world_logic_vol,
-                        false, itheta, false);
+                        true, itheta+1000, false);
       new G4PVPlacement(0, G4ThreeVector(x,y,-(length_/2 + disk_z)),
-                        disk_logic_vol, "DISKR-" + label, world_logic_vol,
-                        false, n_fibers+itheta, false);
+                        fiber_end_logic_vol, "ALUMINIUMR-" + label, world_logic_vol,
+                        true, n_fibers+itheta, false);
     }
 
   }

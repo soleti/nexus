@@ -41,7 +41,7 @@ namespace nexus {
     G4double world_z_;             // World dimensions
     G4double world_xy_;
     G4double radius_;
-    G4double fiber_radius_;
+    G4double fiber_diameter_;
     G4double length_;
     G4String coating_;
     G4String fiber_type_;

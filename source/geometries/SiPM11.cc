@@ -31,7 +31,7 @@ namespace nexus {
   using namespace CLHEP;
 
   SiPM11::SiPM11(): GeometryBase(),
-		    visibility_(0)
+		    visibility_(1)
 
   {
     /// Messenger
@@ -97,7 +97,7 @@ namespace nexus {
 
     G4double active_side     = 1.0   * mm;
     G4double active_depth    = 0.01   * mm;
-    G4double active_offset_x = 0.975 * mm;
+    G4double active_offset_x = 0.7125 * mm;
 
     G4Box* active_solid =
       new G4Box("PHOTODIODES", active_side/2., active_side/2., active_depth/2);
@@ -166,7 +166,7 @@ namespace nexus {
       SensorSD* sipmsd = new SensorSD(sdname);
       sipmsd->SetDetectorVolumeDepth(1);
       sipmsd->SetDetectorNamingOrder(1000.);
-      sipmsd->SetTimeBinning(1.*microsecond);
+      sipmsd->SetTimeBinning(1.*us);
       sipmsd->SetMotherVolumeDepth(2);
 
       G4SDManager::GetSDMpointer()->AddNewDetector(sipmsd);
@@ -175,12 +175,12 @@ namespace nexus {
 
     // Visibilities
     if (visibility_) {
-       G4VisAttributes sipm_col = nexus::DirtyWhite();
+       G4VisAttributes sipm_col = nexus::WhiteAlpha();
       sipm_logic->SetVisAttributes(sipm_col);
-      G4VisAttributes blue_col = nexus::Blue();
+      G4VisAttributes blue_col = nexus::DarkGreen();
       blue_col.SetForceSolid(true);
       active_logic->SetVisAttributes(blue_col);
-      G4VisAttributes plastic_col = nexus::Lilla();
+      G4VisAttributes plastic_col = nexus::RedAlpha();
       plastic_col.SetForceSolid(true);
       plastic_logic->SetVisAttributes(plastic_col);
     }

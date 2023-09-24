@@ -41,6 +41,10 @@ namespace opticalprops {
 
   G4MaterialPropertiesTable* GdLS();
 
+  G4MaterialPropertiesTable* LiquidO();
+
+  G4MaterialPropertiesTable* CsI();
+
   G4MaterialPropertiesTable* GAr(G4double sc_yield,
                                 G4double e_lifetime=1000.*ms);
 
