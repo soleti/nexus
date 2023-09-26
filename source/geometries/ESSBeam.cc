@@ -449,8 +449,8 @@ namespace nexus {
         }
       }
     } else if (region == "DETECTOR") {
-      // return inside_cylinder_->GenerateVertex("VOLUME");
-      return vertex;
+      return inside_cylinder_->GenerateVertex("VOLUME");
+      // return vertex;
     } else {
       G4Exception("[ESSBeam]", "GenerateVertex()", FatalException,
                   "Unknown vertex generation region!");

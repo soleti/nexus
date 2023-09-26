@@ -599,7 +599,7 @@ namespace opticalprops {
     mpt->AddProperty("ELSPECTRUM"             , lab_emission_energy, lab_emission_intensity, 1);
 
     // CONST PROPERTIES https://www.osti.gov/servlets/purl/1514707
-    mpt->AddConstProperty("SCINTILLATIONYIELD", 1159.0*5 / MeV );
+    mpt->AddConstProperty("SCINTILLATIONYIELD", 11590. / MeV );
     // mpt->AddConstProperty("SCINTILLATIONYIELD", 1. / MeV );
     mpt->AddConstProperty("SCINTILLATIONTIMECONSTANT1",   7.63 * ns);
     mpt->AddConstProperty("RESOLUTIONSCALE",    1.0);
