@@ -4,11 +4,11 @@
 #/Generator/CORSIKAGenerator/plane_x_size 20 m
 #/Generator/CORSIKAGenerator/height 22 m
 
-/Generator/SingleParticle/particle neutron
-/Generator/SingleParticle/min_energy 1 MeV
-/Generator/SingleParticle/max_energy 1 MeV
+/Generator/SingleParticle/particle e-
+/Generator/SingleParticle/min_energy 30 MeV
+/Generator/SingleParticle/max_energy 30 MeV
 /Generator/SingleParticle/region DETECTOR
-#/Generator/SingleParticle/momentum 0 1 0
+/Generator/SingleParticle/momentum 0 1 0
 
 
 #/Generator/BetaDecayGenerator/region DETECTOR
@@ -32,7 +32,7 @@
 /PhysicsList/RegisterPhysics NexusPhysics
 /PhysicsList/RegisterPhysics G4StepLimiterPhysics
 /PhysicsList/RegisterPhysics G4OpticalPhysics
-/process/optical/processActivation Cerenkov true
+/process/optical/processActivation Cerenkov false
 
 ### JOB CONTROL
 /nexus/random_seed            1

@@ -1,8 +1,8 @@
 /control/execute macros/physics/DefaultPhysicsList.mac
 /nexus/RegisterGeometry FluxMonitor
 #/nexus/RegisterGenerator CORSIKAGenerator
-#/nexus/RegisterGenerator SingleParticleGenerator
-/nexus/RegisterGenerator NeutrinoCarbonScattering
+/nexus/RegisterGenerator SingleParticleGenerator
+#/nexus/RegisterGenerator NeutrinoCarbonScattering
 
 /nexus/RegisterPersistencyManager ESSBeamPersistencyManager
 

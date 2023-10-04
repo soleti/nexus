@@ -1,7 +1,12 @@
-
+CMakeFiles
 .DS_Store
 .sconf
 .sconsign.dblite
+.vscode
+.ipynb_checkpoints
+.ipynb
+Makefile
+
 source/.DS_Store
 *~
 

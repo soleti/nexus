@@ -219,5 +219,5 @@ void NeutrinoCarbonScattering::GeneratePrimaryVertex(G4Event* event)
   // // Add particle to the vertex and this to the event
   vertex_positron->SetPrimary(neutron_particle);
 
-  event->AddPrimaryVertex(vertex_positron);
+  // event->AddPrimaryVertex(vertex_positron);
 }

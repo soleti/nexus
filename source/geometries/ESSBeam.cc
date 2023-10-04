@@ -146,7 +146,7 @@ namespace nexus {
     if (liquido) {
       detector_mat->SetMaterialPropertiesTable(opticalprops::LiquidO());
     } else {
-      detector_mat->SetMaterialPropertiesTable(opticalprops::GdLS());
+      detector_mat->SetMaterialPropertiesTable(opticalprops::GdLSAcenaphthene());
     }
 
     G4LogicalVolume* detector_logic =
@@ -338,14 +338,14 @@ namespace nexus {
           G4double y = (detector_diam_ / 2. - 10 * cm / 2 - 1 * cm) * std::cos(theta) * mm;
           G4double x = (detector_diam_ / 2. - 10 * cm / 2 - 1 * cm) * std::sin(theta) * mm;
 
-          new G4PVPlacement(G4Transform3D(*rot, G4ThreeVector(x, y, -detector_height_ / 2 + detector_height_/rows * irow + detector_height_/rows / 2)),
+          new G4PVPlacement(G4Transform3D(*rot, G4ThreeVector(x, y, -detector_height_ / 2 + detector_height_/rows * irow + detector_height_/ rows / 2)),
                             pmt_logic, "PMT" + label, detector_logic,
                             false, irow*angles + itheta, true);
           rot->rotateZ(-step);
         }
       }
 
-      G4int lappd_rows = 2;
+      G4int lappd_rows = 3;
       angles = 8;
       step = 2. * pi / angles;
       for (G4int irow = 0; irow < lappd_rows; irow++) {
@@ -356,7 +356,7 @@ namespace nexus {
           std::string label = std::to_string(irow*angles + itheta);
 
           G4int sign = -1;
-          if (irow % 2 == 0) {
+          if (irow % 2 != 0) {
             theta += step / 2;
             if (itheta == 0)
               rot->rotateZ(-step/2);
@@ -368,7 +368,7 @@ namespace nexus {
 
           if (irow == 1) sign = -1;
 
-          new G4PVPlacement(G4Transform3D(*rot, G4ThreeVector(x, y, -detector_height_ /2  + detector_height_/lappd_rows * irow + detector_height_/lappd_rows / 2 + detector_height_/16*sign)),
+          new G4PVPlacement(G4Transform3D(*rot, G4ThreeVector(x, y, -detector_height_ /2  + detector_height_/lappd_rows * irow + detector_height_/lappd_rows / 2 )),
                             lappd_logic, "LAPPD" + label, detector_logic,
                             false, 1000+irow*angles + itheta, true);
           rot->rotateZ(-step);
@@ -449,8 +449,8 @@ namespace nexus {
         }
       }
     } else if (region == "DETECTOR") {
-      return inside_cylinder_->GenerateVertex("VOLUME");
-      // return vertex;
+      // return inside_cylinder_->GenerateVertex("VOLUME");
+      return vertex;
     } else {
       G4Exception("[ESSBeam]", "GenerateVertex()", FatalException,
                   "Unknown vertex generation region!");

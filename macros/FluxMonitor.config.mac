@@ -4,16 +4,16 @@
 #/Generator/CORSIKAGenerator/plane_x_size 20 m
 #/Generator/CORSIKAGenerator/height 22 m
 
-#/Generator/SingleParticle/particle neutron
-#/Generator/SingleParticle/min_energy 1 MeV
-#/Generator/SingleParticle/max_energy 1 MeV
-#/Generator/SingleParticle/region DETECTOR
+/Generator/SingleParticle/particle e-
+/Generator/SingleParticle/min_energy 25 MeV
+/Generator/SingleParticle/max_energy 25 MeV
+/Generator/SingleParticle/region DETECTOR
 #/Generator/SingleParticle/momentum 0 1 0
 
 
-/Generator/NeutrinoCarbonScattering/region DETECTOR
-/Geometry/FluxMonitor/detector_height 2 m
-/Geometry/FluxMonitor/detector_diam 2 m
+#/Generator/NeutrinoCarbonScattering/region DETECTOR
+/Geometry/FluxMonitor/detector_height 1.5 m
+/Geometry/FluxMonitor/detector_diam 1.5 m
 
 /run/verbose 0
 /event/verbose 0

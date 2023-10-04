@@ -41,6 +41,8 @@ namespace opticalprops {
 
   G4MaterialPropertiesTable* GdLS();
 
+  G4MaterialPropertiesTable* GdLSAcenaphthene();
+
   G4MaterialPropertiesTable* LiquidO();
 
   G4MaterialPropertiesTable* CsI();

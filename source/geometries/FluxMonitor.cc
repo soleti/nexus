@@ -99,6 +99,12 @@ namespace nexus
     new G4PVPlacement(0, *detector_center,
                       detector_logic, "DETECTOR", lab_logic, false, 0, true);
 
+    G4OpticalSurface *opsur_ptfe =
+        new G4OpticalSurface("PTFE_OPSURF", unified, ground, dielectric_dielectric);
+    opsur_ptfe->SetMaterialPropertiesTable(opticalprops::PTFE());
+
+    new G4LogicalSkinSurface("PTFE_OPSURF", detector_logic, opsur_ptfe);
+
     // Steel container
     G4double container_diam = detector_diam_ + 10 * cm;
     G4double container_height = detector_height_ + 10 * cm;
@@ -120,31 +126,29 @@ namespace nexus
     G4MaterialPropertiesTable *photosensor_mpt = new G4MaterialPropertiesTable();
 
     // Paraffin aborber
-    G4double absorber_diam = container_diam + 20 * cm;
-    G4double absorber_height = container_height + 20 * cm;
-    G4Tubs *absorber_full =
-        new G4Tubs("ABSORBER_FULL", 0, absorber_diam / 2. + 20 * cm, absorber_height / 2., 0, twopi);
-    G4SubtractionSolid *absorber_container = new G4SubtractionSolid("ABSORBER_CONTAINER",
-                                                                    absorber_full,
-                                                                    container);
-    G4SubtractionSolid *absorber = new G4SubtractionSolid("ABSORBER",
-                                                          absorber_container,
-                                                          detector_solid);
+    // G4double absorber_diam = container_diam + 20 * cm;
+    // G4double absorber_height = container_height + 20 * cm;
+    // G4Tubs *absorber_full =
+    //     new G4Tubs("ABSORBER_FULL", 0, absorber_diam / 2. + 20 * cm, absorber_height / 2., 0, twopi);
+    // G4SubtractionSolid *absorber_container = new G4SubtractionSolid("ABSORBER_CONTAINER",
+    //                                                                 absorber_full,
+    //                                                                 container);
+    // G4SubtractionSolid *absorber = new G4SubtractionSolid("ABSORBER",
+    //                                                       absorber_container,
+    //                                                       detector_solid);
 
-    G4Material *paraffin = G4NistManager::Instance()->FindOrBuildMaterial("G4_PARAFFIN");
-    G4LogicalVolume *absorber_logic =
-        new G4LogicalVolume(absorber, paraffin, "ABSORBER");
-    absorber_logic->SetVisAttributes(nexus::RedAlpha());
-    absorber_logic->SetVisAttributes(G4VisAttributes::GetInvisible());
+    // G4Material *paraffin = G4NistManager::Instance()->FindOrBuildMaterial("G4_PARAFFIN");
+    // G4LogicalVolume *absorber_logic =
+    //     new G4LogicalVolume(absorber, paraffin, "ABSORBER");
+    // absorber_logic->SetVisAttributes(nexus::RedAlpha());
+    // // absorber_logic->SetVisAttributes(G4VisAttributes::GetInvisible());
+    // new G4PVPlacement(0, *detector_center, absorber_logic,
+    //                   "ABSORBER", lab_logic, false, 0, true);
 
-    G4OpticalSurface *opsur_ptfe =
-        new G4OpticalSurface("PTFE_OPSURF", unified, polished, dielectric_metal);
-    opsur_ptfe->SetMaterialPropertiesTable(opticalprops::PTFE());
 
-    new G4LogicalSkinSurface("POLISHED_AL_OPSURF", absorber_logic, opsur_ptfe);
+    // new G4PVPlacement(0, *detector_center, detector_logic,
+    //                   "DETECTOR", lab_logic, false, 0, true);
 
-    new G4PVPlacement(0, *detector_center, absorber_logic,
-                      "ABSORBER", lab_logic, false, 0, true);
 
     const G4int entries = 11;
 
@@ -179,7 +183,7 @@ namespace nexus
 
     G4LogicalVolume *pmt_logic = pmt_->GetLogicalVolume();
 
-    G4int angles = 6;
+    G4int angles = 3;
     G4double step = 2. * pi / angles;
 
     G4RotationMatrix *rot_z = new G4RotationMatrix();
@@ -213,16 +217,16 @@ namespace nexus
     //                     false, 500+itheta, false);
     // }
 
-    new G4PVPlacement(0, G4ThreeVector(0, 0, -detector_height_ / 2 + 5 * cm),
-                      pmt_logic, "PMTDown0", detector_logic,
-                      false, 300, false);
-    new G4PVPlacement(G4Transform3D(*rot_z, G4ThreeVector(0, 0, detector_height_ / 2 - 5 * cm)),
-                      pmt_logic, "PMTUp0", detector_logic,
-                      false, 600, false);
+    // new G4PVPlacement(0, G4ThreeVector(0, 0, -detector_height_ / 2 + 5 * cm),
+    //                   pmt_logic, "PMTDown0", detector_logic,
+    //                   false, 300, false);
+    // new G4PVPlacement(G4Transform3D(*rot_z, G4ThreeVector(0, 0, detector_height_ / 2 - 5 * cm)),
+    //                   pmt_logic, "PMTUp0", detector_logic,
+    //                   false, 600, false);
 
-    angles = 8;
+    angles = 4;
     step = 2. * pi / angles;
-    G4int rows = 3;
+    G4int rows = 2;
     for (G4int irow = 0; irow < rows; irow++)
     {
       G4RotationMatrix *rot = new G4RotationMatrix();

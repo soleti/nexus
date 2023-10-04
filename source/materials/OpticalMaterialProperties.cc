@@ -599,9 +599,100 @@ namespace opticalprops {
     mpt->AddProperty("ELSPECTRUM"             , lab_emission_energy, lab_emission_intensity, 1);
 
     // CONST PROPERTIES https://www.osti.gov/servlets/purl/1514707
-    mpt->AddConstProperty("SCINTILLATIONYIELD", 11590. / MeV );
-    // mpt->AddConstProperty("SCINTILLATIONYIELD", 1. / MeV );
+    // mpt->AddConstProperty("SCINTILLATIONYIELD",11590. / MeV );
+    mpt->AddConstProperty("SCINTILLATIONYIELD", 1. / MeV );
     mpt->AddConstProperty("SCINTILLATIONTIMECONSTANT1",   7.63 * ns);
+    mpt->AddConstProperty("RESOLUTIONSCALE",    1.0);
+
+    return mpt;
+  }
+
+    /// Gd-loaded linear alkylbenzene ///
+  G4MaterialPropertiesTable* GdLSAcenaphthene()
+  {
+
+    G4MaterialPropertiesTable* mpt = new G4MaterialPropertiesTable();
+
+    // REFRACTIVE INDEX https://arxiv.org/pdf/1105.2101.pdf
+    std::vector<G4double> ri_energy = {
+      optPhotMinE_,
+      h_Planck * c_light / (959.87 * nm),
+      h_Planck * c_light / (738.98 * nm),
+      h_Planck * c_light / (573.91 * nm),
+      h_Planck * c_light / (450.98 * nm),
+      h_Planck * c_light / (329.10 * nm),
+      h_Planck * c_light / (241.53 * nm),
+      h_Planck * c_light / (222.19 * nm),
+      optPhotMaxE_
+    };
+
+    std::vector<G4double> rIndex = {
+      1.47,
+      1.47,
+      1.48,
+      1.48,
+      1.50,
+      1.53,
+      1.62,
+      1.71,
+      1.71
+    };
+
+    mpt->AddProperty("RINDEX", ri_energy, rIndex);
+
+    // ABSORPTION LENGTH https://arxiv.org/pdf/1402.6694.pdf
+    std::vector<G4double> lab_abs_energy = {
+      optPhotMinE_,
+      h_Planck * c_light / (325.81 * nm), h_Planck * c_light / (320.43 * nm),
+      h_Planck * c_light / (312.90 * nm), h_Planck * c_light / (302.69 * nm),
+      h_Planck * c_light / (292.47 * nm), h_Planck * c_light / (288.98 * nm),
+      h_Planck * c_light / (283.87 * nm), h_Planck * c_light / (279.30 * nm),
+      h_Planck * c_light / (268.82 * nm), h_Planck * c_light / (250.00 * nm),
+      optPhotMaxE_
+    };
+
+    std::vector<G4double> lab_absorption = {
+      0.61, 11.34,
+      30.00, 52.07,
+      52.07, 60.85,
+      51.95, 54.88,
+      35.37, 9.63
+    };
+
+    float measuredAbsLength = 10 * m;
+    float measuredAbsValue = 0.1;
+
+    std::vector<G4double> absLength {noAbsLength_};
+    for (auto &abs_value : lab_absorption)
+      absLength.push_back(abs_value / measuredAbsValue * measuredAbsLength * 100);
+    absLength.push_back(noAbsLength_);
+
+    mpt->AddProperty("ABSLENGTH", lab_abs_energy, absLength);
+
+    // EMISSION SPECTRUM
+    std::vector<G4double> lab_emission_energy = {
+      h_Planck * c_light / (394.89 * nm), h_Planck * c_light / (348.66 * nm),
+      h_Planck * c_light / (335.22 * nm), h_Planck * c_light / (328.49 * nm),
+      h_Planck * c_light / (325.54 * nm), h_Planck * c_light / (323.66 * nm),
+      h_Planck * c_light / (319.62 * nm), h_Planck * c_light / (317.47 * nm),
+      h_Planck * c_light / (309.14 * nm)
+    };
+
+    std::vector<G4double> lab_emission_intensity = {
+      3.17, 22.44,
+      60.12, 29.39,
+      36.59, 27.44,
+      55.24, 14.39,
+      0.24
+    };
+
+    mpt->AddProperty("SCINTILLATIONCOMPONENT1", lab_emission_energy, lab_emission_intensity);
+    mpt->AddProperty("ELSPECTRUM"             , lab_emission_energy, lab_emission_intensity, 1);
+
+    // CONST PROPERTIES https://www.osti.gov/servlets/purl/1514707
+    // mpt->AddConstProperty("SCINTILLATIONYIELD",11590. / MeV );
+    mpt->AddConstProperty("SCINTILLATIONYIELD", 7686. / 4. / MeV );
+    mpt->AddConstProperty("SCINTILLATIONTIMECONSTANT1",  45.3 * ns);
     mpt->AddConstProperty("RESOLUTIONSCALE",    1.0);
 
     return mpt;
