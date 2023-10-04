@@ -4,7 +4,7 @@ CMakeFiles
 .sconsign.dblite
 .vscode
 .ipynb_checkpoints
-.ipynb
+*.ipynb
 Makefile
 
 source/.DS_Store
