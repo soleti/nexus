@@ -176,9 +176,6 @@ void BetaDecayGenerator::GeneratePrimaryVertex(G4Event* event)
   // Add particle to the vertex and this to the event
   vertex->SetPrimary(particle);
 
-  particle_definition_ =
-    G4ParticleTable::GetParticleTable()->FindParticle(2112);
-
   G4double neutron_fit[] = {-3.29e-06,  1.08e-03, -2.69e-03,  2.92e-02};
 
   G4double kinetic_energy2 = neutron_fit[3] + kinetic_energy*neutron_fit[2] +
@@ -197,7 +194,7 @@ void BetaDecayGenerator::GeneratePrimaryVertex(G4Event* event)
 
   // Create the new primary particle and set it some properties
   G4PrimaryParticle* particle2 =
-    new G4PrimaryParticle(particle_definition_, px2, py2, pz2);
+    new G4PrimaryParticle(neutron, px2, py2, pz2);
 
     // Add particle to the vertex and this to the event
   // vertex->SetPrimary(particle2);

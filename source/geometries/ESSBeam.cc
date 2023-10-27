@@ -256,7 +256,7 @@ namespace nexus {
       lappd_->SetVisibility(true);
       lappd_->SetWindowRefractiveIndex(opticalprops::BorosilicateGlass()->GetProperty("RINDEX"));
       lappd_->SetSensorDepth(1);
-      lappd_->SetOpticalProperties(photosensor_mpt);
+      lappd_->SetOpticalProperties(lappd_mpt);
       lappd_->Construct();
 
       G4LogicalVolume* pmt_logic = pmt_->GetLogicalVolume();
@@ -427,7 +427,7 @@ namespace nexus {
 
   G4ThreeVector ESSBeam::GenerateVertex(const G4String& region) const
   {
-    G4ThreeVector vertex(0,0.8 * m,0);
+    G4ThreeVector vertex(0,0. * m,0);
     G4double y_starting_point = 30 * m;
 
     if (region == "SINGLE_POINT") {
@@ -449,8 +449,8 @@ namespace nexus {
         }
       }
     } else if (region == "DETECTOR") {
-      // return inside_cylinder_->GenerateVertex("VOLUME");
-      return vertex;
+      return inside_cylinder_->GenerateVertex("VOLUME");
+      // return vertex;
     } else {
       G4Exception("[ESSBeam]", "GenerateVertex()", FatalException,
                   "Unknown vertex generation region!");
