@@ -1,8 +1,6 @@
 /control/execute macros/physics/DefaultPhysicsList.mac
-/nexus/RegisterGeometry ESSBeam
-#/nexus/RegisterGenerator CORSIKAGenerator
-#/nexus/RegisterGenerator SingleParticleGenerator
-/nexus/RegisterGenerator BetaDecayGenerator
+/nexus/RegisterGeometry CherenkovSplitter
+/nexus/RegisterGenerator SingleParticleGenerator
 
 /nexus/RegisterPersistencyManager ESSBeamPersistencyManager
 
@@ -13,7 +11,7 @@
 /nexus/RegisterTrackingAction OpticalTrackingAction
 /nexus/RegisterSteppingAction AnalysisSteppingAction
 
-/nexus/RegisterMacro macros/ESSBeam.config.mac
+/nexus/RegisterMacro macros/CherenkovSplitter.config.mac
 
 /control/verbose 0
 /run/verbose 0

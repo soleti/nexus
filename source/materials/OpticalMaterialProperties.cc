@@ -26,8 +26,18 @@ namespace opticalprops {
     std::vector<G4double> photEnergy = {optPhotMinE_, optPhotMaxE_};
 
     // REFRACTIVE INDEX
-    std::vector<G4double> rIndex = {1., 1.};
-    mpt->AddProperty("RINDEX", photEnergy, rIndex);
+    // REFRACTIVE INDEX https://arxiv.org/pdf/1105.2101.pdf
+    std::vector<G4double> ri_energy = {
+      optPhotMinE_,
+      optPhotMaxE_
+    };
+
+    std::vector<G4double> rIndex = {
+      1.2,
+      1.2
+    };
+
+    mpt->AddProperty("RINDEX", ri_energy, rIndex);
 
     // ABSORPTION LENGTH
     std::vector<G4double> absLength = {noAbsLength_, noAbsLength_};
@@ -53,9 +63,11 @@ namespace opticalprops {
     G4double eWidth = (optPhotMaxE_ - optPhotMinE_) / ri_entries;
 
     std::vector<G4double> ri_energy;
+    ri_energy.push_back(optPhotMinE_);
     for (int i=0; i<ri_entries; i++) {
       ri_energy.push_back(optPhotMinE_ + i * eWidth);
     }
+    ri_energy.push_back(optPhotMaxE_);
 
     // The following values for the refractive index have been calculated
     // using Sellmeier's equation:
@@ -74,15 +86,19 @@ namespace opticalprops {
     G4double C_3 = 9.88e+1;
 
     std::vector<G4double> rIndex;
+    rIndex.push_back(1.45);
     for (int i=0; i<ri_entries; i++) {
       G4double lambda = h_Planck*c_light/ri_energy[i]*1000; // in micron
       G4double n2 = 1 + B_1*pow(lambda,2)/(pow(lambda,2)-C_1)
         + B_2*pow(lambda,2)/(pow(lambda,2)-C_2)
         + B_3*pow(lambda,2)/(pow(lambda,2)-C_3);
-      rIndex.push_back(sqrt(n2));
-      // G4cout << "* FusedSilica rIndex:  " << std::setw(5) << ri_energy[i]/eV
-      //       << " eV -> " << rIndex[i] << G4endl;
+      if (ri_energy[i]/eV < 10.8) {
+        rIndex.push_back(sqrt(n2));
+      } else {
+        rIndex.push_back(7.1672);
+      }
     }
+    rIndex.push_back(1.54);
     mpt->AddProperty("RINDEX", ri_energy, rIndex);
 
     // ABSORPTION LENGTH
@@ -110,7 +126,7 @@ namespace opticalprops {
       .00005* cm
     };
 
-    mpt->AddProperty("ABSLENGTH", abs_energy, absLength);
+    // mpt->AddProperty("ABSLENGTH", abs_energy, absLength);
 
     return mpt;
   }
@@ -318,7 +334,6 @@ namespace opticalprops {
       G4double n2 = 2.291142 - 3.311944E-2*pow(lambda,2) - 1.630099E-2*pow(lambda,-2) +
                     7.265983E-3*pow(lambda,-4) - 6.806145E-4*pow(lambda,-6) +
                     1.960732E-5*pow(lambda,-8);
-      rIndex.push_back(sqrt(n2));
       // G4cout << "* GlassEpoxy rIndex:  " << std::setw(5)
       //        << ri_energy[i]/eV << " eV -> " << rIndex[i] << G4endl;
     }
@@ -569,10 +584,10 @@ namespace opticalprops {
     float measuredAbsLength = 15 * m;
     float measuredAbsValue = 0.0015;
 
-    std::vector<G4double> absLength {noAbsLength_};
+    std::vector<G4double> absLength {15*m};
     for (auto &abs_value : lab_absorption)
       absLength.push_back(measuredAbsValue / abs_value * measuredAbsLength);
-    absLength.push_back(noAbsLength_);
+    absLength.push_back(15*m);
 
     mpt->AddProperty("ABSLENGTH", lab_abs_energy, absLength);
 
@@ -599,8 +614,8 @@ namespace opticalprops {
     mpt->AddProperty("ELSPECTRUM"             , lab_emission_energy, lab_emission_intensity, 1);
 
     // CONST PROPERTIES https://www.osti.gov/servlets/purl/1514707
-    mpt->AddConstProperty("SCINTILLATIONYIELD",11590. / MeV );
-    // mpt->AddConstProperty("SCINTILLATIONYIELD", 1. / MeV );
+    // mpt->AddConstProperty("SCINTILLATIONYIELD",11590. / MeV );
+    mpt->AddConstProperty("SCINTILLATIONYIELD", 0. / MeV );
     mpt->AddConstProperty("SCINTILLATIONTIMECONSTANT1",   7.63 * ns);
     mpt->AddConstProperty("RESOLUTIONSCALE",    1.0);
 
@@ -2061,6 +2076,11 @@ namespace opticalprops {
   {
     G4MaterialPropertiesTable* mpt = new G4MaterialPropertiesTable();
 
+    std::vector<G4double> photEnergy = {optPhotMinE_, optPhotMaxE_};
+
+    // REFRACTIVE INDEX
+    std::vector<G4double> rIndex = {1., 1.};
+    mpt->AddProperty("RINDEX", photEnergy, rIndex);
     std::vector<G4double> energies = {
       optPhotMinE_, optPhotMaxE_
     };
