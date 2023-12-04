@@ -197,7 +197,7 @@ void BetaDecayGenerator::GeneratePrimaryVertex(G4Event* event)
     new G4PrimaryParticle(neutron, px2, py2, pz2);
 
     // Add particle to the vertex and this to the event
-  // vertex->SetPrimary(particle2);
+  vertex->SetPrimary(particle2);
   event->AddPrimaryVertex(vertex);
 }
 

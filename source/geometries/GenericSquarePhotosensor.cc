@@ -141,7 +141,7 @@ void GenericSquarePhotosensor::Construct()
 
   // G4Tubs* case_solid_vol = new G4Tubs(name, 0, width_ / 2., thickness_ / 2., 0, twopi);
   G4Box* case_solid_vol =
-    new G4Box(name, width_/2., height_/2., thickness_/2.);
+    new G4Box(name, width_/2. + 2 *cm, height_/2. + 2*cm, thickness_/2.);
 
   G4LogicalVolume* case_logic_vol =
     new G4LogicalVolume(case_solid_vol, case_mat_, name);
@@ -211,11 +211,9 @@ void GenericSquarePhotosensor::Construct()
 
   // VISIBILITIES /////////////////////////////////////////////
   if (visibility_) {
-    window_logic_vol  ->SetVisAttributes(G4VisAttributes::GetInvisible());
-    G4VisAttributes blue = nexus::Blue();
-    blue.SetForceSolid(true);
-    sensarea_logic_vol->SetVisAttributes(blue);
-    case_logic_vol->SetVisAttributes(nexus::LightGrey());
+    window_logic_vol->SetVisAttributes(nexus::Blue());
+    sensarea_logic_vol->SetVisAttributes(nexus::Blue());
+    case_logic_vol->SetVisAttributes(nexus::DirtyWhite());
   }
   else {
     window_logic_vol  ->SetVisAttributes(G4VisAttributes::GetInvisible());

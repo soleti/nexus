@@ -2,7 +2,7 @@
 
 #include <G4Box.hh>
 #include <G4Tubs.hh>
-
+#include "PmtR12860.h"
 #include <G4GenericMessenger.hh>
 #include <G4NistManager.hh>
 #include <G4LogicalVolume.hh>
@@ -174,6 +174,7 @@ namespace nexus {
                       "CONTAINER", lab_logic, false, 0, true);
 
     GenericPhotosensor *pmt_  = new GenericPhotosensor("PMT", 46 * cm, 46 * cm, 5 * cm);
+    // PmtR12860 *pmt_ = new PmtR12860();
     GenericSquarePhotosensor *lappd_  = new GenericSquarePhotosensor("LAPPD", 20 * cm, 20 * cm, 5 * cm);
     G4MaterialPropertiesTable* photosensor_mpt = new G4MaterialPropertiesTable();
     G4MaterialPropertiesTable* lappd_mpt = new G4MaterialPropertiesTable();
