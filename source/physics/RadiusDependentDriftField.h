@@ -24,7 +24,7 @@ namespace nexus {
     /// Destructor
     ~RadiusDependentDriftField();
 
-    virtual G4double Drift(G4LorentzVector&);
+    virtual double Drift(G4LorentzVector&);
 
     virtual G4LorentzVector GeneratePointAlongDriftLine(const G4LorentzVector&, const G4LorentzVector&);
 

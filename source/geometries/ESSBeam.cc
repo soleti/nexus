@@ -192,20 +192,20 @@ namespace nexus {
 							   detector_solid);
 
     G4Material* paraffin = G4NistManager::Instance()->FindOrBuildMaterial("G4_PARAFFIN");
-    G4LogicalVolume* absorber_logic =
-      new G4LogicalVolume(absorber, paraffin, "ABSORBER");
-    absorber_logic->SetVisAttributes(nexus::RedAlpha());
-    absorber_logic->SetVisAttributes(G4VisAttributes::GetInvisible());
+    // G4LogicalVolume* absorber_logic =
+    //   new G4LogicalVolume(absorber, paraffin, "ABSORBER");
+    // absorber_logic->SetVisAttributes(nexus::RedAlpha());
+    // absorber_logic->SetVisAttributes(G4VisAttributes::GetInvisible());
 
     G4OpticalSurface* opsur_ptfe =
       new G4OpticalSurface("PTFE_OPSURF", unified, polished, dielectric_metal);
     opsur_ptfe->SetMaterialPropertiesTable(opticalprops::PTFE());
 
-    new G4LogicalSkinSurface("PTFE_OPSURF", absorber_logic, opsur_ptfe);
+    // new G4LogicalSkinSurface("PTFE_OPSURF", absorber_logic, opsur_ptfe);
     // new G4LogicalSkinSurface("PTFE_OPSURF", container_logic, opsur_ptfe);
 
-    new G4PVPlacement(0, *detector_center, absorber_logic,
-                      "ABSORBER", lab_logic, false, 0, true);
+    // new G4PVPlacement(0, *detector_center, absorber_logic,
+    //                   "ABSORBER", lab_logic, false, 0, true);
 
     if (!liquido) {
       const G4int entries = 11;
@@ -322,7 +322,7 @@ namespace nexus {
 
       angles = 8;
       step = 2. * pi / angles;
-      G4int rows = 3;
+      G4int rows = 6;
       for (G4int irow = 0; irow < rows; irow++) {
         G4RotationMatrix *rot = new G4RotationMatrix();
         rot->rotateX(90 * deg);
@@ -346,7 +346,7 @@ namespace nexus {
         }
       }
 
-      G4int lappd_rows = 3;
+      G4int lappd_rows = 6;
       angles = 8;
       step = 2. * pi / angles;
       for (G4int irow = 0; irow < lappd_rows; irow++) {
@@ -375,53 +375,53 @@ namespace nexus {
           rot->rotateZ(-step);
         }
       }
-    } else {
-          G4double fiber_length =detector_height_ - 425*um*4;
-          GenericWLSFiber* fiber_ = new GenericWLSFiber("Y11", true, 1 * mm, fiber_length, true, false, nullptr, materials::Y11(), true);
-          fiber_->SetCoreOpticalProperties(opticalprops::Y11());
-          fiber_->Construct();
-          G4LogicalVolume* fiber_logic = fiber_->GetLogicalVolume();
-          fiber_logic->SetVisAttributes(nexus::LightGreenAlpha());
+    // } else {
+    //       G4double fiber_length =detector_height_ - 425*um*4;
+    //       GenericWLSFiber* fiber_ = new GenericWLSFiber("Y11", true, 1 * mm, fiber_length, true, false, nullptr, materials::Y11(), true);
+    //       fiber_->SetCoreOpticalProperties(opticalprops::Y11());
+    //       fiber_->Construct();
+    //       G4LogicalVolume* fiber_logic = fiber_->GetLogicalVolume();
+    //       fiber_logic->SetVisAttributes(nexus::LightGreenAlpha());
 
-          G4Material* fiber_end_mat = G4NistManager::Instance()->FindOrBuildMaterial("G4_Al");
+    //       G4Material* fiber_end_mat = G4NistManager::Instance()->FindOrBuildMaterial("G4_Al");
 
-          G4double fiber_end_z = 0.1 * mm;
+    //       G4double fiber_end_z = 0.1 * mm;
 
-          G4Tubs* fiber_end_solid_vol =
-            new G4Tubs("fiber_end", 0, 1 * mm/2, fiber_end_z, 0, 2 * M_PI);
+    //       G4Tubs* fiber_end_solid_vol =
+    //         new G4Tubs("fiber_end", 0, 1 * mm/2, fiber_end_z, 0, 2 * M_PI);
 
-          G4LogicalVolume* fiber_end_logic_vol =
-            new G4LogicalVolume(fiber_end_solid_vol, fiber_end_mat, "FIBER_END");
-          G4OpticalSurface* opsur_al =
-            new G4OpticalSurface("POLISHED_AL_OPSURF", unified, polished, dielectric_metal);
-          opsur_al->SetMaterialPropertiesTable(opticalprops::PolishedAl());
+    //       G4LogicalVolume* fiber_end_logic_vol =
+    //         new G4LogicalVolume(fiber_end_solid_vol, fiber_end_mat, "FIBER_END");
+    //       G4OpticalSurface* opsur_al =
+    //         new G4OpticalSurface("POLISHED_AL_OPSURF", unified, polished, dielectric_metal);
+    //       opsur_al->SetMaterialPropertiesTable(opticalprops::PolishedAl());
 
-          new G4LogicalSkinSurface("POLISHED_AL_OPSURF", fiber_end_logic_vol, opsur_al);
+    //       new G4LogicalSkinSurface("POLISHED_AL_OPSURF", fiber_end_logic_vol, opsur_al);
 
 
-          SiPM11 *sipm_  = new SiPM11();
-          sipm_->Construct();
-          G4LogicalVolume* sipm_logic = sipm_->GetLogicalVolume();
+    //       SiPM11 *sipm_  = new SiPM11();
+    //       sipm_->Construct();
+    //       G4LogicalVolume* sipm_logic = sipm_->GetLogicalVolume();
 
-          G4double pitch = 1 * cm;
+    //       G4double pitch = 1 * cm;
 
-          for (uint ix=0; ix<detector_diam_/pitch; ix++) {
-            for (uint iy=0; iy<detector_diam_/pitch; iy++) {
-              if (sqrt(pow(ix*pitch-detector_diam_/2,2) + pow(iy*pitch-detector_diam_/2,2)) < detector_diam_/2-0.5*cm) {
-                std::string label = std::to_string(ix * detector_diam_/pitch + iy);
+    //       for (uint ix=0; ix<detector_diam_/pitch; ix++) {
+    //         for (uint iy=0; iy<detector_diam_/pitch; iy++) {
+    //           if (sqrt(pow(ix*pitch-detector_diam_/2,2) + pow(iy*pitch-detector_diam_/2,2)) < detector_diam_/2-0.5*cm) {
+    //             std::string label = std::to_string(ix * detector_diam_/pitch + iy);
 
-                new G4PVPlacement(0, G4ThreeVector(ix*pitch-detector_diam_/2, iy*pitch-detector_diam_/2, 0),
-                        fiber_logic, "FIBER" + label, detector_logic,
-                        true, ix * 10000 + iy, true);
-                new G4PVPlacement(0, G4ThreeVector(ix*pitch-detector_diam_/2, iy*pitch-detector_diam_/2, -fiber_length/2-0.1*mm),
-                        fiber_end_logic_vol, "AL_ENDCAP" + label, detector_logic,
-                        true, ix * 10000 + iy, true);
-                new G4PVPlacement(0, G4ThreeVector(ix*pitch-detector_diam_/2, iy*pitch-detector_diam_/2, detector_height_/2-425*um),
-                        sipm_logic, "SiPM"+label, detector_logic,
-                        true, ix * 10000 + iy, true);
-              }
-            }
-          }
+    //             new G4PVPlacement(0, G4ThreeVector(ix*pitch-detector_diam_/2, iy*pitch-detector_diam_/2, 0),
+    //                     fiber_logic, "FIBER" + label, detector_logic,
+    //                     true, ix * 10000 + iy, true);
+    //             new G4PVPlacement(0, G4ThreeVector(ix*pitch-detector_diam_/2, iy*pitch-detector_diam_/2, -fiber_length/2-0.1*mm),
+    //                     fiber_end_logic_vol, "AL_ENDCAP" + label, detector_logic,
+    //                     true, ix * 10000 + iy, true);
+    //             new G4PVPlacement(0, G4ThreeVector(ix*pitch-detector_diam_/2, iy*pitch-detector_diam_/2, detector_height_/2-425*um),
+    //                     sipm_logic, "SiPM"+label, detector_logic,
+    //                     true, ix * 10000 + iy, true);
+    //           }
+    //         }
+    //       }
 
     }
   }

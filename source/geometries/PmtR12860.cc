@@ -12,7 +12,7 @@
 #include "OpticalMaterialProperties.h"
 #include "MaterialsList.h"
 #include "Visibilities.h"
-#include "ellipse_intersect_circle.hh"
+// #include "ellipse_intersect_circle.hh"
 
 #include <G4NistManager.hh>
 #include <G4Polycone.hh>

@@ -1249,7 +1249,7 @@ namespace opticalprops {
       h_Planck * c_light / (250. * nm),  h_Planck * c_light / (230. * nm),
       h_Planck * c_light / (210. * nm),  h_Planck * c_light / (190. * nm),
       h_Planck * c_light / (170. * nm),  h_Planck * c_light / (150. * nm),
-      h_Planck * c_light / (100. * nm),  optPhotMaxE_
+      optPhotMaxE_
     };
 
     std::vector<G4double> WLS_absLength = {
@@ -1261,7 +1261,7 @@ namespace opticalprops {
       400. * nm,     400. * nm,     // 250 , 230 nm
       350. * nm,     250. * nm,     // 210 , 190 nm
       350. * nm,     400. * nm,     // 170 , 150 nm
-      400. * nm,     noAbsLength_   // 100 nm
+      noAbsLength_   // 100 nm
     };
 
     //for (int i=0; i<WLS_abs_entries; i++)
@@ -1323,7 +1323,7 @@ namespace opticalprops {
     // All Optical Material Properties from normal TPB ...
     mpt->AddProperty("RINDEX",       opticalprops::TPB()->GetProperty("RINDEX"));
     mpt->AddProperty("ABSLENGTH",    opticalprops::TPB()->GetProperty("ABSLENGTH"));
-    mpt->AddProperty("WLSABSLENGTH", opticalprops::TPB()->GetProperty("WLSABSLENGTH"));
+    // mpt->AddProperty("WLSABSLENGTH", opticalprops::TPB()->GetProperty("WLSABSLENGTH"));
     mpt->AddProperty("WLSCOMPONENT", opticalprops::TPB()->GetProperty("WLSCOMPONENT"));
     mpt->AddConstProperty("WLSTIMECONSTANT", opticalprops::TPB()->GetConstProperty("WLSTIMECONSTANT"));
 
@@ -2014,14 +2014,14 @@ namespace opticalprops {
     // REFRACTIVE INDEX
     std::vector<G4double> rIndex_energies = {
       optPhotMinE_,
-      0.585,
-      0.994,
-      1.541,
-      2.144,
-      2.686,
-      3.176,
-      3.717,
-      4.119,
+      0.585 * eV,
+      0.994 * eV,
+      1.541 * eV,
+      2.144 * eV,
+      2.686 * eV,
+      3.176 * eV,
+      3.717 * eV,
+      4.119 * eV,
       optPhotMaxE_
     };
     std::vector<G4double> rIndex = {
@@ -2036,6 +2036,7 @@ namespace opticalprops {
       1.551,
       1.552
     };
+
     mpt->AddProperty("RINDEX", rIndex_energies, rIndex);
     
     return mpt;

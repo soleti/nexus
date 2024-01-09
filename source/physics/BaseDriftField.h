@@ -32,13 +32,13 @@ namespace nexus {
 
     /// Calculates the final position and time of a charge carrier
     /// drifting under the influence of the field. Returns the step length.
-    virtual G4double Drift(G4LorentzVector&) = 0;
+    virtual double Drift(G4LorentzVector&) = 0;
 
     /// Returns a random 4D point (space and time) along a drift line
     virtual G4LorentzVector 
       GeneratePointAlongDriftLine(const G4LorentzVector&, const G4LorentzVector&) = 0;
 
-    virtual G4double LightYield() const;
+    virtual double LightYield() const;
 
   private:
     void Print() const;
@@ -50,7 +50,7 @@ namespace nexus {
   
   inline BaseDriftField::~BaseDriftField() {}
 
-  inline G4double BaseDriftField::LightYield() const {return 0.;}
+  inline double BaseDriftField::LightYield() const {return 0.;}
 
   inline void BaseDriftField::Print() const {}
 
