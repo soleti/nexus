@@ -375,7 +375,7 @@ namespace nexus {
           rot->rotateZ(-step);
         }
       }
-    // } else {
+    // } else { 
     //       G4double fiber_length =detector_height_ - 425*um*4;
     //       GenericWLSFiber* fiber_ = new GenericWLSFiber("Y11", true, 1 * mm, fiber_length, true, false, nullptr, materials::Y11(), true);
     //       fiber_->SetCoreOpticalProperties(opticalprops::Y11());
