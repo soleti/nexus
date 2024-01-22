@@ -171,9 +171,9 @@ namespace nexus {
 
     G4OpticalSurface* ptfe_surface = new G4OpticalSurface("PTFE_SURFACE");
     ptfe_surface->SetType(dielectric_LUT);
-    ptfe_surface->SetFinish(polishedteflonair);
+    ptfe_surface->SetFinish(groundteflonair);
     ptfe_surface->SetModel(LUT);
-    ptfe_surface->SetMaterialPropertiesTable(opticalprops::PTFE());
+    // ptfe_surface->SetMaterialPropertiesTable(opticalprops::PTFE());
 
     new G4LogicalBorderSurface(
       "CRYSTAL_PTFE", crystal_right, teflon_full_position, ptfe_surface);

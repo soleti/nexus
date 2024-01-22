@@ -767,13 +767,13 @@ namespace opticalprops {
       0.0,  0.04, 0.10, 0.29, 0.67, 0.88, 0.29, 0.10, 0.02, 0
     };
 
-    mpt->AddProperty("SCINTILLATIONCOMPONENT1", energy, emission_intensity_cold);
+    mpt->AddProperty("SCINTILLATIONCOMPONENT1", energy, emission_intensity_warm);
     // mpt->AddProperty("SCINTILLATIONCOMPONENT2", energy, emission_intensity);
     // mpt->AddProperty("ELSPECTRUM"            , energy, emission_intensity, 1);
     G4double csi_time_fast  =     0.81 * us;
     // G4double csi_time_slow  =    28 * ns;
     // CONST PROPERTIES https://www.osti.gov/servlets/purl/1514707
-    mpt->AddConstProperty("SCINTILLATIONYIELD", 100000. / MeV);
+    mpt->AddConstProperty("SCINTILLATIONYIELD", 120000 / MeV);
     mpt->AddConstProperty("SCINTILLATIONYIELD1", 1. );
     // mpt->AddConstProperty("SCINTILLATIONYIELD1", 0. );
     mpt->AddConstProperty("SCINTILLATIONTIMECONSTANT1",   csi_time_fast);

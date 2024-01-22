@@ -119,26 +119,29 @@ namespace nexus {
 
     // SiPM efficiency set using the official Hamamatsu specs.
 
-    const G4int entries = 10;
+    const G4int entries = 11;
 
     G4double energies[entries]     = {
-          h_Planck * c_light / (895.04 * nm), h_Planck * c_light / (714.05 * nm),
-          h_Planck * c_light / (573.55 * nm), h_Planck * c_light / (467.77 * nm),
-          h_Planck * c_light / (396.69 * nm), h_Planck * c_light / (357.02 * nm),
-          h_Planck * c_light / (342.15 * nm), h_Planck * c_light / (321.49 * nm),
-          h_Planck * c_light / (290.08 * nm), h_Planck * c_light / (277.69 * nm),
+          h_Planck * c_light / (884.59 * nm), h_Planck * c_light / (729.04 * nm),
+          h_Planck * c_light / (614.93 * nm), h_Planck * c_light / (489.31 * nm),
+          h_Planck * c_light / (445.90 * nm), h_Planck * c_light / (383.25 * nm),
+          h_Planck * c_light / (353.27 * nm), h_Planck * c_light / (337.06 * nm),
+          h_Planck * c_light / (300.17 * nm), h_Planck * c_light / (282.92 * nm),
+          h_Planck * c_light / (277.94 * nm)
 		};
     G4double reflectivity[entries] = {
       0, 0, 0, 0,
       0, 0, 0, 0,
-      0, 0
+      0, 0, 0
     };
+
     G4double efficiency[entries]   = {
-      0.0237*2, 0.081*2,
-      0.1881*2, 0.2521*2,
-      0.2284*2, 0.1814*2,
-      0.1809*2, 0.1649*2,
-      0.1149*2, 0.0247*2
+      0.04, 0.15,
+      0.29, 0.49,
+      0.5, 0.44,
+      0.36, 0.35,
+      0.29, 0.16,
+      0.03
 
       // 1., 1.,
       // 1., 1.,
