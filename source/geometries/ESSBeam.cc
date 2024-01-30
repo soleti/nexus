@@ -146,7 +146,7 @@ namespace nexus {
     if (liquido) {
       detector_mat->SetMaterialPropertiesTable(opticalprops::LiquidO());
     } else {
-      detector_mat->SetMaterialPropertiesTable(opticalprops::GdLSAcenaphthene());
+      detector_mat->SetMaterialPropertiesTable(opticalprops::GdLS());
     }
 
     G4LogicalVolume* detector_logic =
@@ -159,6 +159,9 @@ namespace nexus {
     // Steel container
     G4double container_diam   = detector_diam_+1.3*m;
     G4double container_height = detector_height_+1.3*m;
+    G4Material *container_mat = materials::LAB();
+    container_mat->SetMaterialPropertiesTable(opticalprops::GdLS());
+
     G4Tubs* container_full =
       new G4Tubs("CONTAINER_FULL", 0, container_diam/2., container_height/2., 0, twopi);
     G4SubtractionSolid *container = new G4SubtractionSolid("CONTAINER",
@@ -167,7 +170,7 @@ namespace nexus {
 
     // G4Material* steel = G4NistManager::Instance()->FindOrBuildMaterial("G4_STAINLESS-STEEL");
     G4LogicalVolume* container_logic =
-      new G4LogicalVolume(container, materials::GdLS(), "CONTAINER");
+      new G4LogicalVolume(container, container_mat, "CONTAINER");
     container_logic->SetVisAttributes(nexus::WhiteAlpha());
     // container_logic->SetVisAttributes(G4VisAttributes::GetInvisible());
     new G4PVPlacement(0, *detector_center, container_logic,
@@ -202,7 +205,7 @@ namespace nexus {
     opsur_ptfe->SetMaterialPropertiesTable(opticalprops::PMMA());
 
     // // new G4LogicalSkinSurface("PTFE_OPSURF", absorber_logic, opsur_ptfe);
-    // new G4LogicalSkinSurface("PTFE_OPSURF", detector_logic, opsur_ptfe);
+    new G4LogicalSkinSurface("PTFE_OPSURF", detector_logic, opsur_ptfe);
 
     // new G4PVPlacement(0, *detector_center, absorber_logic,
     //                   "ABSORBER", lab_logic, false, 0, true);
@@ -274,11 +277,11 @@ namespace nexus {
         std::string label = std::to_string(theta);
         G4double x = (detector_diam_ / 2. - 75 * cm) * std::sin(theta) * mm;
         G4double y = (detector_diam_ / 2. - 75 * cm) * std::cos(theta) * mm;
-        new G4PVPlacement(0, G4ThreeVector(x, y, -detector_height_ / 2 + 5 * cm),
-                          pmt_logic, "PMTDownout" + label, detector_logic,
+        new G4PVPlacement(0, G4ThreeVector(x, y, -detector_height_ / 2 - 10 * cm),
+                          pmt_logic, "PMTDownout" + label, container_logic,
                           false, 100+itheta, false);
-        new G4PVPlacement(G4Transform3D(*rot_z, G4ThreeVector(x, y, detector_height_ / 2 - 5 * cm)),
-                          pmt_logic, "PMTUpout" + label, detector_logic,
+        new G4PVPlacement(G4Transform3D(*rot_z, G4ThreeVector(x, y, detector_height_ / 2 + 10 * cm)),
+                          pmt_logic, "PMTUpout" + label, container_logic,
                           false, 400+itheta, false);
       }
 
@@ -287,13 +290,13 @@ namespace nexus {
       for (G4int itheta=0; itheta < angles; itheta++) {
         G4float theta = twopi / angles * itheta;
         std::string label = std::to_string(theta);
-        G4double x = (detector_diam_ / 2. - 125 * cm) * std::sin(theta) * mm;
-        G4double y = (detector_diam_ / 2. - 125 * cm) * std::cos(theta) * mm;
-        new G4PVPlacement(0, G4ThreeVector(x, y, -detector_height_ / 2 + 5 * cm),
-                          lappd_logic, "LAPPDDownout" + label, detector_logic,
+        G4double x = (detector_diam_ / 2. - 145 * cm) * std::sin(theta) * mm;
+        G4double y = (detector_diam_ / 2. - 145 * cm) * std::cos(theta) * mm;
+        new G4PVPlacement(0, G4ThreeVector(x, y, -detector_height_ / 2 - 10 * cm),
+                          lappd_logic, "LAPPDDownout" + label, container_logic,
                           false, 1100+itheta, false);
-        new G4PVPlacement(G4Transform3D(*rot_z, G4ThreeVector(x, y, detector_height_ / 2 - 5 * cm)),
-                          lappd_logic, "LAPPDUpout" + label, detector_logic,
+        new G4PVPlacement(G4Transform3D(*rot_z, G4ThreeVector(x, y, detector_height_ / 2 +10 * cm)),
+                          lappd_logic, "LAPPDUpout" + label, container_logic,
                           false, 1400+itheta, false);
       }
 
@@ -313,11 +316,11 @@ namespace nexus {
       //                     false, 500+itheta, false);
       // }
 
-      new G4PVPlacement(0, G4ThreeVector(0, 0, -detector_height_ / 2 + 5 * cm),
-                        pmt_logic, "PMTDown0", detector_logic,
+      new G4PVPlacement(0, G4ThreeVector(0, 0, -detector_height_ / 2 - 10 * cm),
+                        pmt_logic, "PMTDown0", container_logic,
                         false, 300, false);
-      new G4PVPlacement(G4Transform3D(*rot_z, G4ThreeVector(0, 0, detector_height_ / 2 - 5 * cm)),
-                        pmt_logic, "PMTUp0", detector_logic,
+      new G4PVPlacement(G4Transform3D(*rot_z, G4ThreeVector(0, 0, detector_height_ / 2 + 10 * cm)),
+                        pmt_logic, "PMTUp0", container_logic,
                         false, 600, false);
 
       angles = 8;
@@ -336,11 +339,11 @@ namespace nexus {
               rot->rotateZ(-step/2);
           }
 
-          G4double y = (detector_diam_ / 2. - 10 * cm / 2 - 1 * cm) * std::cos(theta) * mm;
-          G4double x = (detector_diam_ / 2. - 10 * cm / 2 - 1 * cm) * std::sin(theta) * mm;
+          G4double y = (detector_diam_ / 2. + 10 * cm / 2 - 1 * cm) * std::cos(theta) * mm;
+          G4double x = (detector_diam_ / 2. + 10 * cm / 2 - 1 * cm) * std::sin(theta) * mm;
 
           new G4PVPlacement(G4Transform3D(*rot, G4ThreeVector(x, y, -detector_height_ / 2 + detector_height_/rows * irow + detector_height_/ rows / 2)),
-                            pmt_logic, "PMT" + label, detector_logic,
+                            pmt_logic, "PMT" + label, container_logic,
                             false, irow*angles + itheta, true);
           rot->rotateZ(-step);
         }
@@ -364,13 +367,13 @@ namespace nexus {
             sign = 1;
           }
 
-          G4double y = (detector_diam_ / 2. - 10 * cm / 2 - 1 * cm) * std::cos(theta) * mm;
-          G4double x = (detector_diam_ / 2. - 10 * cm / 2 - 1 * cm) * std::sin(theta) * mm;
+          G4double y = (detector_diam_ / 2. + 10 * cm / 2 - 1 * cm) * std::cos(theta) * mm;
+          G4double x = (detector_diam_ / 2. + 10 * cm / 2 - 1 * cm) * std::sin(theta) * mm;
 
           if (irow == 1) sign = -1;
 
           new G4PVPlacement(G4Transform3D(*rot, G4ThreeVector(x, y, -detector_height_ /2  + detector_height_/lappd_rows * irow + detector_height_/lappd_rows / 2 )),
-                            lappd_logic, "LAPPD" + label, detector_logic,
+                            lappd_logic, "LAPPD" + label, container_logic,
                             false, 1000+irow*angles + itheta, true);
           rot->rotateZ(-step);
         }
