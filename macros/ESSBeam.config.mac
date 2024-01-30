@@ -35,6 +35,7 @@
 /process/optical/processActivation Cerenkov true
 
 ### JOB CONTROL
+/neuxs/start_id   0
 /nexus/random_seed            1
 /nexus/persistency/start_id   0
 /nexus/persistency/outputFile ESSBeam
