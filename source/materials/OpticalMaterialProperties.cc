@@ -706,7 +706,7 @@ namespace opticalprops {
 
     // CONST PROPERTIES https://www.osti.gov/servlets/purl/1514707
     // mpt->AddConstProperty("SCINTILLATIONYIELD",11590. / MeV );
-    mpt->AddConstProperty("SCINTILLATIONYIELD", 0. / MeV );
+    mpt->AddConstProperty("SCINTILLATIONYIELD", 5. / MeV );
     mpt->AddConstProperty("SCINTILLATIONTIMECONSTANT1",  45.3 * ns);
     mpt->AddConstProperty("RESOLUTIONSCALE",    1.0);
 

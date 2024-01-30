@@ -157,19 +157,19 @@ namespace nexus {
                       detector_logic, "DETECTOR", lab_logic, false, 0, true);
 
     // Steel container
-    G4double container_diam   = detector_diam_+10*cm;
-    G4double container_height = detector_height_+10*cm;
+    G4double container_diam   = detector_diam_+1.3*m;
+    G4double container_height = detector_height_+1.3*m;
     G4Tubs* container_full =
-      new G4Tubs("CONTAINER_FULL", 0, container_diam/2.+5*cm, container_height/2., 0, twopi);
+      new G4Tubs("CONTAINER_FULL", 0, container_diam/2., container_height/2., 0, twopi);
     G4SubtractionSolid *container = new G4SubtractionSolid("CONTAINER",
 							   container_full,
 							   detector_solid);
 
     // G4Material* steel = G4NistManager::Instance()->FindOrBuildMaterial("G4_STAINLESS-STEEL");
     G4LogicalVolume* container_logic =
-      new G4LogicalVolume(container, steel, "CONTAINER");
-    // container_logic->SetVisAttributes(nexus::DarkGreyAlpha());
-    container_logic->SetVisAttributes(G4VisAttributes::GetInvisible());
+      new G4LogicalVolume(container, materials::GdLS(), "CONTAINER");
+    container_logic->SetVisAttributes(nexus::WhiteAlpha());
+    // container_logic->SetVisAttributes(G4VisAttributes::GetInvisible());
     new G4PVPlacement(0, *detector_center, container_logic,
                       "CONTAINER", lab_logic, false, 0, true);
 
@@ -192,17 +192,17 @@ namespace nexus {
 							   detector_solid);
 
     G4Material* paraffin = G4NistManager::Instance()->FindOrBuildMaterial("G4_PARAFFIN");
-    // G4LogicalVolume* absorber_logic =
-    //   new G4LogicalVolume(absorber, paraffin, "ABSORBER");
-    // absorber_logic->SetVisAttributes(nexus::RedAlpha());
+    G4LogicalVolume* absorber_logic =
+      new G4LogicalVolume(absorber, paraffin, "ABSORBER");
+    absorber_logic->SetVisAttributes(nexus::RedAlpha());
     // absorber_logic->SetVisAttributes(G4VisAttributes::GetInvisible());
 
     G4OpticalSurface* opsur_ptfe =
-      new G4OpticalSurface("PTFE_OPSURF", unified, polished, dielectric_metal);
-    opsur_ptfe->SetMaterialPropertiesTable(opticalprops::PTFE());
+      new G4OpticalSurface("PMMA_OPSURF", unified, ground, dielectric_dielectric);
+    opsur_ptfe->SetMaterialPropertiesTable(opticalprops::PMMA());
 
-    // new G4LogicalSkinSurface("PTFE_OPSURF", absorber_logic, opsur_ptfe);
-    // new G4LogicalSkinSurface("PTFE_OPSURF", container_logic, opsur_ptfe);
+    // // new G4LogicalSkinSurface("PTFE_OPSURF", absorber_logic, opsur_ptfe);
+    // new G4LogicalSkinSurface("PTFE_OPSURF", detector_logic, opsur_ptfe);
 
     // new G4PVPlacement(0, *detector_center, absorber_logic,
     //                   "ABSORBER", lab_logic, false, 0, true);
@@ -322,7 +322,7 @@ namespace nexus {
 
       angles = 8;
       step = 2. * pi / angles;
-      G4int rows = 6;
+      G4int rows = 3;
       for (G4int irow = 0; irow < rows; irow++) {
         G4RotationMatrix *rot = new G4RotationMatrix();
         rot->rotateX(90 * deg);
@@ -346,7 +346,7 @@ namespace nexus {
         }
       }
 
-      G4int lappd_rows = 6;
+      G4int lappd_rows = 3;
       angles = 8;
       step = 2. * pi / angles;
       for (G4int irow = 0; irow < lappd_rows; irow++) {
