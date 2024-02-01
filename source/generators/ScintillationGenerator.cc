@@ -101,7 +101,7 @@ void ScintillationGenerator::GeneratePrimaryVertex(G4Event* event)
 
   G4cout << scint_photons << " PHOTONS" << G4endl;
 
-  for ( G4int i = 0; i<scint_photons i++)
+  for ( G4int i = 0; i<scint_photons; i++)
     {
       // Generate random direction by default
       G4ThreeVector _momentum_direction = G4RandomDirection();
