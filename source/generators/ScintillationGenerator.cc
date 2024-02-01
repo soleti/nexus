@@ -93,13 +93,15 @@ void ScintillationGenerator::GeneratePrimaryVertex(G4Event* event)
   // Create a new vertex
   G4PrimaryVertex* vertex = new G4PrimaryVertex(position, time);
 
+  G4int scint_photons = nphotons_;
+
   if (gaussian_) {
-    nphotons_ = G4RandGauss::shoot(nphotons_, sqrt(fano_*nphotons_));
+    scint_photons = G4RandGauss::shoot(nphotons_, sqrt(fano_*nphotons_));
   }
 
-  G4cout << nphotons_ << " PHOTONS" << G4endl;
+  G4cout << scint_photons << " PHOTONS" << G4endl;
 
-  for ( G4int i = 0; i<nphotons_; i++)
+  for ( G4int i = 0; i<scint_photons i++)
     {
       // Generate random direction by default
       G4ThreeVector _momentum_direction = G4RandomDirection();
