@@ -23,7 +23,6 @@
 #include <G4Event.hh>
 #include <G4RandomDirection.hh>
 #include <G4OpticalPhoton.hh>
-
 #include "CLHEP/Units/SystemOfUnits.h"
 
 using namespace nexus;
@@ -33,7 +32,7 @@ REGISTER_CLASS(ScintillationGenerator, G4VPrimaryGenerator)
 
 
 ScintillationGenerator::ScintillationGenerator() :
-  G4VPrimaryGenerator(), msg_(0), geom_(0), nphotons_(1000000)
+  G4VPrimaryGenerator(), msg_(0), geom_(0), nphotons_(1000000), gaussian_(false), fano_(1.)
 {
   msg_ = new G4GenericMessenger(this, "/Generator/ScintGenerator/",
     "Control commands of scintillation generator.");
@@ -42,6 +41,9 @@ ScintillationGenerator::ScintillationGenerator() :
                         "Set the region of the geometry where the vertex will be generated.");
 
   msg_->DeclareProperty("nphotons", nphotons_, "Set number of photons");
+  msg_->DeclareProperty("gaussian", gaussian_, "Distribute the number of photons as Gaussian with mean nphotons and sigma sqrt(nphotons)");
+  msg_->DeclareProperty("fano", fano_, "Fano factor (if gaussian is true)");
+
 
   geom_navigator_ =
     G4TransportationManager::GetTransportationManager()->GetNavigatorForTracking();
@@ -90,6 +92,12 @@ void ScintillationGenerator::GeneratePrimaryVertex(G4Event* event)
 
   // Create a new vertex
   G4PrimaryVertex* vertex = new G4PrimaryVertex(position, time);
+
+  if (gaussian_) {
+    nphotons_ = G4RandGauss::shoot(nphotons_, sqrt(fano_*nphotons_));
+  }
+
+  G4cout << nphotons_ << " PHOTONS" << G4endl;
 
   for ( G4int i = 0; i<nphotons_; i++)
     {

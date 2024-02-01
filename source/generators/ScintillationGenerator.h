@@ -47,7 +47,8 @@ namespace nexus {
 
     G4String region_;
     G4int    nphotons_;
-
+    G4bool   gaussian_;
+    G4double fano_;
   };
 
 } // end namespace nexus
