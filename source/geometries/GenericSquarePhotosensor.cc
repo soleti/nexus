@@ -37,7 +37,7 @@ GenericSquarePhotosensor::GenericSquarePhotosensor(G4String name,
   width_              (width),           // Width of the Sensitive Area
   height_             (height),          // Height of the Sensitive Area
   thickness_          (thickness),       // Thickness of the whole sensor
-  window_thickness_   (6 * mm),        // Window thickness    (similar to Sensl SiPMs)
+  window_thickness_   (0.3 * mm),        // Window thickness    (similar to Sensl SiPMs)
   sensarea_thickness_ (0.1 * mm),        // Sensitive thickness (similar to Sensl SiPMs)
   wls_thickness_      (1. * micrometer), // WLS thickness = 1 micron by definition)
   with_wls_coating_   (false),
@@ -141,7 +141,7 @@ void GenericSquarePhotosensor::Construct()
 
   // G4Tubs* case_solid_vol = new G4Tubs(name, 0, width_ / 2., thickness_ / 2., 0, twopi);
   G4Box* case_solid_vol =
-    new G4Box(name, width_/2. + 2 *cm, height_/2. + 2*cm, thickness_/2.);
+    new G4Box(name, width_/2. , height_/2. , thickness_/2.);
 
   G4LogicalVolume* case_logic_vol =
     new G4LogicalVolume(case_solid_vol, case_mat_, name);
@@ -211,9 +211,9 @@ void GenericSquarePhotosensor::Construct()
 
   // VISIBILITIES /////////////////////////////////////////////
   if (visibility_) {
-    window_logic_vol->SetVisAttributes(nexus::Blue());
-    sensarea_logic_vol->SetVisAttributes(nexus::Blue());
-    case_logic_vol->SetVisAttributes(nexus::DirtyWhite());
+    window_logic_vol->SetVisAttributes(nexus::LightBlueAlpha());
+    sensarea_logic_vol->SetVisAttributes(nexus::DarkGrey());
+    case_logic_vol->SetVisAttributes(G4VisAttributes::GetInvisible());
   }
   else {
     window_logic_vol  ->SetVisAttributes(G4VisAttributes::GetInvisible());

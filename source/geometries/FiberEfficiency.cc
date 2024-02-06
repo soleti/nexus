@@ -198,7 +198,7 @@ namespace nexus {
 
     // PMT /////////////////////////////////////////////
 
-    G4double photosensor_thickness = 0.5*cm;
+    G4double photosensor_thickness = 0.7*cm;
     if (detector_type_ == "PMT") {
       pmt_  = new GenericPhotosensor("FIBER_SENSOR", 18./6. * mm, 18./6. * mm, photosensor_thickness);
     }

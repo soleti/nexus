@@ -1249,6 +1249,7 @@ namespace opticalprops {
       h_Planck * c_light / (250. * nm),  h_Planck * c_light / (230. * nm),
       h_Planck * c_light / (210. * nm),  h_Planck * c_light / (190. * nm),
       h_Planck * c_light / (170. * nm),  h_Planck * c_light / (150. * nm),
+      h_Planck * c_light / (96. * nm),
       optPhotMaxE_
     };
 
@@ -1261,6 +1262,7 @@ namespace opticalprops {
       400. * nm,     400. * nm,     // 250 , 230 nm
       350. * nm,     250. * nm,     // 210 , 190 nm
       350. * nm,     400. * nm,     // 170 , 150 nm
+      400. * nm,
       noAbsLength_   // 100 nm
     };
 
