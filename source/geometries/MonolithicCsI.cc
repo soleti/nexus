@@ -43,7 +43,7 @@ namespace nexus
 
   MonolithicCsI::MonolithicCsI() : GeometryBase(),
                                    crystal_width_(48 * mm),
-                                   crystal_length_(22.8 * mm)
+                                   crystal_length_(37.2 * mm)
   {
     /// Messenger
     msg_ = new G4GenericMessenger(this, "/Geometry/MonolithicCsI/",
@@ -79,10 +79,10 @@ namespace nexus
     G4Box *crystal =
         new G4Box("CRYSTAL", crystal_width_ / 2., crystal_width_ / 2., crystal_length_ / 2.);
 
-    // G4Material *CsI = G4NistManager::Instance()->FindOrBuildMaterial("G4_CESIUM_IODIDE");
-    G4Material *CsI = G4NistManager::Instance()->FindOrBuildMaterial("G4_BGO");
+    G4Material *CsI = G4NistManager::Instance()->FindOrBuildMaterial("G4_CESIUM_IODIDE");
+    // G4Material *CsI = G4NistManager::Instance()->FindOrBuildMaterial("G4_BGO");
     // G4Material *CsI = materials::LYSO();
-    CsI->SetMaterialPropertiesTable(opticalprops::BGO());
+    CsI->SetMaterialPropertiesTable(opticalprops::CsI());
     G4LogicalVolume *crystal_logic =
         new G4LogicalVolume(crystal,
                             CsI,
