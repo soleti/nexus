@@ -93,7 +93,7 @@ namespace nexus {
       new G4LogicalVolume(roof, concrete, "CONCRETE");
     new G4PVPlacement(0, *detector_center+G4ThreeVector(0,0,10*m - detector_height_/2 - 0.2 *m ), roof_logic,
                       "ROOF", lab_logic, false, 0, true);
-    roof_logic->SetVisAttributes(nexus::LightGreyAlpha());
+    // roof_logic->SetVisAttributes(nexus::LightGreyAlpha());
     roof_logic->SetVisAttributes(G4VisAttributes::GetInvisible());
 
     G4Material* steel = G4NistManager::Instance()->FindOrBuildMaterial("G4_STAINLESS-STEEL");
@@ -152,7 +152,7 @@ namespace nexus {
     G4LogicalVolume* detector_logic =
       new G4LogicalVolume(detector_solid, detector_mat, "DETECTOR");
 
-    detector_logic->SetVisAttributes(nexus::LightBlueAlpha());
+    detector_logic->SetVisAttributes(nexus::BlueAlpha());
     new G4PVPlacement(0, *detector_center,
                       detector_logic, "DETECTOR", lab_logic, false, 0, true);
 
@@ -176,8 +176,8 @@ namespace nexus {
     new G4PVPlacement(0, *detector_center, container_logic,
                       "CONTAINER", lab_logic, false, 0, true);
 
-    GenericPhotosensor *pmt_  = new GenericPhotosensor("PMT", 46 * cm, 46 * cm, 5 * cm);
-    // PmtR12860 *pmt_ = new PmtR12860();
+    // GenericPhotosensor *pmt_  = new GenericPhotosensor("PMT", 46 * cm, 46 * cm, 5 * cm);
+    PmtR12860 *pmt_ = new PmtR12860();
     GenericSquarePhotosensor *lappd_  = new GenericSquarePhotosensor("LAPPD", 20 * cm, 20 * cm, 5 * cm);
     G4MaterialPropertiesTable* photosensor_mpt = new G4MaterialPropertiesTable();
     G4MaterialPropertiesTable* lappd_mpt = new G4MaterialPropertiesTable();
@@ -249,11 +249,11 @@ namespace nexus {
 
       lappd_mpt->AddProperty("REFLECTIVITY", energy, reflectivity, 2);
       lappd_mpt->AddProperty("EFFICIENCY", eff_energies, eff_lappd, entries);
-      pmt_->SetTimeBinning(1 * us);
-      pmt_->SetVisibility(true);
-      pmt_->SetWindowRefractiveIndex(opticalprops::BorosilicateGlass()->GetProperty("RINDEX"));
-      pmt_->SetSensorDepth(1);
-      pmt_->SetOpticalProperties(photosensor_mpt);
+      // pmt_->SetTimeBinning(1 * us);
+      // pmt_->SetVisibility(true);
+      // pmt_->SetWindowRefractiveIndex(opticalprops::BorosilicateGlass()->GetProperty("RINDEX"));
+      // pmt_->SetSensorDepth(1);
+      // pmt_->SetOpticalProperties(photosensor_mpt);
       pmt_->Construct();
 
       lappd_->SetTimeBinning(0.01 * ns);
@@ -277,10 +277,10 @@ namespace nexus {
         std::string label = std::to_string(theta);
         G4double x = (detector_diam_ / 2. - 75 * cm) * std::sin(theta) * mm;
         G4double y = (detector_diam_ / 2. - 75 * cm) * std::cos(theta) * mm;
-        new G4PVPlacement(0, G4ThreeVector(x, y, -detector_height_ / 2 - 10 * cm),
+        new G4PVPlacement(0, G4ThreeVector(x, y, -detector_height_ / 2 - 10 * cm -15 * cm),
                           pmt_logic, "PMTDownout" + label, container_logic,
                           false, 100+itheta, false);
-        new G4PVPlacement(G4Transform3D(*rot_z, G4ThreeVector(x, y, detector_height_ / 2 + 10 * cm)),
+        new G4PVPlacement(G4Transform3D(*rot_z, G4ThreeVector(x, y, detector_height_ / 2 + 10 * cm + 15 * cm)),
                           pmt_logic, "PMTUpout" + label, container_logic,
                           false, 400+itheta, false);
       }
@@ -316,10 +316,10 @@ namespace nexus {
       //                     false, 500+itheta, false);
       // }
 
-      new G4PVPlacement(0, G4ThreeVector(0, 0, -detector_height_ / 2 - 10 * cm),
+      new G4PVPlacement(0, G4ThreeVector(0, 0, -detector_height_ / 2 - 10 * cm - 15 * cm),
                         pmt_logic, "PMTDown0", container_logic,
                         false, 300, false);
-      new G4PVPlacement(G4Transform3D(*rot_z, G4ThreeVector(0, 0, detector_height_ / 2 + 10 * cm)),
+      new G4PVPlacement(G4Transform3D(*rot_z, G4ThreeVector(0, 0, detector_height_ / 2 + 10 * cm + 15 * cm)),
                         pmt_logic, "PMTUp0", container_logic,
                         false, 600, false);
 
@@ -339,8 +339,8 @@ namespace nexus {
               rot->rotateZ(-step/2);
           }
 
-          G4double y = (detector_diam_ / 2. + 10 * cm / 2 - 1 * cm) * std::cos(theta) * mm;
-          G4double x = (detector_diam_ / 2. + 10 * cm / 2 - 1 * cm) * std::sin(theta) * mm;
+          G4double y = (detector_diam_ / 2. + 10 * cm / 2 - 1 * cm + 15 * cm) * std::cos(theta) * mm;
+          G4double x = (detector_diam_ / 2. + 10 * cm / 2 - 1 * cm + 15 * cm) * std::sin(theta) * mm;
 
           new G4PVPlacement(G4Transform3D(*rot, G4ThreeVector(x, y, -detector_height_ / 2 + detector_height_/rows * irow + detector_height_/ rows / 2)),
                             pmt_logic, "PMT" + label, container_logic,
