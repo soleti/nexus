@@ -4,9 +4,13 @@
 #/Generator/SingleParticle/momentum 0 0.25 1
 #/Generator/SingleParticle/min_costheta 1
 #/Generator/SingleParticle/max_costheta 1
-/Generator/ScintGenerator/nphotons 25000
+/Generator/ScintGenerator/nphotons 2500
 /Generator/ScintGenerator/gaussian true
 /Generator/ScintGenerator/fano 2.73
+
+/Geometry/MonolithicCsI/crystal_length 2
+/Geometry/MonolithicCsI/crystal_material CsITl
+/Geometry/MonolithicCsI/back_wrapping false
 
 /run/verbose 1
 /event/verbose 0

@@ -628,7 +628,7 @@ namespace opticalprops {
     };
 
     mpt->AddProperty("SCINTILLATIONCOMPONENT1", energy, emission_intensity);
-    mpt->AddConstProperty("SCINTILLATIONYIELD", 25000. / MeV);
+    mpt->AddConstProperty("SCINTILLATIONYIELD", 35000. / MeV);
     mpt->AddConstProperty("SCINTILLATIONYIELD1", 1. );
     mpt->AddConstProperty("SCINTILLATIONTIMECONSTANT1", 40 * ns);
     mpt->AddConstProperty("RESOLUTIONSCALE",    1.0);

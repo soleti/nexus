@@ -42,14 +42,18 @@ namespace nexus
   using namespace CLHEP;
 
   MonolithicCsI::MonolithicCsI() : GeometryBase(),
+                                   crystal_material_("CsI"),
                                    crystal_width_(48 * mm),
-                                   crystal_length_(37.2 * mm)
+                                   crystal_length_(2.),
+                                   back_wrapping_(true)
   {
     /// Messenger
     msg_ = new G4GenericMessenger(this, "/Geometry/MonolithicCsI/",
                                   "Control commands of geometry MonolithicCsI.");
+    msg_->DeclareProperty("crystal_material", crystal_material_, "Crystal material (CsI, CsITl, LYSO, BGO)");
     msg_->DeclareProperty("crystal_width", crystal_width_, "Crystal width");
-    msg_->DeclareProperty("crystal_length", crystal_length_, "Crystal length");
+    msg_->DeclareProperty("crystal_length", crystal_length_, "Crystal length (in radiation lengths)");
+    msg_->DeclareProperty("back_wrapping", back_wrapping_, "Crystal wrapped also on the back side? (true/false)");
   }
 
   MonolithicCsI::~MonolithicCsI()
@@ -76,19 +80,38 @@ namespace nexus
     // (i.e., this is the volume that will be placed in the world)
     this->SetLogicalVolume(lab_logic);
 
+    G4Material *material = nullptr;
+
+    if (crystal_material_ == "CsI") {
+      crystal_length_ *= 18.6 * mm;
+      material = G4NistManager::Instance()->FindOrBuildMaterial("G4_CESIUM_IODIDE");
+      material->SetMaterialPropertiesTable(opticalprops::CsI());
+    } else if (crystal_material_ == "BGO") {
+      crystal_length_ *= 11.4 * mm;
+      material = G4NistManager::Instance()->FindOrBuildMaterial("G4_BGO");
+      material->SetMaterialPropertiesTable(opticalprops::BGO());
+    } else if (crystal_material_ == "LYSO") {
+      crystal_length_ *= 11.4 * mm;
+      material = materials::LYSO();
+      material->SetMaterialPropertiesTable(opticalprops::LYSO());
+    } else if (crystal_material_ == "CsITl") {
+      crystal_length_ *= 18.6 * mm;
+      material = G4NistManager::Instance()->FindOrBuildMaterial("G4_CESIUM_IODIDE");
+      material->SetMaterialPropertiesTable(opticalprops::CsITl());
+    } else {
+      G4Exception("[MonolithicCsI]", "Construct()", FatalException,
+                  "Unknown crystal material!");
+    }
+
     G4Box *crystal =
         new G4Box("CRYSTAL", crystal_width_ / 2., crystal_width_ / 2., crystal_length_ / 2.);
 
-    G4Material *CsI = G4NistManager::Instance()->FindOrBuildMaterial("G4_CESIUM_IODIDE");
-    // G4Material *CsI = G4NistManager::Instance()->FindOrBuildMaterial("G4_BGO");
-    // G4Material *CsI = materials::LYSO();
-    CsI->SetMaterialPropertiesTable(opticalprops::CsI());
     G4LogicalVolume *crystal_logic =
         new G4LogicalVolume(crystal,
-                            CsI,
+                            material,
                             "CRYSTAL");
     crystal_logic->SetVisAttributes(nexus::LightBlueAlpha());
-    G4VPhysicalVolume *crystal_right = new G4PVPlacement(0, G4ThreeVector(0, 0, +25. / 2 * mm + crystal_length_ / 2),
+    G4VPhysicalVolume *crystal_right = new G4PVPlacement(0, G4ThreeVector(0, 0, 25. / 2 * mm + crystal_length_ / 2),
                                                          crystal_logic, "CRYSTAL", lab_logic,
                                                          true, 2, true);
 
@@ -96,28 +119,18 @@ namespace nexus
     G4int teflon_coatings = 5;
     G4double teflon_thickness_tot = teflon_thickness * teflon_coatings;
     G4Box *teflon_coating_full = new G4Box("TEFLON_FULL", crystal_width_ / 2 + teflon_thickness_tot / 2, crystal_width_ / 2 + teflon_thickness_tot / 2, crystal_length_ / 2.);
-    G4Box *teflon_back = new G4Box("TEFLON_BACK", crystal_width_ / 2 + teflon_thickness_tot / 2, crystal_width_ / 2 + teflon_thickness_tot / 2, teflon_thickness_tot / 2);
 
     G4SubtractionSolid *teflon_coating = new G4SubtractionSolid("TEFLON", teflon_coating_full, crystal);
     G4LogicalVolume *teflon_logic =
         new G4LogicalVolume(teflon_coating,
                             G4NistManager::Instance()->FindOrBuildMaterial("G4_TEFLON"),
                             "TEFLON_SIDES");
-    G4LogicalVolume *teflon_back_logic =
-        new G4LogicalVolume(teflon_back,
-                            G4NistManager::Instance()->FindOrBuildMaterial("G4_TEFLON"),
-                            "TEFLON_BACK");
 
     teflon_logic->SetVisAttributes(nexus::White());
-    teflon_back_logic->SetVisAttributes(nexus::White());
 
     G4VPhysicalVolume *teflon_full_position = new G4PVPlacement(0, G4ThreeVector(0, 0, 25. / 2 * mm + crystal_length_ / 2),
                                                                 teflon_logic, "TEFLON_SIDES", lab_logic,
                                                                 true, 1, true);
-
-    // G4VPhysicalVolume* teflon_back_position = new G4PVPlacement(0, G4ThreeVector(0, 0, 25./2 * mm - teflon_thickness_tot/2 ),
-    //                   teflon_back_logic, "TEFLON_BACK", lab_logic,
-    //                   true, 2, true);
 
     G4OpticalSurface *ptfe_surface = new G4OpticalSurface("PTFE_SURFACE");
     ptfe_surface->SetType(dielectric_LUT);
@@ -138,8 +151,19 @@ namespace nexus
     new G4LogicalBorderSurface(
         "CRYSTAL_PTFE", crystal_right, teflon_full_position, ptfe_surface);
 
-    // new G4LogicalBorderSurface(
-    //   "CRYSTAL_PTFE_BACK", crystal_right, teflon_back_position, ptfe_surface);
+    if (back_wrapping_) {
+      G4Box *teflon_back = new G4Box("TEFLON_BACK", crystal_width_ / 2 + teflon_thickness_tot / 2, crystal_width_ / 2 + teflon_thickness_tot / 2, teflon_thickness_tot / 2);
+      G4LogicalVolume *teflon_back_logic =
+          new G4LogicalVolume(teflon_back,
+                              G4NistManager::Instance()->FindOrBuildMaterial("G4_TEFLON"),
+                              "TEFLON_BACK");
+      teflon_back_logic->SetVisAttributes(nexus::White());
+      G4VPhysicalVolume *teflon_back_position = new G4PVPlacement(0, G4ThreeVector(0, 0, 25. / 2 * mm - teflon_thickness_tot / 2),
+                                                                  teflon_back_logic, "TEFLON_BACK", lab_logic,
+                                                                  true, 2, true);
+      new G4LogicalBorderSurface(
+          "CRYSTAL_PTFE_BACK", crystal_right, teflon_back_position, ptfe_surface);
+    }
 
     SiPM66NoCasing *sipm_geom = new SiPM66NoCasing();
 

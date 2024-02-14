@@ -32,10 +32,10 @@ namespace nexus {
     BoxPointSampler* box_source_;
 
     // Dimension of the crystals
+    G4String crystal_material_;
     G4double crystal_width_;
     G4double crystal_length_;
-
-
+    G4bool back_wrapping_;
   };
 }
 #endif
