@@ -145,6 +145,10 @@ void PersistencyManager::StoreTrajectories(G4TrajectoryContainer* tc)
   if (!tc) return;
 
   // Loop through the trajectories stored in the container
+
+  G4bool found_photo_1 = false;
+  G4bool found_photo_2 = false;
+
   for (size_t i=0; i<tc->entries(); ++i) {
     Trajectory* trj = dynamic_cast<Trajectory*>((*tc)[i]);
     if (!trj) continue;
@@ -175,7 +179,26 @@ void PersistencyManager::StoreTrajectories(G4TrajectoryContainer* tc)
     } else {
       mother_id = trj->GetParentID();
     }
-    if (mother_id == 1) {
+
+    G4String creator_proc = trj->GetCreatorProcess().c_str();
+
+    if ((mother_id == 1) || ((mother_id == 2) && (creator_proc == "phot")) || ((mother_id == 3) && (creator_proc == "phot"))) {
+
+      if (found_photo_1 && mother_id == 2) {
+        continue;
+      }
+
+      if (found_photo_2 && mother_id == 3) {
+        continue;
+      }
+      
+      if (mother_id == 2) {
+        found_photo_1 = true;
+      }
+      if (mother_id == 3) {
+        found_photo_2 = true;
+      }
+
       h5writer_->WriteParticleInfo(nevt_, trackid, trj->GetParticleName().c_str(),
           primary, mother_id,
           (float)ini_xyz.x(), (float)ini_xyz.y(),

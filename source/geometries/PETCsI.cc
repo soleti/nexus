@@ -133,10 +133,11 @@ namespace nexus
 
             G4double y = (pet_diameter_ / 2. + crystal_length_ / 2) * std::cos(theta);
             G4double x = (pet_diameter_ / 2. + crystal_length_ / 2) * std::sin(theta);
-
-            new G4PVPlacement(G4Transform3D(*rot, G4ThreeVector(x, y, -pet_length_ / 2 + iring * crystal_width_ + crystal_length_ / 2)),
+            G4double z = -pet_length_ / 2 + iring * crystal_width_ + crystal_length_ / 2;
+            new G4PVPlacement(G4Transform3D(*rot, G4ThreeVector(x, y, z)),
                               crystal_logic, "CRYSTAL" + label, lab_logic,
                               false, iring*rings + itheta, true);
+            G4cout << "CRYSTAL" << label << " " << x << " " << y << " " << z << G4endl;
         rot->rotateZ(-step);
       }
     }
