@@ -175,19 +175,22 @@ void PersistencyManager::StoreTrajectories(G4TrajectoryContainer* tc)
     } else {
       mother_id = trj->GetParentID();
     }
-    h5writer_->WriteParticleInfo(nevt_, trackid, trj->GetParticleName().c_str(),
-				 primary, mother_id,
-				 (float)ini_xyz.x(), (float)ini_xyz.y(),
-                                 (float)ini_xyz.z(), (float)ini_t,
-				 (float)final_xyz.x(), (float)final_xyz.y(),
-                                 (float)final_xyz.z(), (float)final_t,
-				 ini_volume.c_str(), final_volume.c_str(),
-				 (float)ini_mom.x(), (float)ini_mom.y(),
-                                 (float)ini_mom.z(), (float)final_mom.x(),
-                                 (float)final_mom.y(), (float)final_mom.z(),
-				 kin_energy, length,
-                                 trj->GetCreatorProcess().c_str(),
-				 trj->GetFinalProcess().c_str());
+    if (mother_id == 1) {
+      h5writer_->WriteParticleInfo(nevt_, trackid, trj->GetParticleName().c_str(),
+          primary, mother_id,
+          (float)ini_xyz.x(), (float)ini_xyz.y(),
+                                  (float)ini_xyz.z(), (float)ini_t,
+          (float)final_xyz.x(), (float)final_xyz.y(),
+                                  (float)final_xyz.z(), (float)final_t,
+          ini_volume.c_str(), final_volume.c_str(),
+          (float)ini_mom.x(), (float)ini_mom.y(),
+                                  (float)ini_mom.z(), (float)final_mom.x(),
+                                  (float)final_mom.y(), (float)final_mom.z(),
+          kin_energy, length,
+                                  trj->GetCreatorProcess().c_str(),
+          trj->GetFinalProcess().c_str());
+
+    }
 
   }
 }
