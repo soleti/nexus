@@ -182,20 +182,20 @@ void PersistencyManager::StoreTrajectories(G4TrajectoryContainer* tc)
 
     G4String creator_proc = trj->GetCreatorProcess().c_str();
 
-    if ((mother_id == 1) || ((mother_id == 2) && (creator_proc == "phot")) || ((mother_id == 3) && (creator_proc == "phot"))) {
-
-      if (found_photo_1 && mother_id == 2) {
+    if ((mother_id == 1) || (mother_id == 2) || (mother_id == 3)) {
+      if (found_photo_1 && (mother_id == 2) && (creator_proc == "phot")) {
         continue;
       }
 
-      if (found_photo_2 && mother_id == 3) {
+      if (found_photo_2 && (mother_id == 3) && (creator_proc == "phot")) {
         continue;
       }
-      
-      if (mother_id == 2) {
+
+      if ((creator_proc == "phot") && (mother_id == 2)) {
         found_photo_1 = true;
       }
-      if (mother_id == 3) {
+
+      if ((creator_proc == "phot") && (mother_id == 3)) {
         found_photo_2 = true;
       }
 
@@ -213,7 +213,11 @@ void PersistencyManager::StoreTrajectories(G4TrajectoryContainer* tc)
                                   trj->GetCreatorProcess().c_str(),
           trj->GetFinalProcess().c_str());
 
+      if (creator_proc == "compt") {
+        break;
+      }
     }
+
 
   }
 }
