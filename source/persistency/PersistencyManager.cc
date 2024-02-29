@@ -146,9 +146,6 @@ void PersistencyManager::StoreTrajectories(G4TrajectoryContainer* tc)
 
   // Loop through the trajectories stored in the container
 
-  G4bool found_photo_1 = false;
-  G4bool found_photo_2 = false;
-
   for (size_t i=0; i<tc->entries(); ++i) {
     Trajectory* trj = dynamic_cast<Trajectory*>((*tc)[i]);
     if (!trj) continue;
@@ -182,23 +179,24 @@ void PersistencyManager::StoreTrajectories(G4TrajectoryContainer* tc)
 
     G4String creator_proc = trj->GetCreatorProcess().c_str();
 
-    if ((mother_id == 1) || (mother_id == 2) || (mother_id == 3)) {
-      if (found_photo_1 && (mother_id == 2) && (creator_proc == "phot")) {
-        continue;
-      }
+    // if ((mother_id == 1) || (mother_id == 2) || (mother_id == 3)) {
+    //   if (found_photo_1 && (mother_id == 2) && (creator_proc == "phot")) {
+    //     continue;
+    //   }
 
-      if (found_photo_2 && (mother_id == 3) && (creator_proc == "phot")) {
-        continue;
-      }
+    //   if (found_photo_2 && (mother_id == 3) && (creator_proc == "phot")) {
+    //     continue;
+    //   }
 
-      if ((creator_proc == "phot") && (mother_id == 2)) {
-        found_photo_1 = true;
-      }
+    //   if ((creator_proc == "phot") && (mother_id == 2)) {
+    //     found_photo_1 = true;
+    //   }
 
-      if ((creator_proc == "phot") && (mother_id == 3)) {
-        found_photo_2 = true;
-      }
+    //   if ((creator_proc == "phot") && (mother_id == 3)) {
+    //     found_photo_2 = true;
+    //   }
 
+    if (mother_id == 1) {
       h5writer_->WriteParticleInfo(nevt_, trackid, trj->GetParticleName().c_str(),
           primary, mother_id,
           (float)ini_xyz.x(), (float)ini_xyz.y(),
@@ -213,9 +211,9 @@ void PersistencyManager::StoreTrajectories(G4TrajectoryContainer* tc)
                                   trj->GetCreatorProcess().c_str(),
           trj->GetFinalProcess().c_str());
 
-      if (creator_proc == "compt") {
-        break;
-      }
+    //   if (creator_proc == "compt") {
+    //     break;
+    //   }
     }
 
 
@@ -244,16 +242,16 @@ void PersistencyManager::StoreHits(G4HCofThisEvent* hce)
     // Fetch collection using the id number
     G4VHitsCollection* hits = hce->GetHC(hcid);
 
-    if (hcname == IonizationSD::GetCollectionUniqueName())
-      StoreIonizationHits(hits);
-    else if (hcname == SensorSD::GetCollectionUniqueName()) {
-      StoreSensorHits(hits);
-    } else {
-      G4String msg =
-        "Collection of hits '" + sdname + "/" + hcname
-        + "' is of an unknown type and will not be stored.";
-      G4Exception("[PersistencyManager]", "StoreHits()", JustWarning, msg);
-    }
+    // if (hcname == IonizationSD::GetCollectionUniqueName())
+    //   StoreIonizationHits(hits);
+    // else if (hcname == SensorSD::GetCollectionUniqueName()) {
+    //   StoreSensorHits(hits);
+    // } else {
+    //   G4String msg =
+    //     "Collection of hits '" + sdname + "/" + hcname
+    //     + "' is of an unknown type and will not be stored.";
+    //   G4Exception("[PersistencyManager]", "StoreHits()", JustWarning, msg);
+    // }
   }
 
 }

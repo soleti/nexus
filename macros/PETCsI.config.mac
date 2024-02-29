@@ -12,7 +12,6 @@
 /tracking/verbose 0
 /process/em/verbose 0
 
-
 /PhysicsList/RegisterPhysics G4EmStandardPhysics_option4
 /PhysicsList/RegisterPhysics G4StoppingPhysics
 /PhysicsList/RegisterPhysics G4StepLimiterPhysics
@@ -20,6 +19,8 @@
 #/PhysicsList/RegisterPhysics G4OpticalPhysics
 #/process/optical/processActivation Cerenkov true
 
+/Actions/DefaultEventAction/min_energy 1.020 MeV
+/Actions/DefaultEventAction/max_energy 1.100 MeV
 
 ### JOB CONTROL
 /nexus/random_seed            1

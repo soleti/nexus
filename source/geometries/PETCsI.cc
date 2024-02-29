@@ -9,14 +9,7 @@
 #include "MaterialsList.h"
 #include "Visibilities.h"
 #include "OpticalMaterialProperties.h"
-#include "SiPM66NoCasing.h"
-#include "SiPM33NoCasing.h"
-
-#include <G4Tubs.hh>
-#include <G4SubtractionSolid.hh>
-#include <G4OpticalSurface.hh>
-#include <G4LogicalSkinSurface.hh>
-#include <G4LogicalBorderSurface.hh>
+#include "IonizationSD.h"
 
 #include <G4Box.hh>
 #include <G4NistManager.hh>
@@ -26,7 +19,7 @@
 #include <G4VisAttributes.hh>
 #include <G4GenericMessenger.hh>
 #include <G4Box.hh>
-#include <G4Tubs.hh>
+#include <G4SDManager.hh>
 
 #include "FactoryBase.h"
 
@@ -141,6 +134,12 @@ namespace nexus
         rot->rotateZ(-step);
       }
     }
+
+    G4SDManager* sdmgr = G4SDManager::GetSDMpointer();
+    IonizationSD* ionisd = new IonizationSD("PET");
+    // ionisd->IncludeInTotalEnergyDeposit(false);
+    sdmgr->AddNewDetector(ionisd);
+    crystal_logic->SetSensitiveDetector(ionisd);
 
     jas_phantom_ = new JaszczakPhantom();
     jas_phantom_->Construct();
