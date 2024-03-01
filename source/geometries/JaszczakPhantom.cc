@@ -88,7 +88,7 @@ void JaszczakPhantom::Construct()
   auto water_solid =
     new G4Tubs(water_name, 0, cylinder_inner_diam_/2, cylinder_height_/2., 0, twopi);
 
-  G4Material* water = G4NistManager::Instance()->FindOrBuildMaterial("G4_WATER");
+  G4Material* water = G4NistManager::Instance()->FindOrBuildMaterial("G4_AIR");
   auto water_logic =
     new G4LogicalVolume(water_solid, water, water_name);
   G4VPhysicalVolume* water_phys =
