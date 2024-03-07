@@ -62,8 +62,9 @@ namespace nexus
 
   void PETCsI::Construct()
   {
-    sphere1_ = new SpherePointSampler(10 * mm, 0, G4ThreeVector(-5 * cm ,  0 * cm, 0));
-    sphere2_ = new SpherePointSampler(20 * mm, 0, G4ThreeVector(-10 * cm , 0 * cm, 0));
+
+    box_source_ = new BoxPointSampler(300 * mm, 300 * mm, 300 * mm, 0);
+
     G4double size = 2 * m;
     G4Box *lab_solid =
         new G4Box("LAB", size / 2., size / 2., size / 2.);
@@ -141,90 +142,22 @@ namespace nexus
     sdmgr->AddNewDetector(ionisd);
     crystal_logic->SetSensitiveDetector(ionisd);
 
-    jas_phantom_ = new JaszczakPhantom();
-    jas_phantom_->Construct();
-    G4LogicalVolume* phantom_logic = jas_phantom_->GetLogicalVolume();
-    new G4PVPlacement(0, G4ThreeVector(0, 0, 0), phantom_logic, "JASZCZAK",
-                      lab_logic, false, 0, true);
-    // G4VPhysicalVolume *crystal_position = new G4PVPlacement(0, G4ThreeVector(0, 0, 25. / 2 * mm + crystal_length_ / 2),
-    //                                                         crystal_logic, "CRYSTAL", lab_logic,
-    //                                                         true, 2, true);
+    // jas_phantom_ = new JaszczakPhantom();
+    // jas_phantom_->Construct();
+    // G4LogicalVolume* phantom_logic = jas_phantom_->GetLogicalVolume();
+    // new G4PVPlacement(0, G4ThreeVector(0, 0, 0), phantom_logic, "JASZCZAK",
+    //                   lab_logic, false, 0, true);
 
-//     G4double teflon_thickness = 0.08 * mm;
-//     G4int teflon_coatings = 5;
-//     G4double teflon_thickness_tot = teflon_thickness * teflon_coatings;
-//     G4Box *teflon_coating_full = new G4Box("TEFLON_FULL", crystal_width_ / 2 + teflon_thickness_tot / 2, crystal_width_ / 2 + teflon_thickness_tot / 2, crystal_length_ / 2.);
-
-//     G4SubtractionSolid *teflon_coating = new G4SubtractionSolid("TEFLON", teflon_coating_full, crystal);
-//     G4LogicalVolume *teflon_logic =
-//         new G4LogicalVolume(teflon_coating,
-//                             G4NistManager::Instance()->FindOrBuildMaterial("G4_TEFLON"),
-//                             "TEFLON_SIDES");
-
-//     teflon_logic->SetVisAttributes(nexus::White());
-
-//     G4VPhysicalVolume *teflon_full_position = new G4PVPlacement(0, G4ThreeVector(0, 0, 25. / 2 * mm + crystal_length_ / 2),
-//                                                                 teflon_logic, "TEFLON_SIDES", lab_logic,
-//                                                                 true, 1, true);
-
-//     G4OpticalSurface *ptfe_surface = new G4OpticalSurface("PTFE_SURFACE");
-//     ptfe_surface->SetType(dielectric_LUT);
-//     ptfe_surface->SetFinish(groundteflonair);
-//     // ptfe_surface->SetFinish(RoughTeflon_LUT);
-//     ptfe_surface->SetModel(LUT);
-//     // ptfe_surface->SetType(dielectric_dielectric);
-//     // ptfe_surface->SetFinish(polishedvm2000air);
-//     // ptfe_surface->SetFinish(polishedfrontpainted);
-//     // ptfe_surface->SetModel(unified);
-//     // ptfe_surface->SetMaterialPropertiesTable(opticalprops::PTFE());
-// //
-//     // G4OpticalSurface *air_surface = new G4OpticalSurface("CRYSTAL_SURFACE");
-//     // ptfe_surface->SetType(dielectric_LUTDAVIS);
-//     // ptfe_surface->SetFinish(Polished_LUT);
-//     // ptfe_surface->SetModel(DAVIS);
-
-//     new G4LogicalBorderSurface(
-//         "CRYSTAL_PTFE", crystal_right, teflon_full_position, ptfe_surface);
-
-//     if (back_wrapping_) {
-//       G4Box *teflon_back = new G4Box("TEFLON_BACK", crystal_width_ / 2 + teflon_thickness_tot / 2, crystal_width_ / 2 + teflon_thickness_tot / 2, teflon_thickness_tot / 2);
-//       G4LogicalVolume *teflon_back_logic =
-//           new G4LogicalVolume(teflon_back,
-//                               G4NistManager::Instance()->FindOrBuildMaterial("G4_TEFLON"),
-//                               "TEFLON_BACK");
-//       teflon_back_logic->SetVisAttributes(nexus::White());
-//       G4VPhysicalVolume *teflon_back_position = new G4PVPlacement(0, G4ThreeVector(0, 0, 25. / 2 * mm - teflon_thickness_tot / 2),
-//                                                                   teflon_back_logic, "TEFLON_BACK", lab_logic,
-//                                                                   true, 2, true);
-//       new G4LogicalBorderSurface(
-//           "CRYSTAL_PTFE_BACK", crystal_right, teflon_back_position, ptfe_surface);
-//     }
-
-    // SiPM66NoCasing *sipm_geom = new SiPM66NoCasing();
-
-    // sipm_geom->Construct();
-    // G4LogicalVolume *sipm_logic = sipm_geom->GetLogicalVolume();
-    // G4int n_rows = (int)crystal_width_ / sipm_geom->GetDimensions().x();
-    // G4int n_cols = (int)crystal_width_ / sipm_geom->GetDimensions().y();
-    // for (G4int irow = 0; irow < n_rows; irow++)
-    // {
-    //   for (G4int icol = 0; icol < n_cols; icol++)
-    //   {
-    //     std::string label = std::to_string(irow * n_rows + icol);
-    //     new G4PVPlacement(0, G4ThreeVector(irow * sipm_geom->GetDimensions().x() - crystal_width_ / 2 + sipm_geom->GetDimensions().x() / 2, icol * sipm_geom->GetDimensions().x() - crystal_width_ / 2 + sipm_geom->GetDimensions().x() / 2, 25. / 2 * mm + crystal_length_ + sipm_geom->GetDimensions().z() / 2), sipm_logic,
-    //                       "SiPM" + label, lab_logic, true, irow * n_rows + icol);
-    //   }
-    // }
   }
 
   G4ThreeVector PETCsI::GenerateVertex(const G4String &region) const
   {
     // G4ThreeVector vertex(0, 0, 0);
     // return vertex;
-    // return box_source_->GenerateVertex("INSIDE");
+    return box_source_->GenerateVertex("INSIDE");
     // vertex =
     // sphere1_->GenerateVertex("INSIDE");
-    return jas_phantom_->GenerateVertex("JPHANTOM");
+    // return jas_phantom_->GenerateVertex("JPHANTOM");
   }
 
 }

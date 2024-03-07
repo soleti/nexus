@@ -8,6 +8,7 @@
 #include "GeometryBase.h"
 #include "CylinderPointSampler2020.h"
 #include "SpherePointSampler.h"
+#include "BoxPointSampler.h"
 #include "JaszczakPhantom.h"
 
 class G4GenericMessenger;
@@ -30,8 +31,7 @@ namespace nexus {
 
     // Messenger for the definition of control commands
     G4GenericMessenger* msg_;
-    SpherePointSampler* sphere1_;
-    SpherePointSampler* sphere2_;
+    BoxPointSampler* box_source_;
     JaszczakPhantom* jas_phantom_;
 
     // Dimension of the crystals
