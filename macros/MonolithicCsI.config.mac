@@ -11,7 +11,7 @@
 /Geometry/MonolithicCsI/crystal_length 2
 /Geometry/MonolithicCsI/crystal_material CsITl
 /Geometry/MonolithicCsI/back_wrapping true
-#/Geometry/MonolithicCsI/crystal_width 24 cm
+/Geometry/MonolithicCsI/crystal_width 24 cm 
 
 /run/verbose 1
 /event/verbose 0
