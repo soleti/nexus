@@ -242,16 +242,16 @@ void PersistencyManager::StoreHits(G4HCofThisEvent* hce)
     // Fetch collection using the id number
     G4VHitsCollection* hits = hce->GetHC(hcid);
 
-    // if (hcname == IonizationSD::GetCollectionUniqueName())
-    //   StoreIonizationHits(hits);
-    // else if (hcname == SensorSD::GetCollectionUniqueName()) {
-    //   StoreSensorHits(hits);
-    // } else {
-    //   G4String msg =
-    //     "Collection of hits '" + sdname + "/" + hcname
-    //     + "' is of an unknown type and will not be stored.";
-    //   G4Exception("[PersistencyManager]", "StoreHits()", JustWarning, msg);
-    // }
+    if (hcname == IonizationSD::GetCollectionUniqueName())
+      StoreIonizationHits(hits);
+    else if (hcname == SensorSD::GetCollectionUniqueName()) {
+      StoreSensorHits(hits);
+    } else {
+      G4String msg =
+        "Collection of hits '" + sdname + "/" + hcname
+        + "' is of an unknown type and will not be stored.";
+      G4Exception("[PersistencyManager]", "StoreHits()", JustWarning, msg);
+    }
   }
 
 }
