@@ -32,6 +32,7 @@ namespace nexus {
     // Messenger for the definition of control commands
     G4GenericMessenger* msg_;
     BoxPointSampler* box_source_;
+    CylinderPointSampler2020* cylindrical_shell_;
     JaszczakPhantom* jas_phantom_;
 
     // Dimension of the crystals

@@ -64,6 +64,7 @@ namespace nexus
   {
 
     box_source_ = new BoxPointSampler(300 * mm, 300 * mm, 300 * mm, 0);
+    cylindrical_shell_ = new CylinderPointSampler2020(0, pet_diameter_ / 2. - 1 * cm, pet_length_ / 2., 0, 2 * M_PI);
 
     G4double size = 2 * m;
     G4Box *lab_solid =
@@ -123,19 +124,19 @@ namespace nexus
     for (G4int iring=0; iring < rings; iring++) {
       for (G4int itheta=0; itheta < angles; itheta++) {
         G4float theta = 2 * M_PI / angles * itheta;
-        std::string label = std::to_string(iring*rings + itheta);
+        std::string label = std::to_string(iring*angles + itheta);
 
-            G4double y = (pet_diameter_ / 2. + crystal_length_ / 2) * std::cos(theta);
-            G4double x = (pet_diameter_ / 2. + crystal_length_ / 2) * std::sin(theta);
-            G4double z = -pet_length_ / 2 + iring * crystal_width_ + crystal_length_ / 2;
-            new G4PVPlacement(G4Transform3D(*rot, G4ThreeVector(x, y, z)),
-                              crystal_logic, "CRYSTAL" + label, lab_logic,
-                              false, iring*rings + itheta, true);
-            G4cout << "CRYSTAL" << label << " " << x << " " << y << " " << z << G4endl;
+        G4double y = (pet_diameter_ / 2. + crystal_length_ / 2) * std::cos(theta);
+        G4double x = (pet_diameter_ / 2. + crystal_length_ / 2) * std::sin(theta);
+        G4double z = -pet_length_ / 2 + iring * crystal_width_ + crystal_length_ / 2;
+        new G4PVPlacement(G4Transform3D(*rot, G4ThreeVector(x, y, z)),
+                          crystal_logic, label, lab_logic,
+                          true, iring*rings + itheta, true);
+        G4cout << "CRYSTAL" << label << " " << x << " " << y << " " << z << G4endl;
         rot->rotateZ(-step);
       }
     }
-
+// "CRYSTAL_" + std::to_string(iring) + "_" + std::to_string(itheta)
     G4SDManager* sdmgr = G4SDManager::GetSDMpointer();
     IonizationSD* ionisd = new IonizationSD("PET");
     // ionisd->IncludeInTotalEnergyDeposit(false);
@@ -154,7 +155,11 @@ namespace nexus
   {
     // G4ThreeVector vertex(0, 0, 0);
     // return vertex;
-    return box_source_->GenerateVertex("INSIDE");
+    if (region == "CYLINDRICAL_SHELL") {
+      return cylindrical_shell_->GenerateVertex("OUTER_SURFACE");
+    } else {
+      return box_source_->GenerateVertex("INSIDE");
+    }
     // vertex =
     // sphere1_->GenerateVertex("INSIDE");
     // return jas_phantom_->GenerateVertex("JPHANTOM");
