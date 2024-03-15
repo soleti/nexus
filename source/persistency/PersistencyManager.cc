@@ -196,7 +196,7 @@ void PersistencyManager::StoreTrajectories(G4TrajectoryContainer* tc)
     //     found_photo_2 = true;
     //   }
 
-    if (mother_id == 1) {
+    // if (mother_id == 1) {
       h5writer_->WriteParticleInfo(nevt_, trackid, trj->GetParticleName().c_str(),
           primary, mother_id,
           (float)ini_xyz.x(), (float)ini_xyz.y(),
@@ -214,7 +214,7 @@ void PersistencyManager::StoreTrajectories(G4TrajectoryContainer* tc)
     //   if (creator_proc == "compt") {
     //     break;
     //   }
-    }
+    // }
 
 
   }
