@@ -104,9 +104,9 @@ void JaszczakPhantom::Construct()
   auto radius_pos = cylinder_inner_diam_/4.;
   auto z_pos      = - cylinder_height_/2. + sphere_height_;
 
-  // for (unsigned long i=0; i<sphere_radii.size(); i++) {
-  //   BuildSpheres(i, sphere_radii[i], radius_pos, 0, water_logic, water);
-  // }
+  for (unsigned long i=0; i<sphere_radii.size(); i++) {
+    BuildSpheres(i, sphere_radii[i], radius_pos, 0, water_logic, water);
+  }
 
   // // Rods
   // std::vector<G4double> rod_radii =
