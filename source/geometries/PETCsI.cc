@@ -131,7 +131,7 @@ namespace nexus
         G4double z = -pet_length_ / 2 + iring * crystal_width_ + crystal_length_ / 2;
         new G4PVPlacement(G4Transform3D(*rot, G4ThreeVector(x, y, z)),
                           crystal_logic, label, lab_logic,
-                          true, iring*rings + itheta, true);
+                          true, iring*rings + itheta, false);
         G4cout << "CRYSTAL" << label << " " << x << " " << y << " " << z << G4endl;
         rot->rotateZ(-step);
       }
