@@ -45,10 +45,26 @@ AnalysisSteppingAction::~AnalysisSteppingAction()
 
 void AnalysisSteppingAction::UserSteppingAction(const G4Step* step)
 {
-  G4ParticleDefinition* pdef = step->GetTrack()->GetDefinition();
+  // G4ParticleDefinition* pdef = step->GetTrack()->GetDefinition();
 
-  //Check whether the track is an optical photon
-  if (pdef != G4OpticalPhoton::Definition()) return;
+  // G4VPhysicalVolume* volIn = step->GetPostStepPoint()->GetPhysicalVolume();
+  // if ((volIn->GetName() != "LAB") && (volIn->GetName() != "WORLD")) {
+    if (step->GetPreStepPoint()->GetStepStatus() == fGeomBoundary) {
+      step->GetTrack()->SetTrackStatus(fStopAndKill);
+    }
+  // }
+  // G4bool condition = step->IsFirstStepInVolume();`
+  // if(volIn == ‘yourVolume’ && particle == ‘neutron’ && condition == true)
+  // {
+  // Get the information you want
+  // }
+  // G4LogicalVolume* volume = step->GetPostStepPoint()->GetTouchableHandle()->GetVolume()->GetLogicalVolume();
+  // if (volume->GetName() == "CRYSTAL") {
+  //   // G4cout << "Volume: " << volume->GetName() << G4endl;
+  //   step->GetTrack()->SetTrackStatus(fStopAndKill);
+  // }
+  // //Check whether the track is an optical photon
+  // if (pdef != G4OpticalPhoton::Definition()) return;
 
   /*
   // example of information one can access about optical photons
@@ -69,30 +85,30 @@ void AnalysisSteppingAction::UserSteppingAction(const G4Step* step)
 
   // Retrieve the pointer to the optical boundary process.
   // We do this only once per run defining our local pointer as static.
-  static G4OpBoundaryProcess* boundary = 0;
+  // static G4OpBoundaryProcess* boundary = 0;
 
-  if (!boundary) { // the pointer is not defined yet
-    // Get the list of processes defined for the optical photon
-    // and loop through it to find the optical boundary process.
-    G4ProcessVector* pv = pdef->GetProcessManager()->GetProcessList();
-    for (size_t i=0; i<pv->size(); i++) {
-      if ((*pv)[i]->GetProcessName() == "OpBoundary") {
-	boundary = (G4OpBoundaryProcess*) (*pv)[i];
-	break;
-      }
-    }
-  }
+  // if (!boundary) { // the pointer is not defined yet
+  //   // Get the list of processes defined for the optical photon
+  //   // and loop through it to find the optical boundary process.
+  //   G4ProcessVector* pv = pdef->GetProcessManager()->GetProcessList();
+  //   for (size_t i=0; i<pv->size(); i++) {
+  //     if ((*pv)[i]->GetProcessName() == "OpBoundary") {
+	// boundary = (G4OpBoundaryProcess*) (*pv)[i];
+	// break;
+  //     }
+  //   }
+  // }
 
-  if (step->GetPostStepPoint()->GetStepStatus() == fGeomBoundary) {
-    if (boundary->GetStatus() == Detection ){
-      G4String detector_name = step->GetPostStepPoint()->GetTouchableHandle()->GetVolume()->GetName();
-      //G4cout << "##### Sensitive Volume: " << detector_name << G4endl;
+  // if (step->GetPostStepPoint()->GetStepStatus() == fGeomBoundary) {
+  //   if (boundary->GetStatus() == Detection ){
+      // step->GetPostStepPoint()->GetTouchableHandle()->GetVolume()->GetName();
+      // G4cout << "##### Sensitive Volume: " << detector_name << G4endl;
 
-      detectorCounts::iterator it = my_counts_.find(detector_name);
-      if (it != my_counts_.end()) my_counts_[it->first] += 1;
-      else my_counts_[detector_name] = 1;
-    }
-  }
+      // detectorCounts::iterator it = my_counts_.find(detector_name);
+  //     if (it != my_counts_.end()) my_counts_[it->first] += 1;
+  //     else my_counts_[detector_name] = 1;
+  //   }
+  // }
 
   return;
 }

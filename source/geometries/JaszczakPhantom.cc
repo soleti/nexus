@@ -33,7 +33,7 @@ JaszczakPhantom::JaszczakPhantom(): GeometryBase(),
                                     sphere_activity_(4),
                                     rod_activity_(4),
                                     cylinder_inner_diam_(216*mm),
-                                    cylinder_height_(186*mm),
+                                    cylinder_height_(186*mm / 2),
                                     cylinder_thickn_(3.2*mm),
                                     sphere1_d_(9.5*mm),
                                     sphere2_d_(12.7*mm),
@@ -88,7 +88,7 @@ void JaszczakPhantom::Construct()
   auto water_solid =
     new G4Tubs(water_name, 0, cylinder_inner_diam_/2, cylinder_height_/2., 0, twopi);
 
-  G4Material* water = G4NistManager::Instance()->FindOrBuildMaterial("G4_AIR");
+  G4Material* water = G4NistManager::Instance()->FindOrBuildMaterial("G4_WATER");
   auto water_logic =
     new G4LogicalVolume(water_solid, water, water_name);
   G4VPhysicalVolume* water_phys =
@@ -105,16 +105,16 @@ void JaszczakPhantom::Construct()
   auto z_pos      = - cylinder_height_/2. + sphere_height_;
 
   for (unsigned long i=0; i<sphere_radii.size(); i++) {
-    BuildSpheres(i, sphere_radii[i], radius_pos, z_pos, water_logic, water);
+    BuildSpheres(i, sphere_radii[i], radius_pos, 0, water_logic, water);
   }
 
-  // Rods
-  std::vector<G4double> rod_radii =
-    {rod1_d_/2, rod2_d_/2, rod3_d_/2, rod4_d_/2, rod5_d_/2, rod6_d_/2};
-  z_pos = - cylinder_height_/2. + rod_height_/2;
-  for (unsigned long i=0; i<rod_radii.size(); i++) {
-    BuildRods(i, rod_radii[i], z_pos, water_logic, water);
-  }
+  // // Rods
+  // std::vector<G4double> rod_radii =
+  //   {rod1_d_/2, rod2_d_/2, rod3_d_/2, rod4_d_/2, rod5_d_/2, rod6_d_/2};
+  // z_pos = - cylinder_height_/2. + rod_height_/2;
+  // for (unsigned long i=0; i<rod_radii.size(); i++) {
+  //   BuildRods(i, rod_radii[i], z_pos, water_logic, water);
+  // }
 
   // Relative actvities
   auto max_activity = std::max(sphere_activity_, std::max(bckg_activity_, rod_activity_));

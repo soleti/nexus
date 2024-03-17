@@ -39,7 +39,8 @@ namespace nexus
                                    crystal_width_(48 * mm),
                                    crystal_length_(2.),
                                    pet_diameter_(60 * cm),
-                                   pet_length_(76.8 * cm)
+                                   pet_length_(76.8 * cm),
+                                   phantom_(false)
   {
     /// Messenger
     msg_ = new G4GenericMessenger(this, "/Geometry/PETCsI/",
@@ -52,7 +53,7 @@ namespace nexus
     diameter_cmd.SetUnitCategory("Length");
     G4GenericMessenger::Command& pet_length_cmd = msg_->DeclareProperty("pet_length", pet_length_, "PET length");
     pet_length_cmd.SetUnitCategory("Length");
-
+    msg_->DeclareProperty("phantom", phantom_, "Use phantom (default false)");
   }
 
   PETCsI::~PETCsI()
@@ -63,8 +64,7 @@ namespace nexus
   void PETCsI::Construct()
   {
 
-    box_source_ = new BoxPointSampler(300 * mm, 300 * mm, 300 * mm, 0);
-    cylindrical_shell_ = new CylinderPointSampler2020(0, pet_diameter_ / 2. - 1 * cm, pet_length_ / 2., 0, 2 * M_PI);
+    cylindrical_shell_ = new CylinderPointSampler2020(0, pet_diameter_ / 2. - 0.5 * cm, pet_length_ / 2., 0, 2 * M_PI);
 
     G4double size = 2 * m;
     G4Box *lab_solid =
@@ -143,26 +143,27 @@ namespace nexus
     sdmgr->AddNewDetector(ionisd);
     crystal_logic->SetSensitiveDetector(ionisd);
 
-    // jas_phantom_ = new JaszczakPhantom();
-    // jas_phantom_->Construct();
-    // G4LogicalVolume* phantom_logic = jas_phantom_->GetLogicalVolume();
-    // new G4PVPlacement(0, G4ThreeVector(0, 0, 0), phantom_logic, "JASZCZAK",
-    //                   lab_logic, false, 0, true);
-
+    if (phantom_) {
+      jas_phantom_ = new JaszczakPhantom();
+      jas_phantom_->Construct();
+      G4LogicalVolume* phantom_logic = jas_phantom_->GetLogicalVolume();
+      new G4PVPlacement(0, G4ThreeVector(0, 0, 0), phantom_logic, "JASZCZAK",
+                        lab_logic, false, 0, true);
+    }
   }
 
   G4ThreeVector PETCsI::GenerateVertex(const G4String &region) const
   {
-    // G4ThreeVector vertex(0, 0, 0);
-    // return vertex;
+
     if (region == "CYLINDRICAL_SHELL") {
       return cylindrical_shell_->GenerateVertex("OUTER_SURFACE");
+    } else if (region == "PHANTOM") {
+      return jas_phantom_->GenerateVertex("JPHANTOM");
     } else {
-      return box_source_->GenerateVertex("INSIDE");
+      G4ThreeVector vertex(0, 0, 0);
+      return vertex;
     }
-    // vertex =
-    // sphere1_->GenerateVertex("INSIDE");
-    // return jas_phantom_->GenerateVertex("JPHANTOM");
+
   }
 
 }
