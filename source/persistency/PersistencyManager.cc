@@ -222,9 +222,9 @@ void PersistencyManager::StoreHits(G4HCofThisEvent* hce)
     // Fetch collection using the id number
     G4VHitsCollection* hits = hce->GetHC(hcid);
 
-    if (hcname == IonizationSD::GetCollectionUniqueName())
-      StoreIonizationHits(hits);
-    else if (hcname == SensorSD::GetCollectionUniqueName()) {
+    if (hcname == IonizationSD::GetCollectionUniqueName()) {
+      // StoreIonizationHits(hits);
+    } else if (hcname == SensorSD::GetCollectionUniqueName()) {
       StoreSensorHits(hits);
     } else {
       G4String msg =
