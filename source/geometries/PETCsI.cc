@@ -64,7 +64,7 @@ namespace nexus
   void PETCsI::Construct()
   {
 
-    cylindrical_shell_ = new CylinderPointSampler2020(0, pet_diameter_ / 2. - 0.5 * cm, pet_length_ / 2., 0, 2 * M_PI);
+    cylindrical_shell_ = new CylinderPointSampler2020(0, pet_diameter_ / 2. - 1 * cm, pet_length_ / 2., 0, 2 * M_PI);
 
     G4double size = 2 * m;
     G4Box *lab_solid =
