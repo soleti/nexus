@@ -11,6 +11,7 @@
 #include "OpticalMaterialProperties.h"
 #include "SiPM66NoCasing.h"
 #include "SiPM33NoCasing.h"
+#include "SiPM44NoCasing.h"
 
 #include <G4Tubs.hh>
 #include <G4SubtractionSolid.hh>
@@ -165,7 +166,7 @@ namespace nexus
           "CRYSTAL_PTFE_BACK", crystal_right, teflon_back_position, ptfe_surface);
     }
 
-    SiPM66NoCasing *sipm_geom = new SiPM66NoCasing();
+    SiPM44NoCasing *sipm_geom = new SiPM44NoCasing();
 
     sipm_geom->Construct();
     G4LogicalVolume *sipm_logic = sipm_geom->GetLogicalVolume();
