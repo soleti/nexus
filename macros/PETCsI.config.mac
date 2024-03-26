@@ -1,14 +1,14 @@
 /Generator/SingleParticle/particle e+
 /Generator/SingleParticle/min_energy 1 keV
 /Generator/SingleParticle/max_energy 1 keV
-/Generator/SingleParticle/region CYLINDRICAL_SHELL
+/Generator/SingleParticle/region PHANTOM
 
 /Geometry/PETCsI/crystal_length 2
 /Geometry/PETCsI/crystal_material CsI
-/Geometry/PETCsI/crystal_width 4 mm
+/Geometry/PETCsI/crystal_width 48 mm
 /Geometry/PETCsI/pet_diameter 60 cm
 /Geometry/PETCsI/pet_length 30 cm
-/Geometry/PETCsI/phantom false
+/Geometry/PETCsI/phantom true
 
 /run/verbose 1
 /event/verbose 0

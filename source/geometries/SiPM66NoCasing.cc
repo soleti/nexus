@@ -192,10 +192,10 @@ namespace nexus {
     if (visibility_) {
        G4VisAttributes sipm_col = nexus::WhiteAlpha();
       sipm_logic->SetVisAttributes(sipm_col);
-      G4VisAttributes blue_col = nexus::DarkGreen();
+      G4VisAttributes blue_col = nexus::BlueAlpha();
       blue_col.SetForceSolid(true);
       active_logic->SetVisAttributes(blue_col);
-      G4VisAttributes plastic_col = nexus::RedAlpha();
+      G4VisAttributes plastic_col = nexus::DarkGreen();
       plastic_col.SetForceSolid(true);
       plastic_logic->SetVisAttributes(plastic_col);
     }

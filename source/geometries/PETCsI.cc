@@ -105,41 +105,45 @@ namespace nexus
                   "Unknown crystal material!");
     }
 
-    G4Box *crystal =
-        new G4Box("CRYSTAL", crystal_width_ / 2., crystal_width_ / 2., crystal_length_ / 2.);
+    // G4Box *crystal =
+    //     new G4Box("CRYSTAL", crystal_width_ / 2., crystal_width_ / 2., crystal_length_ / 2.);
 
-    G4LogicalVolume *crystal_logic =
-        new G4LogicalVolume(crystal,
-                            material,
-                            "CRYSTAL");
-    crystal_logic->SetVisAttributes(nexus::LightBlueAlpha());
+    // G4LogicalVolume *crystal_logic =
+    //     new G4LogicalVolume(crystal,
+    //                         material,
+    //                         "CRYSTAL");
+    // crystal_logic->SetVisAttributes(nexus::LightBlueAlpha());
 
-    G4int angles = floor(pet_diameter_ * M_PI / crystal_width_);
+    monolithic_csi_ = new PETElement("CsI", crystal_width_,  2);
+    monolithic_csi_->Construct();
+    G4LogicalVolume *crystal_logic = monolithic_csi_->GetLogicalVolume();
+    G4double module_width = monolithic_csi_->GetDimensions().x();
+    G4double module_length = monolithic_csi_->GetDimensions().z();
+    G4int angles = floor(pet_diameter_ * M_PI / module_width);
     G4double step = 2. * pi / angles;
     G4RotationMatrix *rot = new G4RotationMatrix();
     rot->rotateX(90 * deg);
+    rot->rotateZ(180 * deg);
 
-    G4int rings = floor(pet_length_ / crystal_width_);
+    G4int rings = floor(pet_length_ / module_width);
 
     for (G4int iring=0; iring < rings; iring++) {
       for (G4int itheta=0; itheta < angles; itheta++) {
         G4float theta = 2 * M_PI / angles * itheta;
         std::string label = std::to_string(iring*angles + itheta);
 
-        G4double y = (pet_diameter_ / 2. + crystal_length_ / 2) * std::cos(theta);
-        G4double x = (pet_diameter_ / 2. + crystal_length_ / 2) * std::sin(theta);
-        G4double z = -pet_length_ / 2 + iring * crystal_width_ + crystal_length_ / 2;
+        G4double y = (pet_diameter_ / 2. + module_length / 2) * std::cos(theta);
+        G4double x = (pet_diameter_ / 2. + module_length / 2) * std::sin(theta);
+        G4double z = -pet_length_ / 2 + iring * module_width + module_width / 2;
         new G4PVPlacement(G4Transform3D(*rot, G4ThreeVector(x, y, z)),
                           crystal_logic, label, lab_logic,
                           true, iring*rings + itheta, false);
-        G4cout << "CRYSTAL" << label << " " << x << " " << y << " " << z << G4endl;
         rot->rotateZ(-step);
       }
     }
-// "CRYSTAL_" + std::to_string(iring) + "_" + std::to_string(itheta)
+
     G4SDManager* sdmgr = G4SDManager::GetSDMpointer();
     IonizationSD* ionisd = new IonizationSD("PET");
-    // ionisd->IncludeInTotalEnergyDeposit(false);
     sdmgr->AddNewDetector(ionisd);
     crystal_logic->SetSensitiveDetector(ionisd);
 
