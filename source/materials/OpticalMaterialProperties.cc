@@ -767,7 +767,7 @@ namespace opticalprops {
       0.0,  0.04, 0.10, 0.29, 0.67, 0.88, 0.29, 0.10, 0.02, 0
     };
 
-    mpt->AddProperty("SCINTILLATIONCOMPONENT1", energy, emission_intensity_warm);
+    mpt->AddProperty("SCINTILLATIONCOMPONENT1", energy, emission_intensity_cold);
     // mpt->AddProperty("SCINTILLATIONCOMPONENT2", energy, emission_intensity);
     // mpt->AddProperty("ELSPECTRUM"            , energy, emission_intensity, 1);
     G4double csi_time_fast  =     0.81 * us;

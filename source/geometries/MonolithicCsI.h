@@ -30,6 +30,7 @@ namespace nexus {
     // Messenger for the definition of control commands
     G4GenericMessenger* msg_;
     BoxPointSampler* box_source_;
+    BoxPointSampler* plane_source_;
 
     // Dimension of the crystals
     G4String crystal_material_;

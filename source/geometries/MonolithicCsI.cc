@@ -12,6 +12,8 @@
 #include "SiPM66NoCasing.h"
 #include "SiPM33NoCasing.h"
 #include "SiPM44NoCasing.h"
+#include "IonizationSD.h"
+#include <G4SDManager.hh>
 
 #include <G4Tubs.hh>
 #include <G4SubtractionSolid.hh>
@@ -26,8 +28,6 @@
 #include <G4PVPlacement.hh>
 #include <G4VisAttributes.hh>
 #include <G4GenericMessenger.hh>
-#include <G4Box.hh>
-#include <G4Tubs.hh>
 
 #include "FactoryBase.h"
 
@@ -65,6 +65,7 @@ namespace nexus
   void MonolithicCsI::Construct()
   {
     box_source_ = new BoxPointSampler(crystal_width_, crystal_width_, crystal_length_, 0, G4ThreeVector(0, 0, +25. / 2 * mm + crystal_length_ / 2));
+
     G4double size = 0.5 * m;
     G4Box *lab_solid =
         new G4Box("LAB", size / 2., size / 2., size / 2.);
@@ -74,8 +75,7 @@ namespace nexus
     G4LogicalVolume *lab_logic = new G4LogicalVolume(lab_solid, air, "LAB");
 
     lab_logic->SetVisAttributes(G4VisAttributes::GetInvisible());
-    G4VPhysicalVolume *lab_phys = new G4PVPlacement(
-            0, G4ThreeVector(), lab_logic, "lab", 0, false, 0, true);
+    new G4PVPlacement(0, G4ThreeVector(), lab_logic, "lab", 0, false, 0, true);
 
     // Set this volume as the wrapper for the whole geometry
     // (i.e., this is the volume that will be placed in the world)
@@ -103,6 +103,8 @@ namespace nexus
       G4Exception("[MonolithicCsI]", "Construct()", FatalException,
                   "Unknown crystal material!");
     }
+
+    plane_source_ = new BoxPointSampler(crystal_width_, crystal_width_, 1 * mm, 0, G4ThreeVector(0, 0, + 25. / 2 * mm  -crystal_length_/2));
 
     G4Box *crystal =
         new G4Box("CRYSTAL", crystal_width_ / 2., crystal_width_ / 2., crystal_length_ / 2.);
@@ -166,6 +168,12 @@ namespace nexus
           "CRYSTAL_PTFE_BACK", crystal_right, teflon_back_position, ptfe_surface);
     }
 
+
+    // G4SDManager* sdmgr = G4SDManager::GetSDMpointer();
+    // IonizationSD* ionisd = new IonizationSD("PET");
+    // sdmgr->AddNewDetector(ionisd);
+    // crystal_logic->SetSensitiveDetector(ionisd);
+
     SiPM44NoCasing *sipm_geom = new SiPM44NoCasing();
 
     sipm_geom->Construct();
@@ -187,7 +195,12 @@ namespace nexus
   {
     G4ThreeVector vertex(0, 0, 0);
     // return vertex;
-    return box_source_->GenerateVertex("INSIDE");
+    if (region == "INSIDE")
+      return box_source_->GenerateVertex("INSIDE");
+    else if (region == "OUTSIDE")
+      return plane_source_->GenerateVertex("INSIDE");
+    else
+      return vertex;
   }
 
 }
