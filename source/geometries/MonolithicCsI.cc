@@ -169,12 +169,12 @@ namespace nexus
     }
 
 
-    // G4SDManager* sdmgr = G4SDManager::GetSDMpointer();
-    // IonizationSD* ionisd = new IonizationSD("PET");
-    // sdmgr->AddNewDetector(ionisd);
-    // crystal_logic->SetSensitiveDetector(ionisd);
+    G4SDManager* sdmgr = G4SDManager::GetSDMpointer();
+    IonizationSD* ionisd = new IonizationSD("PET");
+    sdmgr->AddNewDetector(ionisd);
+    crystal_logic->SetSensitiveDetector(ionisd);
 
-    SiPM44NoCasing *sipm_geom = new SiPM44NoCasing();
+    SiPM66NoCasing *sipm_geom = new SiPM66NoCasing();
 
     sipm_geom->Construct();
     G4LogicalVolume *sipm_logic = sipm_geom->GetLogicalVolume();

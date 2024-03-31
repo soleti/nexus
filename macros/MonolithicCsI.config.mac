@@ -1,14 +1,13 @@
-#/Generator/SingleParticle/particle gamma
-#/Generator/SingleParticle/min_energy 511 keV
-#/Generator/SingleParticle/max_energy 511 keV
-#/Generator/SingleParticle/region OUTSIDE
-#/Generator/SingleParticle/momentum 0 0 1
+/Generator/SingleParticle/particle gamma
+/Generator/SingleParticle/min_energy 511 keV
+/Generator/SingleParticle/max_energy 511 keV
+/Generator/SingleParticle/region OUTSIDE
+/Generator/SingleParticle/momentum 0 0 1
 #/Generator/SingleParticle/min_costheta 1
 #/Generator/SingleParticle/max_costheta 1
-/Generator/ScintGenerator/nphotons 2500
-/Generator/ScintGenerator/gaussian true
-/Generator/ScintGenerator/fano 2.73
-/Generator/ScintGenerator/region INSIDE
+#/Generator/ScintGenerator/nphotons 2500
+#/Generator/ScintGenerator/gaussian true
+#/Generator/ScintGenerator/fano 2.73
 
 /Geometry/MonolithicCsI/crystal_length 2
 /Geometry/MonolithicCsI/crystal_material CsI
@@ -32,7 +31,6 @@
 /PhysicsList/RegisterPhysics G4StepLimiterPhysics
 /PhysicsList/RegisterPhysics G4OpticalPhysics
 /process/optical/processActivation Cerenkov true
-
 
 ### JOB CONTROL
 /nexus/random_seed            1

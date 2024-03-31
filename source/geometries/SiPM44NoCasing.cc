@@ -180,7 +180,7 @@ namespace nexus {
       SensorSD* sipmsd = new SensorSD(sdname);
       sipmsd->SetDetectorVolumeDepth(1);
       sipmsd->SetDetectorNamingOrder(1000.);
-      sipmsd->SetTimeBinning(0.1*ns);
+      sipmsd->SetTimeBinning(2*us);
       sipmsd->SetMotherVolumeDepth(2);
 
       G4SDManager::GetSDMpointer()->AddNewDetector(sipmsd);
