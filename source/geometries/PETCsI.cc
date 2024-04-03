@@ -137,7 +137,7 @@ namespace nexus
         G4double z = -pet_length_ / 2 + iring * module_width + module_width / 2;
         new G4PVPlacement(G4Transform3D(*rot, G4ThreeVector(x, y, z)),
                           crystal_logic, label, lab_logic,
-                          true, iring*rings + itheta, false);
+                          true, iring*angles + itheta, false);
         rot->rotateZ(-step);
       }
     }
