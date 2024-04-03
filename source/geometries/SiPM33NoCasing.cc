@@ -119,31 +119,41 @@ namespace nexus {
 
     // SiPM efficiency set using the official Hamamatsu specs.
 
-    const G4int entries = 10;
+    const G4int entries = 15;
 
     G4double energies[entries]     = {
-          h_Planck * c_light / (895.04 * nm), h_Planck * c_light / (714.05 * nm),
-          h_Planck * c_light / (573.55 * nm), h_Planck * c_light / (467.77 * nm),
-          h_Planck * c_light / (396.69 * nm), h_Planck * c_light / (357.02 * nm),
-          h_Planck * c_light / (342.15 * nm), h_Planck * c_light / (321.49 * nm),
-          h_Planck * c_light / (290.08 * nm), h_Planck * c_light / (277.69 * nm),
+          opticalprops::optPhotMinE_,
+          h_Planck * c_light / (809.722 * nm), h_Planck * c_light / (675.000 * nm),
+          h_Planck * c_light / (587.500 * nm), h_Planck * c_light / (494.444 * nm),
+          h_Planck * c_light / (455.556 * nm), h_Planck * c_light / (422.222 * nm),
+          h_Planck * c_light / (395.833 * nm), h_Planck * c_light / (366.667 * nm),
+          h_Planck * c_light / (344.444 * nm), h_Planck * c_light / (311.111 * nm),
+          h_Planck * c_light / (293.056 * nm), h_Planck * c_light / (288.889 * nm),
+          h_Planck * c_light / (279.167 * nm),
+          opticalprops::optPhotMaxE_
 		};
     G4double reflectivity[entries] = {
-      0, 0, 0, 0,
-      0, 0, 0, 0,
-      0, 0
+      0,
+      0, 0,
+      0, 0,
+      0, 0,
+      0, 0,
+      0, 0,
+      0, 0,
+      0,
+      0
     };
+
     G4double efficiency[entries]   = {
-      // 0.0237, 0.081,
-      // 0.1881, 0.2521,
-      // 0.2284, 0.1814,
-      // 0.1809, 0.1649,
-      // 0.1149, 0.0247
-      0.0349, 0.0804,
-      0.1579, 0.2841,
-      0.4974, 0.4562,
-      0.3537, 0.3539,
-      0.2660, 0.0914
+      0,
+      0.0087, 0.192,
+      0.311, 0.467,
+      0.511, 0.502,
+      0.469, 0.406,
+      0.393, 0.324,
+      0.180, 0.048,
+      0.02,
+      0
       // 1., 1.,
       // 1., 1.,
       // 1., 1.,
@@ -171,7 +181,7 @@ namespace nexus {
       SensorSD* sipmsd = new SensorSD(sdname);
       sipmsd->SetDetectorVolumeDepth(1);
       sipmsd->SetDetectorNamingOrder(1000.);
-      sipmsd->SetTimeBinning(0.1*ns);
+      sipmsd->SetTimeBinning(2*us);
       sipmsd->SetMotherVolumeDepth(2);
 
       G4SDManager::GetSDMpointer()->AddNewDetector(sipmsd);

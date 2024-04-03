@@ -179,7 +179,7 @@ void PersistencyManager::StoreTrajectories(G4TrajectoryContainer* tc)
 
     G4String creator_proc = trj->GetCreatorProcess().c_str();
 
-    if (mother_id == 1) {
+    // if (mother_id == 1) {
     // if (kin_energy > 1 * keV) {
       h5writer_->WriteParticleInfo(nevt_, trackid, trj->GetParticleName().c_str(),
           primary, mother_id,
@@ -195,7 +195,7 @@ void PersistencyManager::StoreTrajectories(G4TrajectoryContainer* tc)
                                   trj->GetCreatorProcess().c_str(),
           trj->GetFinalProcess().c_str());
     // }
-    }
+    // }
 
 
   }
