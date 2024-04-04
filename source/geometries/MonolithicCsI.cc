@@ -174,7 +174,7 @@ namespace nexus
     sdmgr->AddNewDetector(ionisd);
     crystal_logic->SetSensitiveDetector(ionisd);
 
-    SiPM33NoCasing *sipm_geom = new SiPM33NoCasing();
+    SiPM66NoCasing *sipm_geom = new SiPM66NoCasing();
 
     sipm_geom->Construct();
     G4LogicalVolume *sipm_logic = sipm_geom->GetLogicalVolume();
@@ -184,9 +184,9 @@ namespace nexus
     {
       for (G4int icol = 0; icol < n_cols; icol++)
       {
-        std::string label = std::to_string(irow * n_rows + icol);
+        std::string label = std::to_string(irow * n_cols + icol);
         new G4PVPlacement(0, G4ThreeVector(irow * sipm_geom->GetDimensions().x() - crystal_width_ / 2 + sipm_geom->GetDimensions().x() / 2, icol * sipm_geom->GetDimensions().x() - crystal_width_ / 2 + sipm_geom->GetDimensions().x() / 2, 25. / 2 * mm + crystal_length_ + sipm_geom->GetDimensions().z() / 2), sipm_logic,
-                          "SiPM" + label, lab_logic, true, irow * n_rows + icol);
+                          "SiPM" + label, lab_logic, true, irow * n_cols + icol);
       }
     }
   }
