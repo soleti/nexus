@@ -81,30 +81,6 @@ namespace nexus
     // Set this volume as the wrapper for the whole geometry
     // (i.e., this is the volume that will be placed in the world)
     this->SetLogicalVolume(lab_logic);
-
-    G4Material *material = nullptr;
-
-    if (crystal_material_ == "CsI") {
-      crystal_length_ *= 18.6 * mm;
-      material = G4NistManager::Instance()->FindOrBuildMaterial("G4_CESIUM_IODIDE");
-      material->SetMaterialPropertiesTable(opticalprops::CsI());
-    } else if (crystal_material_ == "BGO") {
-      crystal_length_ *= 11.4 * mm;
-      material = G4NistManager::Instance()->FindOrBuildMaterial("G4_BGO");
-      material->SetMaterialPropertiesTable(opticalprops::BGO());
-    } else if (crystal_material_ == "LYSO") {
-      crystal_length_ *= 11.4 * mm;
-      material = materials::LYSO();
-      material->SetMaterialPropertiesTable(opticalprops::LYSO());
-    } else if (crystal_material_ == "CsITl") {
-      crystal_length_ *= 18.6 * mm;
-      material = G4NistManager::Instance()->FindOrBuildMaterial("G4_CESIUM_IODIDE");
-      material->SetMaterialPropertiesTable(opticalprops::CsITl());
-    } else {
-      G4Exception("[PETCsI]", "Construct()", FatalException,
-                  "Unknown crystal material!");
-    }
-
     // G4Box *crystal =
     //     new G4Box("CRYSTAL", crystal_width_ / 2., crystal_width_ / 2., crystal_length_ / 2.);
 
@@ -114,7 +90,7 @@ namespace nexus
     //                         "CRYSTAL");
     // crystal_logic->SetVisAttributes(nexus::LightBlueAlpha());
 
-    monolithic_csi_ = new PETElement("CsI", crystal_width_,  2);
+    monolithic_csi_ = new PETElement(crystal_material_, crystal_width_,  crystal_length_);
     monolithic_csi_->Construct();
     G4LogicalVolume *crystal_logic = monolithic_csi_->GetLogicalVolume();
     G4double module_width = monolithic_csi_->GetDimensions().x();

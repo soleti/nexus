@@ -10,7 +10,7 @@
 /nexus/RegisterRunAction DefaultRunAction
 /nexus/RegisterEventAction DefaultEventAction
 /nexus/RegisterTrackingAction DefaultTrackingAction
-#/nexus/RegisterSteppingAction AnalysisSteppingAction
+/nexus/RegisterSteppingAction AnalysisSteppingAction
 #/nexus/RegisterTrackingAction LightTableTrackingAction
 #/nexus/RegisterTrackingAction OpticalTrackingAction
 

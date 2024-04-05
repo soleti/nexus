@@ -45,8 +45,16 @@ AnalysisSteppingAction::~AnalysisSteppingAction()
 
 void AnalysisSteppingAction::UserSteppingAction(const G4Step* step)
 {
- G4ParticleDefinition* pdef = step->GetTrack()->GetDefinition();
 
+  G4Track* track = step->GetTrack();
+
+  // Check if this is the first interaction
+  const std::vector<const G4Track*>* secondaries = step->GetSecondaryInCurrentStep();
+  if (secondaries->size() > 0) {
+      // The particle has produced a daughter, kill it
+      track->SetTrackStatus(fStopAndKill);
+  }
+  G4ParticleDefinition* pdef = step->GetTrack()->GetDefinition();
   //Check whether the track is an optical photon
   if (pdef != G4OpticalPhoton::Definition()) return;
 
