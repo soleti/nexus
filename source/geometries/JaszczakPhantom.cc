@@ -48,7 +48,8 @@ JaszczakPhantom::JaszczakPhantom(): GeometryBase(),
                                     rod4_d_(7.9*mm),
                                     rod5_d_(9.5*mm),
                                     rod6_d_(11.1*mm),
-                                    rod_height_(88*mm)
+                                    rod_height_(88*mm),
+                                    rods_spheres_(true)
 {
   // Messenger
   msg_ = new G4GenericMessenger(this, "/Geometry/Jaszczak/",
@@ -56,6 +57,7 @@ JaszczakPhantom::JaszczakPhantom(): GeometryBase(),
   msg_->DeclareProperty("bckg_activity",   bckg_activity_,   "Activity of the background of the phantom");
   msg_->DeclareProperty("sphere_activity", sphere_activity_, "Activity of the spheres");
   msg_->DeclareProperty("rod_activity",    rod_activity_,    "Activity of the rods");
+  msg_->DeclareProperty("rods_spheres",    rods_spheres_,    "Build rods and spheres");
 
   /// Initializing the geometry navigator (used in vertex generation)
   geom_navigator_ =
@@ -98,33 +100,34 @@ void JaszczakPhantom::Construct()
 
   cyl_gen_ = new CylinderPointSampler2020(water_phys);
 
-  // Spheres
-  std::vector<G4double> sphere_radii =
-    {sphere1_d_/2, sphere2_d_/2, sphere3_d_/2, sphere4_d_/2, sphere5_d_/2, sphere6_d_/2};
-  auto radius_pos = cylinder_inner_diam_/4.;
-  auto z_pos      = - cylinder_height_/2. + sphere_height_;
+  if (rods_spheres_) {
+    // Spheres
+    std::vector<G4double> sphere_radii =
+      {sphere1_d_/2, sphere2_d_/2, sphere3_d_/2, sphere4_d_/2, sphere5_d_/2, sphere6_d_/2};
+    auto radius_pos = cylinder_inner_diam_/4.;
+    auto z_pos      = - cylinder_height_/2. + sphere_height_;
 
-  for (unsigned long i=0; i<sphere_radii.size(); i++) {
-    // BuildSpheres(i, sphere_radii[i], radius_pos, z_pos, water_logic, water);
+    for (unsigned long i=0; i<sphere_radii.size(); i++) {
+      BuildSpheres(i, sphere_radii[i], radius_pos, z_pos, water_logic, water);
+    }
+
+    // Rods
+    std::vector<G4double> rod_radii =
+      {rod1_d_/2, rod2_d_/2, rod3_d_/2, rod4_d_/2, rod5_d_/2, rod6_d_/2};
+    z_pos = - cylinder_height_/2. + rod_height_/2;
+    for (unsigned long i=0; i<rod_radii.size(); i++) {
+      BuildRods(i, rod_radii[i], z_pos, water_logic, water);
+    }
+
+    // Relative actvities
+    auto max_activity = std::max(sphere_activity_, std::max(bckg_activity_, rod_activity_));
+    bckg_activity_   /= max_activity;
+    sphere_activity_ /= max_activity;
+    rod_activity_    /= max_activity;
+
+    G4cout << "*** Relative activities (background, spheres, rods) ***" << G4endl;
+    G4cout << bckg_activity_ << ", " << sphere_activity_  << ", " << rod_activity_ << G4endl;
   }
-
-  // // Rods
-  std::vector<G4double> rod_radii =
-    {rod1_d_/2, rod2_d_/2, rod3_d_/2, rod4_d_/2, rod5_d_/2, rod6_d_/2};
-  z_pos = - cylinder_height_/2. + rod_height_/2;
-  for (unsigned long i=0; i<rod_radii.size(); i++) {
-    BuildRods(i, rod_radii[i], z_pos, water_logic, water);
-  }
-
-  // Relative actvities
-  auto max_activity = std::max(sphere_activity_, std::max(bckg_activity_, rod_activity_));
-  bckg_activity_   /= max_activity;
-  sphere_activity_ /= max_activity;
-  rod_activity_    /= max_activity;
-
-  G4cout << "*** Relative activities (background, spheres, rods) ***" << G4endl;
-  G4cout << bckg_activity_ << ", " << sphere_activity_  << ", " << rod_activity_ << G4endl;
-
 }
 
 

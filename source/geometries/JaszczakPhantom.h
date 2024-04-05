@@ -70,6 +70,8 @@ class JaszczakPhantom: public GeometryBase
   G4double rod6_d_;
   G4double rod_height_;
 
+  G4bool rods_spheres_;
+
 };
 
 #endif
