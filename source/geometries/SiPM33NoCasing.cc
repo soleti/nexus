@@ -85,8 +85,8 @@ namespace nexus {
 
 
 
-    G4double epoxy_z = 0.15 * 2 * mm;
-    G4Box* plastic_solid = new G4Box("PLASTIC", sipm_x/2., sipm_y/2., pcb_z/2 - epoxy_z / 4);
+    G4double epoxy_z = 0.15 * mm;
+    G4Box* plastic_solid = new G4Box("PLASTIC", sipm_x/2., sipm_y/2., pcb_z/2 - epoxy_z / 2);
 
     G4LogicalVolume* plastic_logic =
     new G4LogicalVolume(plastic_solid, silicone, "PLASTIC");
