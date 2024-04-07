@@ -5,13 +5,13 @@
 #/Generator/SingleParticle/momentum 0 0 1
 #/Generator/SingleParticle/min_costheta 1
 #/Generator/SingleParticle/max_costheta 1
-/Generator/ScintGenerator/nphotons 50000
+/Generator/ScintGenerator/nphotons 2500
 /Generator/ScintGenerator/gaussian true
 /Generator/ScintGenerator/fano 2.73
 /Generator/ScintGenerator/region INSIDE
 
 /Geometry/MonolithicCsI/crystal_length 2
-/Geometry/MonolithicCsI/crystal_material CsI
+/Geometry/MonolithicCsI/crystal_material CsITl
 /Geometry/MonolithicCsI/back_wrapping true
 /Geometry/MonolithicCsI/crystal_width 48 cm
 
