@@ -11,7 +11,7 @@
 #/nexus/RegisterEventAction DefaultEventAction
 #/nexus/RegisterTrackingAction DefaultTrackingAction
 #/nexus/RegisterSteppingAction AnalysisSteppingAction
-#/nexus/RegisterTrackingAction LightTableTrackingAction
+/nexus/RegisterTrackingAction LightTableTrackingAction
 #/nexus/RegisterTrackingAction OpticalTrackingAction
 
 /nexus/RegisterMacro macros/MonolithicCsI.config.mac

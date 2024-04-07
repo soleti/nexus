@@ -64,7 +64,6 @@ namespace nexus
 
   void MonolithicCsI::Construct()
   {
-    box_source_ = new BoxPointSampler(crystal_width_, crystal_width_, crystal_length_, 0, G4ThreeVector(0, 0, +25. / 2 * mm + crystal_length_ / 2));
 
     G4double size = 0.5 * m;
     G4Box *lab_solid =
@@ -104,7 +103,8 @@ namespace nexus
                   "Unknown crystal material!");
     }
 
-    plane_source_ = new BoxPointSampler(crystal_width_, crystal_width_, 1 * mm, 0, G4ThreeVector(0, 0, + 25. / 2 * mm  -crystal_length_/2));
+    plane_source_ = new BoxPointSampler(crystal_width_, crystal_width_, 1 * mm, 0, G4ThreeVector(0, 0,   -crystal_length_/2));
+    box_source_ = new BoxPointSampler(crystal_width_, crystal_width_, crystal_length_, 0, G4ThreeVector(0, 0, + crystal_length_ / 2));
 
     G4Box *crystal =
         new G4Box("CRYSTAL", crystal_width_ / 2., crystal_width_ / 2., crystal_length_ / 2.);
@@ -114,7 +114,7 @@ namespace nexus
                             material,
                             "CRYSTAL");
     crystal_logic->SetVisAttributes(nexus::LightBlueAlpha());
-    G4VPhysicalVolume *crystal_right = new G4PVPlacement(0, G4ThreeVector(0, 0, 25. / 2 * mm + crystal_length_ / 2),
+    G4VPhysicalVolume *crystal_right = new G4PVPlacement(0, G4ThreeVector(0, 0,  + crystal_length_ / 2),
                                                          crystal_logic, "CRYSTAL", lab_logic,
                                                          true, 2, true);
 
@@ -131,7 +131,7 @@ namespace nexus
 
     teflon_logic->SetVisAttributes(nexus::White());
 
-    G4VPhysicalVolume *teflon_full_position = new G4PVPlacement(0, G4ThreeVector(0, 0, 25. / 2 * mm + crystal_length_ / 2),
+    G4VPhysicalVolume *teflon_full_position = new G4PVPlacement(0, G4ThreeVector(0, 0, crystal_length_ / 2),
                                                                 teflon_logic, "TEFLON_SIDES", lab_logic,
                                                                 true, 1, true);
 
@@ -161,7 +161,7 @@ namespace nexus
                               G4NistManager::Instance()->FindOrBuildMaterial("G4_TEFLON"),
                               "TEFLON_BACK");
       teflon_back_logic->SetVisAttributes(nexus::White());
-      G4VPhysicalVolume *teflon_back_position = new G4PVPlacement(0, G4ThreeVector(0, 0, 25. / 2 * mm - teflon_thickness_tot / 2),
+      G4VPhysicalVolume *teflon_back_position = new G4PVPlacement(0, G4ThreeVector(0, 0, - teflon_thickness_tot / 2),
                                                                   teflon_back_logic, "TEFLON_BACK", lab_logic,
                                                                   true, 2, true);
       new G4LogicalBorderSurface(
@@ -185,8 +185,10 @@ namespace nexus
       for (G4int icol = 0; icol < n_cols; icol++)
       {
         std::string label = std::to_string(irow * n_cols + icol);
-        new G4PVPlacement(0, G4ThreeVector(irow * sipm_geom->GetDimensions().x() - crystal_width_ / 2 + sipm_geom->GetDimensions().x() / 2, icol * sipm_geom->GetDimensions().x() - crystal_width_ / 2 + sipm_geom->GetDimensions().x() / 2, 25. / 2 * mm + crystal_length_ + sipm_geom->GetDimensions().z() / 2), sipm_logic,
-                          "SiPM" + label, lab_logic, true, irow * n_cols + icol);
+        new G4PVPlacement(0, G4ThreeVector(irow * sipm_geom->GetDimensions().x() - crystal_width_ / 2 + sipm_geom->GetDimensions().x() / 2,
+                                           icol * sipm_geom->GetDimensions().x() - crystal_width_ / 2 + sipm_geom->GetDimensions().x() / 2,
+                                           crystal_length_ + sipm_geom->GetDimensions().z() / 2),
+                          sipm_logic, "SiPM" + label, lab_logic, true, irow * n_cols + icol);
       }
     }
   }
