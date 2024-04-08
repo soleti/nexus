@@ -108,7 +108,7 @@ void JaszczakPhantom::Construct()
     auto z_pos      = - cylinder_height_/2. + sphere_height_;
 
     for (unsigned long i=0; i<sphere_radii.size(); i++) {
-      // BuildSpheres(i, sphere_radii[i], radius_pos, z_pos, water_logic, water);
+      BuildSpheres(i, sphere_radii[i], radius_pos, z_pos, water_logic, water);
     }
 
     // Rods
@@ -116,7 +116,7 @@ void JaszczakPhantom::Construct()
       {rod1_d_/2, rod2_d_/2, rod3_d_/2, rod4_d_/2, rod5_d_/2, rod6_d_/2};
     z_pos = - cylinder_height_/2. + rod_height_/2;
     for (unsigned long i=0; i<rod_radii.size(); i++) {
-      // BuildRods(i, rod_radii[i], z_pos, water_logic, water);
+      BuildRods(i, rod_radii[i], z_pos, water_logic, water);
     }
 
     // Relative actvities
