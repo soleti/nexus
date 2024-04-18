@@ -174,7 +174,7 @@ namespace nexus
     sdmgr->AddNewDetector(ionisd);
     crystal_logic->SetSensitiveDetector(ionisd);
 
-    SiPM33NoCasing *sipm_geom = new SiPM33NoCasing();
+    SiPM66NoCasing *sipm_geom = new SiPM66NoCasing();
 
     sipm_geom->Construct();
     G4LogicalVolume *sipm_logic = sipm_geom->GetLogicalVolume();
