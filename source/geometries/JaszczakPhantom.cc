@@ -106,9 +106,8 @@ void JaszczakPhantom::Construct()
       {sphere1_d_/2, sphere2_d_/2, sphere3_d_/2, sphere4_d_/2, sphere5_d_/2, sphere6_d_/2};
     auto radius_pos = cylinder_inner_diam_/4.;
     auto z_pos      = - cylinder_height_/2. + sphere_height_;
-    G4cout<< "z_pos" << z_pos << G4endl;
     for (unsigned long i=0; i<sphere_radii.size(); i++) {
-      // BuildSpheres(i, sphere_radii[i], radius_pos, z_pos, water_logic, water);
+      BuildSpheres(i, sphere_radii[i], radius_pos, z_pos, water_logic, water);
     }
 
     // Rods
@@ -116,7 +115,7 @@ void JaszczakPhantom::Construct()
       {rod1_d_/2, rod2_d_/2, rod3_d_/2, rod4_d_/2, rod5_d_/2, rod6_d_/2};
     z_pos = - cylinder_height_/2. + rod_height_/2;
     for (unsigned long i=0; i<rod_radii.size(); i++) {
-      // BuildRods(i, rod_radii[i], z_pos, water_logic, water);
+      BuildRods(i, rod_radii[i], z_pos, water_logic, water);
     }
 
     // Relative actvities
