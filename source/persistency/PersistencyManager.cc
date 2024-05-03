@@ -147,9 +147,6 @@ void PersistencyManager::StoreTrajectories(G4TrajectoryContainer* tc)
 
   // Loop through the trajectories stored in the container
 
-  G4bool not_found_daughter_2 = true;
-  G4bool not_found_daughter_3 = true;
-
   for (size_t i=0; i<tc->entries(); ++i) {
     Trajectory* trj = dynamic_cast<Trajectory*>((*tc)[i]);
     if (!trj) continue;
@@ -183,18 +180,7 @@ void PersistencyManager::StoreTrajectories(G4TrajectoryContainer* tc)
 
     G4String creator_proc = trj->GetCreatorProcess().c_str();
 
-    if (!not_found_daughter_2 && !not_found_daughter_3) {
-      break;
-    }
-
-    if ((mother_id == 2 && not_found_daughter_2) || (mother_id == 3  && not_found_daughter_3)) {
-      if (mother_id == 2) {
-        not_found_daughter_2 = false;
-      }
-      if (mother_id == 3) {
-        not_found_daughter_3 = false;
-      }
-    // if ((mother_id == 1) || (strcmp(trj->GetParticleName().c_str(), "opticalphoton") == 0)) {
+    if ((mother_id == 1) || (strcmp(trj->GetParticleName().c_str(), "opticalphoton") == 0)) {
     // if (kin_energy > 1 * keV) {
       h5writer_->WriteParticleInfo(nevt_, trackid, trj->GetParticleName().c_str(),
           primary, mother_id,
