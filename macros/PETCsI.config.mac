@@ -22,7 +22,7 @@
 #/PhysicsList/RegisterPhysics G4OpticalPhysics
 #/process/optical/processActivation Cerenkov true
 
-/Actions/DefaultEventAction/min_energy 1.020 MeV
+/Actions/DefaultEventAction/min_energy 0.900 MeV
 /Actions/DefaultEventAction/max_energy 1.100 MeV
 
 ### JOB CONTROL

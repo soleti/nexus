@@ -129,8 +129,9 @@ G4bool PersistencyManager::Store(const G4Event* event)
   ihits_ = nullptr;
   hit_map_.clear();
   StoreHits(event->GetHCofThisEvent());
-
+  G4cout << "EVENTID" << nevt_ << " " << total_energy_ << G4endl;
   nevt_++;
+
 
   TrajectoryMap::Clear();
   StoreCurrentEvent(true);
@@ -145,6 +146,9 @@ void PersistencyManager::StoreTrajectories(G4TrajectoryContainer* tc)
   if (!tc) return;
 
   // Loop through the trajectories stored in the container
+
+  G4bool not_found_daughter_2 = true;
+  G4bool not_found_daughter_3 = true;
 
   for (size_t i=0; i<tc->entries(); ++i) {
     Trajectory* trj = dynamic_cast<Trajectory*>((*tc)[i]);
@@ -179,7 +183,18 @@ void PersistencyManager::StoreTrajectories(G4TrajectoryContainer* tc)
 
     G4String creator_proc = trj->GetCreatorProcess().c_str();
 
-    if ((mother_id == 1) || (strcmp(trj->GetParticleName().c_str(), "opticalphoton") == 0)) {
+    if (!not_found_daughter_2 && !not_found_daughter_3) {
+      break;
+    }
+
+    if ((mother_id == 2 && not_found_daughter_2) || (mother_id == 3  && not_found_daughter_3)) {
+      if (mother_id == 2) {
+        not_found_daughter_2 = false;
+      }
+      if (mother_id == 3) {
+        not_found_daughter_3 = false;
+      }
+    // if ((mother_id == 1) || (strcmp(trj->GetParticleName().c_str(), "opticalphoton") == 0)) {
     // if (kin_energy > 1 * keV) {
       h5writer_->WriteParticleInfo(nevt_, trackid, trj->GetParticleName().c_str(),
           primary, mother_id,
@@ -223,7 +238,7 @@ void PersistencyManager::StoreHits(G4HCofThisEvent* hce)
     G4VHitsCollection* hits = hce->GetHC(hcid);
 
     if (hcname == IonizationSD::GetCollectionUniqueName()) {
-      // StoreIonizationHits(hits);
+      StoreIonizationHits(hits);
     } else if (hcname == SensorSD::GetCollectionUniqueName()) {
       StoreSensorHits(hits);
     } else {
@@ -245,8 +260,8 @@ void PersistencyManager::StoreIonizationHits(G4VHitsCollection* hc)
 
   std::string sdname = hits->GetSDname();
 
+  total_energy_ = 0.;
   for (size_t i=0; i<hits->entries(); i++) {
-
     IonizationHit* hit = dynamic_cast<IonizationHit*>(hits->GetHit(i));
     if (!hit) continue;
 
@@ -264,10 +279,11 @@ void PersistencyManager::StoreIonizationHits(G4VHitsCollection* hc)
     ihits_->push_back(1);
 
     G4ThreeVector xyz = hit->GetPosition();
-    h5writer_->WriteHitInfo(nevt_, trackid,  ihits_->size() - 1,
-			    xyz[0], xyz[1], xyz[2],
-			    hit->GetTime(), hit->GetEnergyDeposit(),
-			    sdname.c_str());
+    // h5writer_->WriteHitInfo(nevt_, trackid,  ihits_->size() - 1,
+		// 	    xyz[0], xyz[1], xyz[2],
+		// 	    hit->GetTime(), hit->GetEnergyDeposit(),
+		// 	    sdname.c_str());
+    total_energy_ += hit->GetEnergyDeposit();
   }
 }
 
