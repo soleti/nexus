@@ -167,8 +167,8 @@ void JaszczakPhantom::BuildRods(unsigned long n, G4double r, G4double z_pos,
       for (auto b = 0; /*break when touches the cylinder*/; b+=1, did_b = true) {
         auto x_pos = (a*Ax + b*Bx) * diam + dx;
         auto y_pos = (a*Ay + b*By) * diam + dy;
-        auto margin = 0.01 * mm;
-        if (((a == 5) && (b == 11)) || ((a == 11) && (b == 5))) { break;}
+        auto margin = 0.1 * mm;
+        // if (((a == 5) && (b == 11)) || ((a == 11) && (b == 5))) { break;}
         if (sqrt(x_pos*x_pos + y_pos*y_pos) + r + margin >= cylinder_inner_diam_/2.) { break; }
         auto label = "ROD" + std::to_string(n);
         auto rod_solid = new G4Tubs(label, 0, r, rod_height_/2, 0, twopi);
