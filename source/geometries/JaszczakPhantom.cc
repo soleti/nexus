@@ -32,7 +32,7 @@ JaszczakPhantom::JaszczakPhantom(): GeometryBase(),
                                     bckg_activity_(1),
                                     sphere_activity_(4),
                                     rod_activity_(4),
-                                    cylinder_inner_diam_(416*mm),
+                                    cylinder_inner_diam_(216*mm),
                                     cylinder_height_(186*mm),
                                     cylinder_thickn_(3.2*mm),
                                     sphere1_d_(9.5*mm),
@@ -168,7 +168,7 @@ void JaszczakPhantom::BuildRods(unsigned long n, G4double r, G4double z_pos,
         auto x_pos = (a*Ax + b*Bx) * diam + dx;
         auto y_pos = (a*Ay + b*By) * diam + dy;
         auto margin = 0.1 * mm;
-        // if (((a == 5) && (b == 11)) || ((a == 11) && (b == 5))) { break;}
+        if (((a == 5) && (b == 11)) || ((a == 11) && (b == 5))) { break;}
         if (sqrt(x_pos*x_pos + y_pos*y_pos) + r + margin >= cylinder_inner_diam_/2.) { break; }
         auto label = "ROD" + std::to_string(n);
         auto rod_solid = new G4Tubs(label, 0, r, rod_height_/2, 0, twopi);
