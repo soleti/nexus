@@ -146,12 +146,40 @@ void PersistencyManager::StoreTrajectories(G4TrajectoryContainer* tc)
   if (!tc) return;
 
   // Loop through the trajectories stored in the container
-
-  G4bool not_found_daughter_2 = true;
-  G4bool not_found_daughter_3 = true;
+  G4int smallest_ids[2] = {std::numeric_limits<G4int>::max(), std::numeric_limits<G4int>::max()};
+  size_t smallest_idx[2] = {0, 0};
 
   for (size_t i=0; i<tc->entries(); ++i) {
     Trajectory* trj = dynamic_cast<Trajectory*>((*tc)[i]);
+    if (!trj) continue;
+
+    G4int trackid = trj->GetTrackID();
+
+    G4int mother_id = 0;
+    char primary = 0;
+    if (!trj->GetParentID()) {
+      primary = 1;
+    } else {
+      mother_id = trj->GetParentID();
+    }
+    if (mother_id == 2 && trackid < smallest_ids[0]) {
+      smallest_ids[0] = trackid;
+      smallest_idx[0] = i;
+    }
+
+    if (mother_id == 3 && trackid < smallest_ids[1]) {
+      smallest_ids[1] = trackid;
+      smallest_idx[1] = i;
+    }
+  }
+
+  if (smallest_ids[0] == std::numeric_limits<G4int>::max() ||
+      smallest_ids[1] == std::numeric_limits<G4int>::max()) {
+    return;
+  }
+
+  for (size_t i=0; i<2; ++i) {
+    Trajectory* trj = dynamic_cast<Trajectory*>((*tc)[smallest_idx[i]]);
     if (!trj) continue;
 
     G4int trackid = trj->GetTrackID();
@@ -183,33 +211,29 @@ void PersistencyManager::StoreTrajectories(G4TrajectoryContainer* tc)
 
     G4String creator_proc = trj->GetCreatorProcess().c_str();
 
-    if (!not_found_daughter_2 && !not_found_daughter_3) {
-      break;
-    }
-
-    if ((mother_id == 2 && not_found_daughter_2) || (mother_id == 3  && not_found_daughter_3)) {
-      if (mother_id == 2) {
-        not_found_daughter_2 = false;
-      }
-      if (mother_id == 3) {
-        not_found_daughter_3 = false;
-      }
     // if ((mother_id == 1) || (strcmp(trj->GetParticleName().c_str(), "opticalphoton") == 0)) {
     // if (kin_energy > 1 * keV) {
+    // if ((mother_id == 2 && trackid == smallest_2) || (mother_id == 3 && trackid == smallest_3)) {
+    //   if (mother_id == 2) {
+    //     found_daughter_2 = true;
+    //   }
+    //   if (mother_id == 3) {
+    //     found_daughter_3 = true;
+    //   }
       h5writer_->WriteParticleInfo(nevt_, trackid, trj->GetParticleName().c_str(),
-          primary, mother_id,
-          (float)ini_xyz.x(), (float)ini_xyz.y(),
-                                  (float)ini_xyz.z(), (float)ini_t,
-          (float)final_xyz.x(), (float)final_xyz.y(),
-                                  (float)final_xyz.z(), (float)final_t,
-          ini_volume.c_str(), final_volume.c_str(),
-          (float)ini_mom.x(), (float)ini_mom.y(),
-                                  (float)ini_mom.z(), (float)final_mom.x(),
-                                  (float)final_mom.y(), (float)final_mom.z(),
-          kin_energy, length,
-                                  trj->GetCreatorProcess().c_str(),
-          trj->GetFinalProcess().c_str());
-    }
+                                   primary, mother_id,
+                                   (float)ini_xyz.x(), (float)ini_xyz.y(),
+                                   (float)ini_xyz.z(), (float)ini_t,
+                                   (float)final_xyz.x(), (float)final_xyz.y(),
+                                   (float)final_xyz.z(), (float)final_t,
+                                   ini_volume.c_str(), final_volume.c_str(),
+                                   (float)ini_mom.x(), (float)ini_mom.y(),
+                                   (float)ini_mom.z(), (float)final_mom.x(),
+                                   (float)final_mom.y(), (float)final_mom.z(),
+                                   kin_energy, length,
+                                   trj->GetCreatorProcess().c_str(),
+                                   trj->GetFinalProcess().c_str());
+    // }
 
 
   }
