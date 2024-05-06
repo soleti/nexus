@@ -154,6 +154,7 @@ void PersistencyManager::StoreTrajectories(G4TrajectoryContainer* tc)
     if (!trj) continue;
 
     G4int trackid = trj->GetTrackID();
+    G4String ini_volume = trj->GetInitialVolume();
 
     G4int mother_id = 0;
     char primary = 0;
@@ -162,14 +163,16 @@ void PersistencyManager::StoreTrajectories(G4TrajectoryContainer* tc)
     } else {
       mother_id = trj->GetParentID();
     }
-    if (mother_id == 2 && trackid < smallest_ids[0]) {
-      smallest_ids[0] = trackid;
-      smallest_idx[0] = i;
-    }
+    if (ini_volume != "WATER_BCKG" && ini_volume != "LAB" && ini_volume != "JASZCZAK") {
+      if (mother_id == 2 && trackid < smallest_ids[0]) {
+        smallest_ids[0] = trackid;
+        smallest_idx[0] = i;
+      }
 
-    if (mother_id == 3 && trackid < smallest_ids[1]) {
-      smallest_ids[1] = trackid;
-      smallest_idx[1] = i;
+      if (mother_id == 3 && trackid < smallest_ids[1]) {
+        smallest_ids[1] = trackid;
+        smallest_idx[1] = i;
+      }
     }
   }
 
