@@ -163,7 +163,7 @@ void PersistencyManager::StoreTrajectories(G4TrajectoryContainer* tc)
     } else {
       mother_id = trj->GetParentID();
     }
-    if (ini_volume != "WATER_BCKG" && ini_volume != "LAB" && ini_volume != "JASZCZAK" && (ini_volume.rfind("ROD", 0) != 0) && (ini_volume.rfind("SPHERE", 0) != 0)) {
+    
       if (mother_id == 2 && trackid < smallest_ids[0]) {
         smallest_ids[0] = trackid;
         smallest_idx[0] = i;
@@ -173,7 +173,7 @@ void PersistencyManager::StoreTrajectories(G4TrajectoryContainer* tc)
         smallest_ids[1] = trackid;
         smallest_idx[1] = i;
       }
-    }
+    
   }
 
   if (smallest_ids[0] == std::numeric_limits<G4int>::max() ||
@@ -197,6 +197,11 @@ void PersistencyManager::StoreTrajectories(G4TrajectoryContainer* tc)
 
     G4String ini_volume = trj->GetInitialVolume();
     G4String final_volume = trj->GetFinalVolume();
+
+    if (ini_volume == "WATER_BCKG" || ini_volume == "LAB" || ini_volume == "JASZCZAK" || 
+       (ini_volume.rfind("ROD", 0) == 0) || (ini_volume.rfind("SPHERE", 0) == 0)) {
+           break;
+    }
 
     G4double mass = trj->GetParticleDefinition()->GetPDGMass();
     G4ThreeVector ini_mom = trj->GetInitialMomentum();
