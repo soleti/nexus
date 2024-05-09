@@ -74,8 +74,8 @@ void JaszczakPhantom::Construct()
 {
   auto cyl_name = "CYLINDER";
   auto cylinder_solid =
-    new G4Tubs(cyl_name, 0, (cylinder_inner_diam_+ 2*cylinder_thickn_)/2,
-               (cylinder_height_+2*cylinder_thickn_)/2., 0, twopi);
+    new G4Tubs(cyl_name, 0, (cylinder_inner_diam_+ 2*cylinder_thickn_ + 5 * cm)/2,
+               (cylinder_height_+50*cm+2*cylinder_thickn_)/2., 0, twopi);
 
   G4Material* plexiglass =
     G4NistManager::Instance()->FindOrBuildMaterial("G4_PLEXIGLASS");
@@ -88,7 +88,7 @@ void JaszczakPhantom::Construct()
 
   auto water_name = "WATER_BCKG";
   auto water_solid =
-    new G4Tubs(water_name, 0, cylinder_inner_diam_/2 , cylinder_height_/2., 0, twopi);
+    new G4Tubs(water_name, 0, cylinder_inner_diam_/2 + 2.5 *cm , cylinder_height_/2. + 25 * cm, 0, twopi);
 
   G4Material* water = G4NistManager::Instance()->FindOrBuildMaterial("G4_WATER");
   auto water_logic =
