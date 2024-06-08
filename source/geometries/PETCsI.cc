@@ -112,7 +112,7 @@ namespace nexus
         G4double x = (pet_diameter_ / 2. + module_length / 2) * std::sin(theta);
         G4double z = -pet_length_ / 2 + iring * module_width + module_width / 2;
 
-        // G4cout << "CRYSTAL" << iring*angles + itheta << " " << x << " " << y << " " << z << G4endl;
+        G4cout << "CRYSTAL" << iring*angles + itheta << " " << x << " " << y << " " << z << G4endl;
 
         new G4PVPlacement(G4Transform3D(*rot, G4ThreeVector(x, y, z)),
                           crystal_logic, label, lab_logic,

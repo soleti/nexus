@@ -108,7 +108,7 @@ void PETElement::Construct()
       new G4LogicalVolume(crystal,
                           material,
                           "CRYSTAL");
-  crystal_logic->SetVisAttributes(nexus::LightBlueAlpha());
+  crystal_logic->SetVisAttributes(nexus::LightGreenAlpha());
   this->SetLogicalVolume(crystal_logic);
 
 
