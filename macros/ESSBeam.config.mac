@@ -12,7 +12,7 @@
 
 
 #/Generator/BetaDecayGenerator/region DETECTOR
-/Geometry/ESSBeam/beam False
+/Geometry/ESSBeam/beam True
 /Geometry/ESSBeam/liquido False
 /Geometry/ESSBeam/detector_height 4 m
 /Geometry/ESSBeam/detector_diam 4 m
