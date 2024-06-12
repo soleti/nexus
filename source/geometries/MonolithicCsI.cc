@@ -52,7 +52,8 @@ namespace nexus
     msg_ = new G4GenericMessenger(this, "/Geometry/MonolithicCsI/",
                                   "Control commands of geometry MonolithicCsI.");
     msg_->DeclareProperty("crystal_material", crystal_material_, "Crystal material (CsI, CsITl, LYSO, BGO)");
-    msg_->DeclareProperty("crystal_width", crystal_width_, "Crystal width");
+    G4GenericMessenger::Command& crystal_width_cmd = msg_->DeclareProperty("crystal_width", crystal_width_, "Crystal width");
+    crystal_width_cmd.SetUnitCategory("Length");
     msg_->DeclareProperty("crystal_length", crystal_length_, "Crystal length (in radiation lengths)");
     msg_->DeclareProperty("back_wrapping", back_wrapping_, "Crystal wrapped also on the back side? (true/false)");
   }

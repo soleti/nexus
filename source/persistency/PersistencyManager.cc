@@ -163,7 +163,7 @@ void PersistencyManager::StoreTrajectories(G4TrajectoryContainer* tc)
     } else {
       mother_id = trj->GetParentID();
     }
-    
+
       if (mother_id == 2 && trackid < smallest_ids[0]) {
         smallest_ids[0] = trackid;
         smallest_idx[0] = i;
