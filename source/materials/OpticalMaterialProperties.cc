@@ -548,14 +548,14 @@ namespace opticalprops {
       rIndex.push_back(1 + 0.012055*(0.2075*pow(wl,2)/(91.012*pow(wl,2)-1) +
                                      0.0415*pow(wl,2)/(87.892*pow(wl,2)-1) +
                                      4.3330*pow(wl,2)/(214.02*pow(wl,2)-1)));
-      //G4cout << "* GAr rIndex:  " << std::setw(5) << ri_energy[i]/eV
-      //       << " eV -> " << rIndex[i] << G4endl;
+      G4cout << "* GAr rIndex:  " << std::setw(5) << ri_energy[i]/eV
+            << " eV -> " << rIndex[i] << G4endl;
     }
     mpt->AddProperty("RINDEX", ri_energy, rIndex);
 
     // ABSORPTION LENGTH
     std::vector<G4double> abs_energy = {optPhotMinE_, optPhotMaxE_};
-    std::vector<G4double> absLength  = {noAbsLength_, noAbsLength_};
+    std::vector<G4double> absLength  = {5 * m, 5 * m};
     mpt->AddProperty("ABSLENGTH", abs_energy, absLength);
 
     // EMISSION SPECTRUM
@@ -616,14 +616,14 @@ namespace opticalprops {
     std::vector<G4double> rIndex;
     for (int i=0; i<ri_entries; i++) {
       rIndex.push_back(XenonRefractiveIndex(ri_energy[i], density));
-      // G4cout << "* GXe rIndex:  " << std::setw(7)
-      //        << ri_energy[i]/eV << " eV -> " << rIndex[i] << G4endl;
+      G4cout << "* GXe rIndex:  " << std::setw(7)
+             << ri_energy[i]/eV << " eV -> " << rIndex[i] << G4endl;
     }
     mpt->AddProperty("RINDEX", ri_energy, rIndex, ri_entries);
 
     // ABSORPTION LENGTH
     std::vector<G4double> abs_energy = {optPhotMinE_, optPhotMaxE_};
-    std::vector<G4double> absLength  = {noAbsLength_, noAbsLength_};
+    std::vector<G4double> absLength  = {3 * m, 3 * m};
     mpt->AddProperty("ABSLENGTH", abs_energy, absLength);
 
     // EMISSION SPECTRUM

@@ -6,8 +6,8 @@
 /control/execute macros/physics/DefaultPhysicsList.mac
 /tracking/verbose 1
 /nexus/RegisterGeometry Cigar
-#/nexus/RegisterGenerator SingleParticleGenerator
-/nexus/RegisterGenerator Kr83mGenerator
+/nexus/RegisterGenerator SingleParticleGenerator
+#/nexus/RegisterGenerator Kr83mGenerator
 /nexus/RegisterPersistencyManager PersistencyManager
 
 /PhysicsList/RegisterPhysics G4EmStandardPhysics_option4
@@ -19,8 +19,9 @@
 ### ACTIONS
 
 /nexus/RegisterRunAction DefaultRunAction
+/nexus/RegisterEventAction DefaultEventAction
 /nexus/RegisterTrackingAction DefaultTrackingAction
-/nexus/RegisterTrackingAction OpticalTrackingAction
+#/nexus/RegisterTrackingAction OpticalTrackingAction
 /nexus/RegisterSteppingAction AnalysisSteppingAction
 
 /nexus/RegisterMacro macros/Cigar.config.mac

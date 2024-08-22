@@ -21,6 +21,8 @@
 #include <G4Box.hh>
 #include <G4Tubs.hh>
 #include <G4VisAttributes.hh>
+#include <G4SDManager.hh>
+#include "IonizationSD.h"
 
 using namespace nexus;
 
@@ -123,26 +125,46 @@ namespace nexus {
 
     // WORLD /////////////////////////////////////////////////
 
-    G4Material* world_mat = nullptr;
+    G4Material* cigar_mat = nullptr;
+    G4Material* cigar_mat_inactive = nullptr;
 
     if (gas_ == "Ar") {
-      world_mat = materials::GAr(pressure_);
-      world_mat->SetMaterialPropertiesTable(opticalprops::GAr(1. / (68 * eV)));
+      cigar_mat = materials::GAr(pressure_);
+      cigar_mat_inactive = materials::GAr(pressure_);
+      cigar_mat->SetMaterialPropertiesTable(opticalprops::GAr(1. / (68 * eV)));
     } else if (gas_ == "Xe") {
-      world_mat = materials::GXe(pressure_);
-      world_mat->SetMaterialPropertiesTable(opticalprops::GXe(pressure_));
+      cigar_mat = materials::GXe(pressure_);
+      cigar_mat_inactive = materials::GXe(pressure_);
+      cigar_mat->SetMaterialPropertiesTable(opticalprops::GXe(pressure_));
     } else {
       G4Exception("[Cigar]", "Construct()",
             FatalException, "Invalid gas, must be Ar or Xe");
     }
 
-    G4Box* world_solid_vol =
-     new G4Box("WORLD", world_xy_/2., world_xy_/2., world_z_/2.);
-
-    G4LogicalVolume* world_logic_vol =
-      new G4LogicalVolume(world_solid_vol, world_mat, "WORLD");
+    // Create empty world
+    G4Box* world_solid_vol = new G4Box("WORLD", world_xy_ * 2, world_xy_  * 2, world_z_  * 2);
+    G4LogicalVolume* world_logic_vol = new G4LogicalVolume(world_solid_vol, G4NistManager::Instance()->FindOrBuildMaterial("G4_AIR"), "WORLD");
     world_logic_vol->SetVisAttributes(G4VisAttributes::GetInvisible());
-    GeometryBase::SetLogicalVolume(world_logic_vol);
+    this->SetLogicalVolume(world_logic_vol);
+
+    // Create cylinder made of steel
+    G4Material* steel = G4NistManager::Instance()->FindOrBuildMaterial("G4_STAINLESS-STEEL");
+    G4Tubs* steel_solid_vol =
+      new G4Tubs("STEEL", cigar_width_ / 2 + 3 * cm, cigar_width_ / 2 + 3.5 * cm, cigar_length_ / 2 + 10 * cm, 0, 2 * M_PI);
+    G4LogicalVolume* steel_logic_vol =
+      new G4LogicalVolume(steel_solid_vol, steel, "STEEL");
+    steel_logic_vol->SetVisAttributes(nexus::DarkGrey());
+    new G4PVPlacement(0, G4ThreeVector(0, 0, 0), steel_logic_vol, "STEEL", world_logic_vol, false, 0, false);
+
+    // Volume inside cylinder but outside active volume
+    G4Tubs* argon_solid_vol =
+      new G4Tubs("INACTIVE_VOLUME", 0, cigar_width_ / 2 + 3 * cm, cigar_length_ / 2 + 10 * cm, 0, 2 * M_PI);
+    G4LogicalVolume* argon_logic_vol =
+      new G4LogicalVolume(argon_solid_vol, cigar_mat_inactive, "INACTIVE_VOLUME");
+    argon_logic_vol->SetVisAttributes(G4VisAttributes::GetInvisible());
+    new G4PVPlacement(0, G4ThreeVector(0, 0, 0), argon_logic_vol, "INACTIVE_VOLUME", world_logic_vol, false, 0, false);
+
+
 
     // TEFLON PANELS ////////////////////////////////////////////
     G4double panel_width = 2.5 * mm;
@@ -156,8 +178,8 @@ namespace nexus {
       new G4LogicalVolume(teflon_panel, teflon, "TEFLON");
     G4LogicalVolume* teflon_logic_up =
       new G4LogicalVolume(teflon_panel_up, teflon, "TEFLON_UP");
-    teflon_logic->SetVisAttributes(nexus::White());
-    teflon_logic_up->SetVisAttributes(nexus::White());
+    teflon_logic->SetVisAttributes(nexus::WhiteAlpha());
+    teflon_logic_up->SetVisAttributes(nexus::WhiteAlpha());
 
     G4OpticalSurface* opsur_teflon =
       new G4OpticalSurface("TEFLON_OPSURF", unified, groundteflonair, dielectric_metal);
@@ -166,31 +188,43 @@ namespace nexus {
     new G4LogicalSkinSurface("TEFLON_OPSURF", teflon_logic, opsur_teflon);
 
     new G4PVPlacement(0, G4ThreeVector(0, cigar_width_/2+panel_width/2+fiber_diameter_, 0),
-                      teflon_logic, "TEFLON1", world_logic_vol,
+                      teflon_logic, "TEFLON1", argon_logic_vol,
                       true, 0, false);
 
     new G4PVPlacement(0, G4ThreeVector(0, -cigar_width_/2-panel_width/2-fiber_diameter_, 0),
-                      teflon_logic, "TEFLON2", world_logic_vol,
+                      teflon_logic, "TEFLON2", argon_logic_vol,
                       true, 1, false);
 
     new G4PVPlacement(0, G4ThreeVector(0, 0, cigar_length_/2+panel_width/2),
-                      teflon_logic_up, "TEFLON3", world_logic_vol,
+                      teflon_logic_up, "TEFLON3", argon_logic_vol,
                       true, 1, false);
 
     new G4PVPlacement(0, G4ThreeVector(0, 0, -cigar_length_/2-panel_width/2),
-                      teflon_logic_up, "TEFLON3", world_logic_vol,
+                      teflon_logic_up, "TEFLON3", argon_logic_vol,
                       true, 1, false);
 
     G4RotationMatrix *rot_x = new G4RotationMatrix();
     rot_x->rotateZ(90 * deg);
     new G4PVPlacement(G4Transform3D(*rot_x, G4ThreeVector(cigar_width_ / 2 + panel_width / 2 + fiber_diameter_, 0, 0)),
-                      teflon_logic, "TEFLON3", world_logic_vol,
+                      teflon_logic, "TEFLON3", argon_logic_vol,
                       true, 1, false);
 
     new G4PVPlacement(G4Transform3D(*rot_x, G4ThreeVector(-cigar_width_ / 2 - panel_width / 2 - fiber_diameter_, 0, 0)),
-                      teflon_logic, "TEFLON4", world_logic_vol,
+                      teflon_logic, "TEFLON4", argon_logic_vol,
                       true, 1, false);
 
+    G4Box* active_volume =
+      new G4Box("ACTIVE_VOLUME", cigar_width_ / 2, cigar_width_ / 2, cigar_length_ / 2);
+    G4LogicalVolume* active_volume_logic =
+      new G4LogicalVolume(active_volume, cigar_mat, "ACTIVE_VOLUME");
+    active_volume_logic->SetVisAttributes(nexus::LightBlueAlpha());
+    
+    new G4PVPlacement(0, G4ThreeVector(0, 0, 0), active_volume_logic, "ACTIVE_VOLUME", argon_logic_vol, false, 0, false);
+    G4SDManager* sdman = G4SDManager::GetSDMpointer();
+    G4String sdname = "ACTIVE_VOLUME";
+    IonizationSD* ionization_sd = new IonizationSD(sdname);
+    sdman->AddNewDetector(ionization_sd);
+    active_volume_logic->SetSensitiveDetector(ionization_sd);
     // // FIBER ////////////////////////////////////////////////////
 
     fiber_->SetCoreOpticalProperties(this_fiber_optical);
@@ -244,7 +278,6 @@ namespace nexus {
     }
     G4double energy[]       = {opticalprops::optPhotMinE_, opticalprops::optPhotMaxE_};
     G4double reflectivity[] = {0.0     , 0.0     };
-    G4double efficiency[]   = {1.      , 1.      };
     G4MaterialPropertiesTable* photosensor_mpt = new G4MaterialPropertiesTable();
     photosensor_mpt->AddProperty("REFLECTIVITY", energy, reflectivity, 2);
     photosensor_mpt->AddProperty("EFFICIENCY",   sipm_energy, sipm_efficiency, sipm_entries);
@@ -277,18 +310,18 @@ namespace nexus {
     G4RotationMatrix *rot_y = new G4RotationMatrix();
     rot_y->rotateY(180 * deg);
     new G4PVPlacement(G4Transform3D(*rot_y, G4ThreeVector(cigar_width_ / 2 + fiber_diameter_ / 2, 0, cigar_length_ / 2 + photosensor_thickness / 2 + 7 * cm)),
-                      sipm_logic, "SIPM1", world_logic_vol,
+                      sipm_logic, "SIPM1", argon_logic_vol,
                       false, 1, false);
 
     new G4PVPlacement(G4Transform3D(*rot_y, G4ThreeVector(- cigar_width_ / 2 - fiber_diameter_ / 2, 0, cigar_length_ / 2 + photosensor_thickness / 2 + 7 * cm)),
-                      sipm_logic, "SIPM2", world_logic_vol,
+                      sipm_logic, "SIPM2", argon_logic_vol,
                       false, 2, false);
     rot_y->rotateZ(90 * deg);
     new G4PVPlacement(G4Transform3D(*rot_y, G4ThreeVector(0, - cigar_width_ / 2 - fiber_diameter_ / 2, cigar_length_ / 2 + photosensor_thickness / 2 + 7 * cm)),
-                      sipm_logic, "SIPM3", world_logic_vol,
+                      sipm_logic, "SIPM3", argon_logic_vol,
                       false, 3, false);
     new G4PVPlacement(G4Transform3D(*rot_y, G4ThreeVector(0, cigar_width_ / 2 + fiber_diameter_ / 2, cigar_length_ / 2 + photosensor_thickness / 2 + 7 * cm)),
-                      sipm_logic, "SIPM4", world_logic_vol,
+                      sipm_logic, "SIPM4", argon_logic_vol,
                       false, 4, false);
     for (G4int ifiber = 0; ifiber < n_fibers; ifiber++)
     {
@@ -296,35 +329,35 @@ namespace nexus {
       std::string label = std::to_string(ifiber);
 
       new G4PVPlacement(0, G4ThreeVector(cigar_width_ / 2 + fiber_diameter_ / 2, -cigar_width_ / 2 + ifiber * fiber_diameter_ + fiber_diameter_ / 2, 3.5 * cm),
-                        fiber_logic, "FIBER1-" + label, world_logic_vol,
+                        fiber_logic, "FIBER1-" + label, argon_logic_vol,
                         true, ifiber, false);
 
       new G4PVPlacement(0, G4ThreeVector(-cigar_width_ / 2 - fiber_diameter_ / 2, -cigar_width_ / 2 + ifiber * fiber_diameter_ + fiber_diameter_ / 2,  3.5 * cm),
-                        fiber_logic, "FIBER2-" + label, world_logic_vol,
+                        fiber_logic, "FIBER2-" + label, argon_logic_vol,
                         true, ifiber * 2, false);
 
       new G4PVPlacement(0, G4ThreeVector(-cigar_width_ / 2 + ifiber * fiber_diameter_ + fiber_diameter_ / 2, -cigar_width_ / 2 - fiber_diameter_ / 2,  3.5 * cm),
-                        fiber_logic, "FIBER3-" + label, world_logic_vol,
+                        fiber_logic, "FIBER3-" + label, argon_logic_vol,
                         true, ifiber * 3, false);
 
       new G4PVPlacement(0, G4ThreeVector(-cigar_width_ / 2 + ifiber * fiber_diameter_ + fiber_diameter_ / 2, cigar_width_ / 2 + fiber_diameter_ / 2,  3.5 * cm),
-                        fiber_logic, "FIBER4-" + label, world_logic_vol,
+                        fiber_logic, "FIBER4-" + label, argon_logic_vol,
                         true, ifiber * 4, false);
 
       new G4PVPlacement(0, G4ThreeVector(cigar_width_ / 2 + fiber_diameter_ / 2, -cigar_width_ / 2 + ifiber * fiber_diameter_ + fiber_diameter_ / 2, -cigar_length_ / 2 - fiber_end_z),
-                        fiber_end_logic_vol, "ALUMINUM1-" + label, world_logic_vol,
+                        fiber_end_logic_vol, "ALUMINUM1-" + label, argon_logic_vol,
                         true, ifiber, false);
 
       new G4PVPlacement(0, G4ThreeVector(-cigar_width_ / 2 - fiber_diameter_ / 2, -cigar_width_ / 2 + ifiber * fiber_diameter_ + fiber_diameter_ / 2, -cigar_length_ / 2 - fiber_end_z),
-                        fiber_end_logic_vol, "ALUMINUM2-" + label, world_logic_vol,
+                        fiber_end_logic_vol, "ALUMINUM2-" + label, argon_logic_vol,
                         true, ifiber, false);
 
       new G4PVPlacement(0, G4ThreeVector(-cigar_width_ / 2 + ifiber * fiber_diameter_ + fiber_diameter_ / 2, -cigar_width_ / 2 - fiber_diameter_ / 2, -cigar_length_ / 2 - fiber_end_z),
-                        fiber_end_logic_vol, "ALUMINUM3-" + label, world_logic_vol,
+                        fiber_end_logic_vol, "ALUMINUM3-" + label, argon_logic_vol,
                         true, ifiber, false);
 
       new G4PVPlacement(0, G4ThreeVector(-cigar_width_ / 2 + ifiber * fiber_diameter_ + fiber_diameter_ / 2, cigar_width_ / 2 + fiber_diameter_ / 2, -cigar_length_ / 2 - fiber_end_z),
-                        fiber_end_logic_vol, "ALUMINUM4-" + label, world_logic_vol,
+                        fiber_end_logic_vol, "ALUMINUM4-" + label, argon_logic_vol,
                         true, ifiber, false);
     }
 
@@ -334,12 +367,16 @@ namespace nexus {
 
   G4ThreeVector Cigar::GenerateVertex(const G4String& region) const
   {
-    G4ThreeVector vertex(0.,0.,0.);
+    G4ThreeVector vertex(0.,5 * cm,0.);
 
     // WORLD
     if (region == "INSIDE_CIGAR") {
       // return vertex;
       return inside_cigar_->GenerateVertex("INSIDE");
+    }
+    else if (region == "OUTSIDE") {
+      return vertex;
+
     }
     else {
       G4Exception("[Cigar]", "GenerateVertex()", FatalException,
