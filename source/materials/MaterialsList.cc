@@ -916,6 +916,28 @@ namespace materials {
     return mat;
   }
 
+  G4Material* LaBr3()
+  {
+    G4String name = "LaBr3"; //
+
+    G4Material* mat = G4Material::GetMaterial(name, false);
+
+    if (mat == 0) {
+      G4NistManager* nist = G4NistManager::Instance();
+
+      // The base is Polystyrene
+      // Linear formula: (C8H8)n
+      G4Element* La = nist->FindOrBuildElement("La");
+      G4Element* Br = nist->FindOrBuildElement("Br");
+
+      mat = new G4Material(name, 5.06*g/cm3, 2, kStateSolid);
+      mat->AddElement(La, 0.366875);
+      mat->AddElement(Br, 0.633124);
+      mat->GetIonisation()->SetMeanExcitationEnergy(454.5*eV);
+    }
+    return mat;
+  }
+
   // Pethylene (cladding material)
   G4Material* Pethylene()
   {
