@@ -40,7 +40,8 @@ namespace nexus
                                    crystal_length_(2.),
                                    pet_diameter_(60 * cm),
                                    pet_length_(76.8 * cm),
-                                   phantom_(false)
+                                   phantom_("sensitivity"),
+                                   mixed_(false)
   {
     /// Messenger
     msg_ = new G4GenericMessenger(this, "/Geometry/PETCsI/",
@@ -53,7 +54,8 @@ namespace nexus
     diameter_cmd.SetUnitCategory("Length");
     G4GenericMessenger::Command& pet_length_cmd = msg_->DeclareProperty("pet_length", pet_length_, "PET length");
     pet_length_cmd.SetUnitCategory("Length");
-    msg_->DeclareProperty("phantom", phantom_, "Use phantom (default false)");
+    msg_->DeclareProperty("phantom", phantom_, "Phantom to be placed inside PET ('sensitivity', 'jaszczak', 'necr', 'none')");
+    msg_->DeclareProperty("mixed", mixed_, "Use mixed BGO and CsI (default false)");
   }
 
   PETCsI::~PETCsI()
@@ -89,49 +91,120 @@ namespace nexus
     //                         material,
     //                         "CRYSTAL");
     // crystal_logic->SetVisAttributes(nexus::LightBlueAlpha());
+    G4SDManager* sdmgr = G4SDManager::GetSDMpointer();
 
-    monolithic_csi_ = new PETElement(crystal_material_, crystal_width_,  crystal_length_);
-    monolithic_csi_->Construct();
-    G4LogicalVolume *crystal_logic = monolithic_csi_->GetLogicalVolume();
-    G4double module_width = monolithic_csi_->GetDimensions().x();
-    G4double module_length = monolithic_csi_->GetDimensions().z();
-    G4int angles = floor(pet_diameter_ * M_PI / module_width);
+    G4Material *material = nullptr;
+    if (crystal_material_ == "CsI") {
+      crystal_length_ *= 18.6 * mm;
+      material = G4NistManager::Instance()->FindOrBuildMaterial("G4_CESIUM_IODIDE");
+      material->SetMaterialPropertiesTable(opticalprops::CsI());
+    } else if (crystal_material_ == "BGO") {
+      crystal_length_ *= 11.4 * mm;
+      material = G4NistManager::Instance()->FindOrBuildMaterial("G4_BGO");
+      material->SetMaterialPropertiesTable(opticalprops::BGO());
+    } else if (crystal_material_ == "LYSO") {
+      crystal_length_ *= 11.4 * mm;
+      material = materials::LYSO();
+      material->SetMaterialPropertiesTable(opticalprops::LYSO());
+    } else if (crystal_material_ == "CsITl") {
+      crystal_length_ *= 18.6 * mm;
+      material = G4NistManager::Instance()->FindOrBuildMaterial("G4_CESIUM_IODIDE");
+      material->SetMaterialPropertiesTable(opticalprops::CsITl());
+    } else {
+      G4Exception("[MonolithicCsI]", "Construct()", FatalException,
+                  "Unknown crystal material!");
+    }
+
+    G4Material *bgo = G4NistManager::Instance()->FindOrBuildMaterial("G4_BGO");
+    bgo->SetMaterialPropertiesTable(opticalprops::BGO());
+
+    G4Box *crystal = new G4Box("CRYSTAL", crystal_width_ / 2., crystal_width_ / 2., crystal_length_ / 2);
+    G4Box *crystal_bgo = new G4Box("CRYSTAL", crystal_width_ / 2., crystal_width_ / 2., 11.4 * mm);
+
+    // monolithic_csi_ = new PETElement(crystal_material_, crystal_width_,  crystal_length_);
+    // monolithic_csi_->Construct();
+    // G4double module_width = monolithic_csi_->GetDimensions().x();
+    // G4double module_length = monolithic_csi_->GetDimensions().z();
+    G4int angles = floor(pet_diameter_ * M_PI / crystal_width_);
     G4double step = 2. * pi / angles;
     G4RotationMatrix *rot = new G4RotationMatrix();
     rot->rotateX(90 * deg);
     rot->rotateZ(180 * deg);
 
-    G4int rings = floor(pet_length_ / module_width);
+    G4int rings = floor(pet_length_ / crystal_width_);
+    G4float unit = floor(rings/3);
 
     for (G4int iring=0; iring < rings; iring++) {
       for (G4int itheta=0; itheta < angles; itheta++) {
         G4float theta = 2 * M_PI / angles * itheta;
         std::string label = std::to_string(iring*angles + itheta);
 
-        G4double y = (pet_diameter_ / 2. + module_length / 2) * std::cos(theta);
-        G4double x = (pet_diameter_ / 2. + module_length / 2) * std::sin(theta);
-        G4double z = -pet_length_ / 2 + iring * module_width + module_width / 2;
+        G4double y = (pet_diameter_ / 2. + crystal_length_ / 2) * std::cos(theta);
+        G4double x = (pet_diameter_ / 2. + crystal_length_ / 2) * std::sin(theta);
+        G4double z = -pet_length_ / 2 + iring * crystal_width_ + crystal_width_ / 2;
 
-        G4cout << "CRYSTAL" << iring*angles + itheta << " " << x << " " << y << " " << z << G4endl;
+        G4int iunit = iring/unit+1;
 
-        new G4PVPlacement(G4Transform3D(*rot, G4ThreeVector(x, y, z)),
-                          crystal_logic, label, lab_logic,
-                          true, iring*angles + itheta, false);
+        G4cout << "CRYSTAL" << iring*angles + itheta << " " << x << " " << y << " " << z << " " << G4endl;
+
+        G4LogicalVolume *crystal_logic = nullptr;
+        IonizationSD *ionisd = nullptr;
+        if ((mixed_) && (iunit == 2)) {
+          y = (pet_diameter_ / 2. + 11.4 * mm) * std::cos(theta);
+          x = (pet_diameter_ / 2. + 11.4 * mm) * std::sin(theta);
+          crystal_logic = new G4LogicalVolume(crystal_bgo,
+                              bgo,
+                              "BGO");
+          crystal_logic->SetVisAttributes(nexus::RedAlpha());
+          ionisd = new IonizationSD("BGO"+label);
+          new G4PVPlacement(G4Transform3D(*rot, G4ThreeVector(x, y, z)),
+                  crystal_logic, "BGO"+label, lab_logic,
+                  true, iring*angles + itheta, false);
+        } else {
+          crystal_logic = new G4LogicalVolume(crystal,
+                              material,
+                              "CSI");
+          crystal_logic->SetVisAttributes(nexus::LightBlueAlpha());
+          ionisd = new IonizationSD("CSI"+label);
+          new G4PVPlacement(G4Transform3D(*rot, G4ThreeVector(x, y, z)),
+                  crystal_logic, "CSI"+label, lab_logic,
+                  true, iring*angles + itheta, false);
+        }
+        sdmgr->AddNewDetector(ionisd);
+        crystal_logic->SetSensitiveDetector(ionisd);
+
         rot->rotateZ(-step);
       }
     }
 
-    G4SDManager* sdmgr = G4SDManager::GetSDMpointer();
-    IonizationSD* ionisd = new IonizationSD("PET");
-    sdmgr->AddNewDetector(ionisd);
-    crystal_logic->SetSensitiveDetector(ionisd);
+    // IonizationSD* ionisd = new IonizationSD("PET");
+    // sdmgr->AddNewDetector(ionisd);
+    // crystal_logic->SetSensitiveDetector(ionisd);
 
-    if (phantom_) {
+    IonizationSD* ionisd_phantom = new IonizationSD("PHANTOM");
+    sdmgr->AddNewDetector(ionisd_phantom);
+
+    if (phantom_ == "sensitivity") {
+      nema_sensitivity_ = new NEMASensitivity();
+      nema_sensitivity_->Construct();
+      G4LogicalVolume *phantom_logic = nema_sensitivity_->GetLogicalVolume();
+      new G4PVPlacement(0, G4ThreeVector(0, 0, 0), phantom_logic, "SENSITIVITY",
+                        lab_logic, false, 0, true);
+      phantom_logic->SetSensitiveDetector(ionisd_phantom);
+    } else if (phantom_ == "jaszczak") {
       jas_phantom_ = new JaszczakPhantom();
       jas_phantom_->Construct();
       G4LogicalVolume* phantom_logic = jas_phantom_->GetLogicalVolume();
       new G4PVPlacement(0, G4ThreeVector(0, 0, 0), phantom_logic, "JASZCZAK",
                         lab_logic, false, 0, true);
+      phantom_logic->SetSensitiveDetector(ionisd_phantom);
+    } else if (phantom_ == "necr") {
+      nema_necr_ = new NEMANECR();
+      nema_necr_->Construct();
+      G4LogicalVolume* phantom_logic = nema_necr_->GetLogicalVolume();
+      new G4PVPlacement(0, G4ThreeVector(0, 0, 0), phantom_logic, "NECR",
+                        lab_logic, false, 0, true);
+      phantom_logic->SetSensitiveDetector(ionisd_phantom);
     }
   }
 
@@ -141,7 +214,13 @@ namespace nexus
     if (region == "CYLINDRICAL_SHELL") {
       return cylindrical_shell_->GenerateVertex("OUTER_SURFACE");
     } else if (region == "PHANTOM") {
-      return jas_phantom_->GenerateVertex("JPHANTOM");
+      if (phantom_ == "sensitivity") return nema_sensitivity_->GenerateVertex("JPHANTOM");
+      if (phantom_ == "jaszczak") return jas_phantom_->GenerateVertex("JPHANTOM");
+      if (phantom_ == "necr") return nema_necr_->GenerateVertex("JPHANTOM");
+      else {
+        G4ThreeVector vertex(0, 0, 0);
+        return vertex;
+      }
     } else {
       G4ThreeVector vertex(0, 0, 0);
       return vertex;

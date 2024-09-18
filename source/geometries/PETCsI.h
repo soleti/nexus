@@ -10,7 +10,8 @@
 #include "SpherePointSampler.h"
 #include "BoxPointSampler.h"
 #include "JaszczakPhantom.h"
-#include "PETElement.h"
+#include "NEMASensitivity.h"
+#include "NEMANECR.h"
 
 class G4GenericMessenger;
 
@@ -34,7 +35,8 @@ namespace nexus {
     G4GenericMessenger* msg_;
     CylinderPointSampler2020* cylindrical_shell_;
     JaszczakPhantom* jas_phantom_;
-    PETElement* monolithic_csi_;
+    NEMASensitivity* nema_sensitivity_;
+    NEMANECR* nema_necr_;
 
     // Dimension of the crystals
     G4String crystal_material_;
@@ -42,7 +44,8 @@ namespace nexus {
     G4double crystal_length_;
     G4double pet_diameter_;
     G4double pet_length_;
-    G4bool phantom_;
+    G4String phantom_;
+    G4bool mixed_;
   };
 }
 #endif

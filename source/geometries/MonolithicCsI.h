@@ -36,6 +36,8 @@ namespace nexus {
     G4String crystal_material_;
     G4double crystal_width_;
     G4double crystal_length_;
+    G4bool pixelated_;
+    G4double pixel_size_;
     G4bool back_wrapping_;
   };
 }
