@@ -214,9 +214,9 @@ namespace nexus
     if (region == "CYLINDRICAL_SHELL") {
       return cylindrical_shell_->GenerateVertex("OUTER_SURFACE");
     } else if (region == "PHANTOM") {
-      if (phantom_ == "sensitivity") return nema_sensitivity_->GenerateVertex("JPHANTOM");
+      if (phantom_ == "sensitivity") return nema_sensitivity_->GenerateVertex("VOLUME");
       if (phantom_ == "jaszczak") return jas_phantom_->GenerateVertex("JPHANTOM");
-      if (phantom_ == "necr") return nema_necr_->GenerateVertex("JPHANTOM");
+      if (phantom_ == "necr") return nema_necr_->GenerateVertex("VOLUME");
       else {
         G4ThreeVector vertex(0, 0, 0);
         return vertex;

@@ -4,12 +4,12 @@
 /Generator/SingleParticle/region PHANTOM
 
 /Geometry/PETCsI/crystal_length 2
-/Geometry/PETCsI/crystal_material CsI
+/Geometry/PETCsI/crystal_material BGO
 /Geometry/PETCsI/crystal_width 48 mm
-/Geometry/PETCsI/pet_diameter 82 cm
-/Geometry/PETCsI/pet_length 106 cm
-/Geometry/PETCsI/phantom necr
-/Geometry/PETCsI/mixed true
+/Geometry/PETCsI/pet_diameter 80 cm
+/Geometry/PETCsI/pet_length 30 cm
+/Geometry/PETCsI/phantom sensitivity
+#/Geometry/PETCsI/mixed false
 
 /run/verbose 1
 /event/verbose 0
@@ -23,10 +23,10 @@
 #/PhysicsList/RegisterPhysics G4OpticalPhysics
 #/process/optical/processActivation Cerenkov true
 
-/Actions/DefaultEventAction/min_energy 0.870 MeV
+/Actions/DefaultEventAction/min_energy 0.700 MeV
 #/Actions/DefaultEventAction/max_energy 1.100 MeV
 
 ### JOB CONTROL
 /nexus/random_seed            1
 /nexus/persistency/start_id   0
-/nexus/persistency/output_file CRYSPNECR_mixed
+/nexus/persistency/output_file CRYSPSensitivity_mixed

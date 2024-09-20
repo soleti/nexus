@@ -57,10 +57,10 @@ void NEMASensitivity::Construct()
     G4Tubs* rod = new G4Tubs("ROD" + label, inner_diameters[i] * mm, outer_diameters[i] * mm, 700 * mm / 2, 0, twopi);
     G4LogicalVolume* rod_logic = new G4LogicalVolume(rod, aluminum, "SPHERE");
     rod_logic->SetVisAttributes(nexus::LightGreyAlpha());
-    new G4PVPlacement(0, G4ThreeVector(0, 0, 0), rod_logic, "ROD" + label, phantom_logic, false, i);
+    // new G4PVPlacement(0, G4ThreeVector(0, 0, 0), rod_logic, "ROD" + label, phantom_logic, false, i);
   }
 
-  G4Tubs *sleeve = new G4Tubs("SLEEVE", 2 * mm, 3.2 * mm, 700 * mm / 2, 0, twopi);
+  G4Tubs *sleeve = new G4Tubs("SLEEVE", 0, 3. * mm, 700 * mm / 2, 0, twopi);
   G4LogicalVolume *sleeve_logic = new G4LogicalVolume(sleeve, polyethylene, "SLEEVE");
   sleeve_logic->SetVisAttributes(nexus::LightGreenAlpha());
   G4VPhysicalVolume* sleeve_phys = new G4PVPlacement(0, G4ThreeVector(0, 0, 0), sleeve_logic, "SLEEVE", phantom_logic, false, 0);
