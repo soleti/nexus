@@ -9,7 +9,7 @@
 /Geometry/PETCsI/pet_diameter 80 cm
 /Geometry/PETCsI/pet_length 30 cm
 /Geometry/PETCsI/phantom sensitivity
-#/Geometry/PETCsI/mixed false
+/Geometry/PETCsI/mixed false
 
 /run/verbose 1
 /event/verbose 0
