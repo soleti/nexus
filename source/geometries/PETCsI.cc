@@ -132,8 +132,7 @@ namespace nexus
     rot->rotateZ(180 * deg);
 
     G4int rings = floor(pet_length_ / crystal_width_);
-    G4float unit = floor(rings/3);
-
+unit
     for (G4int iring=0; iring < rings; iring++) {
       for (G4int itheta=0; itheta < angles; itheta++) {
         G4float theta = 2 * M_PI / angles * itheta;
@@ -143,13 +142,11 @@ namespace nexus
         G4double x = (pet_diameter_ / 2. + crystal_length_ / 2) * std::sin(theta);
         G4double z = -pet_length_ / 2 + iring * crystal_width_ + crystal_width_ / 2;
 
-        G4int iunit = iring/unit+1;
-
         G4cout << "CRYSTAL" << iring*angles + itheta << " " << x << " " << y << " " << z << " " << G4endl;
 
         G4LogicalVolume *crystal_logic = nullptr;
         IonizationSD *ionisd = nullptr;
-        if ((mixed_) && (iunit == 2)) {
+        if ((mixed_) && (z < pet_length_/6) && (z>-pet_length_/6)) {
           y = (pet_diameter_ / 2. + 11.4 * mm) * std::cos(theta);
           x = (pet_diameter_ / 2. + 11.4 * mm) * std::sin(theta);
           crystal_logic = new G4LogicalVolume(crystal_bgo,
