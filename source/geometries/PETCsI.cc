@@ -132,7 +132,7 @@ namespace nexus
     rot->rotateZ(180 * deg);
 
     G4int rings = floor(pet_length_ / crystal_width_);
-unit
+
     for (G4int iring=0; iring < rings; iring++) {
       for (G4int itheta=0; itheta < angles; itheta++) {
         G4float theta = 2 * M_PI / angles * itheta;
