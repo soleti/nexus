@@ -34,6 +34,7 @@ namespace nexus {
     // Messenger for the definition of control commands
     G4GenericMessenger* msg_;
     CylinderPointSampler2020* cylindrical_shell_;
+    CylinderPointSampler2020* pileup_gen_;
     JaszczakPhantom* jas_phantom_;
     NEMASensitivity* nema_sensitivity_;
     NEMANECR* nema_necr_;

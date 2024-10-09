@@ -18,7 +18,7 @@
 #include <G4PVPlacement.hh>
 #include <G4VisAttributes.hh>
 #include <G4GenericMessenger.hh>
-#include <G4Box.hh>
+#include <G4Tubs.hh>
 #include <G4SDManager.hh>
 
 #include "FactoryBase.h"
@@ -73,6 +73,7 @@ namespace nexus
         new G4Box("LAB", size / 2., size / 2., size / 2.);
 
     G4Material *air = G4NistManager::Instance()->FindOrBuildMaterial("G4_AIR");
+    G4Material *water = G4NistManager::Instance()->FindOrBuildMaterial("G4_WATER");
 
     G4LogicalVolume *lab_logic = new G4LogicalVolume(lab_solid, air, "LAB");
 
@@ -161,7 +162,7 @@ namespace nexus
           crystal_logic = new G4LogicalVolume(crystal,
                               material,
                               "CSI");
-          crystal_logic->SetVisAttributes(nexus::LightBlueAlpha());
+          crystal_logic->SetVisAttributes(nexus::LightGreenAlpha());
           ionisd = new IonizationSD("CSI"+label);
           new G4PVPlacement(G4Transform3D(*rot, G4ThreeVector(x, y, z)),
                   crystal_logic, "CSI"+label, lab_logic,
@@ -202,6 +203,15 @@ namespace nexus
       new G4PVPlacement(0, G4ThreeVector(0, 0, 0), phantom_logic, "NECR",
                         lab_logic, false, 0, true);
       phantom_logic->SetSensitiveDetector(ionisd_phantom);
+    } else if (phantom_ == "pileup") {
+      G4Tubs *cylinder = new G4Tubs("CYLINDER", 0, 20 * cm, 90 * cm, 0, 2 * M_PI);
+      G4LogicalVolume *cylinder_logic = new G4LogicalVolume(cylinder, water, "CYLINDER");
+      G4VPhysicalVolume* cylinder_phys = new G4PVPlacement(0, G4ThreeVector(0, 0, 0), cylinder_logic, "CYLINDER",
+                        lab_logic, false, 0, true);
+      cylinder_logic->SetSensitiveDetector(ionisd_phantom);
+      cylinder_logic->SetVisAttributes(nexus::LightBlueAlpha());
+      pileup_gen_ = new CylinderPointSampler2020(cylinder_phys);
+
     }
   }
 
@@ -214,6 +224,7 @@ namespace nexus
       if (phantom_ == "sensitivity") return nema_sensitivity_->GenerateVertex("VOLUME");
       if (phantom_ == "jaszczak") return jas_phantom_->GenerateVertex("JPHANTOM");
       if (phantom_ == "necr") return nema_necr_->GenerateVertex("VOLUME");
+      if (phantom_ == "pileup") return pileup_gen_->GenerateVertex("VOLUME");
       else {
         G4ThreeVector vertex(0, 0, 0);
         return vertex;

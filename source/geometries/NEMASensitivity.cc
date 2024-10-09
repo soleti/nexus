@@ -45,6 +45,7 @@ void NEMASensitivity::Construct()
   G4Material* air = G4NistManager::Instance()->FindOrBuildMaterial("G4_AIR");
   G4Material* aluminum = G4NistManager::Instance()->FindOrBuildMaterial("G4_Al");
   G4Material* polyethylene = G4NistManager::Instance()->FindOrBuildMaterial("G4_POLYETHYLENE");
+  G4Material* water = G4NistManager::Instance()->FindOrBuildMaterial("G4_WATER");
 
   G4Tubs* phantom = new G4Tubs("PHANTOM", 0, outer_diameters[4] * mm, 700 * mm / 2, 0, twopi);
   G4LogicalVolume* phantom_logic = new G4LogicalVolume(phantom, air, "PHANTOM");
@@ -52,18 +53,22 @@ void NEMASensitivity::Construct()
   this->SetLogicalVolume(phantom_logic);
   new G4PVPlacement(0, G4ThreeVector(0, 0, 0), phantom_logic, "PHANTOM", 0, false, 0);
 
-  for (int i = 0; i < 5; i++) {
+  for (int i = 0; i < 1; i++) {
     std::string label = std::to_string(i);
     G4Tubs* rod = new G4Tubs("ROD" + label, inner_diameters[i] * mm, outer_diameters[i] * mm, 700 * mm / 2, 0, twopi);
     G4LogicalVolume* rod_logic = new G4LogicalVolume(rod, aluminum, "SPHERE");
     rod_logic->SetVisAttributes(nexus::LightGreyAlpha());
-    // new G4PVPlacement(0, G4ThreeVector(0, 0, 0), rod_logic, "ROD" + label, phantom_logic, false, i);
+    new G4PVPlacement(0, G4ThreeVector(0, 0, 0), rod_logic, "ROD" + label, phantom_logic, false, i);
   }
 
-  G4Tubs *sleeve = new G4Tubs("SLEEVE", 0, 3. * mm, 700 * mm / 2, 0, twopi);
+  G4Tubs *sleeve = new G4Tubs("SLEEVE", 2.2 * mm, 3. * mm, 700 * mm / 2, 0, twopi);
+  G4Tubs *sleeve_hole = new G4Tubs("SLEEVE_HOLE", 0, 2.2 * mm, 700 * mm / 2, 0, twopi);
   G4LogicalVolume *sleeve_logic = new G4LogicalVolume(sleeve, polyethylene, "SLEEVE");
+  G4LogicalVolume *sleeve_hole_logic = new G4LogicalVolume(sleeve_hole, water, "SLEEVE_HOLE");
   sleeve_logic->SetVisAttributes(nexus::LightGreenAlpha());
-  G4VPhysicalVolume* sleeve_phys = new G4PVPlacement(0, G4ThreeVector(0, 0, 0), sleeve_logic, "SLEEVE", phantom_logic, false, 0);
+  sleeve_hole_logic->SetVisAttributes(nexus::LightBlueAlpha());
+  new G4PVPlacement(0, G4ThreeVector(0, 0, 0), sleeve_logic, "SLEEVE", phantom_logic, false, 0);
+  G4VPhysicalVolume* sleeve_phys = new G4PVPlacement(0, G4ThreeVector(0, 0, 0), sleeve_hole_logic, "SLEEVE_HOLE", phantom_logic, false, 0);
   cyl_gen_ = new CylinderPointSampler2020(sleeve_phys);
 
 
