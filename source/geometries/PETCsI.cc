@@ -132,6 +132,14 @@ namespace nexus
     rot->rotateZ(180 * deg);
 
     G4int rings = floor(pet_length_ / crystal_width_);
+    G4LogicalVolume *crystal_logic_bgo = new G4LogicalVolume(crystal_bgo,
+                        bgo,
+                        "BGO");
+    crystal_logic_bgo->SetVisAttributes(nexus::RedAlpha());
+    G4LogicalVolume *crystal_logic = new G4LogicalVolume(crystal,
+                        material,
+                        "CSI");
+    crystal_logic->SetVisAttributes(nexus::LightBlueAlpha());
 
     for (G4int iring=0; iring < rings; iring++) {
       for (G4int itheta=0; itheta < angles; itheta++) {
@@ -144,42 +152,40 @@ namespace nexus
 
         G4cout << "CRYSTAL" << iring*angles + itheta << " " << x << " " << y << " " << z << " " << G4endl;
 
-        G4LogicalVolume *crystal_logic = nullptr;
         IonizationSD *ionisd = nullptr;
+
         if ((mixed_) && (z < pet_length_/6) && (z>-pet_length_/6)) {
           y = (pet_diameter_ / 2. + 11.4 * mm) * std::cos(theta);
           x = (pet_diameter_ / 2. + 11.4 * mm) * std::sin(theta);
-          crystal_logic = new G4LogicalVolume(crystal_bgo,
-                              bgo,
-                              "BGO");
-          crystal_logic->SetVisAttributes(nexus::RedAlpha());
-          ionisd = new IonizationSD("BGO"+label);
+
+          // ionisd = new IonizationSD("BGO"+label);
           new G4PVPlacement(G4Transform3D(*rot, G4ThreeVector(x, y, z)),
-                  crystal_logic, "BGO"+label, lab_logic,
+                  crystal_logic_bgo, "BGO"+label, lab_logic,
                   true, iring*angles + itheta, false);
         } else {
-          crystal_logic = new G4LogicalVolume(crystal,
-                              material,
-                              "CSI");
-          crystal_logic->SetVisAttributes(nexus::LightBlueAlpha());
-          ionisd = new IonizationSD("CSI"+label);
+          // ionisd = new IonizationSD("CSI"+label);
           new G4PVPlacement(G4Transform3D(*rot, G4ThreeVector(x, y, z)),
                   crystal_logic, "CSI"+label, lab_logic,
                   true, iring*angles + itheta, false);
         }
-        sdmgr->AddNewDetector(ionisd);
-        crystal_logic->SetSensitiveDetector(ionisd);
+
+        // sdmgr->AddNewDetector(ionisd);
+        // crystal_logic->SetSensitiveDetector(ionisd);
 
         rot->rotateZ(-step);
       }
     }
 
-    // IonizationSD* ionisd = new IonizationSD("PET");
-    // sdmgr->AddNewDetector(ionisd);
-    // crystal_logic->SetSensitiveDetector(ionisd);
+    IonizationSD* ionisd_csi = new IonizationSD("CSI");
+    sdmgr->AddNewDetector(ionisd_csi);
+    crystal_logic->SetSensitiveDetector(ionisd_csi);
 
-    IonizationSD* ionisd_phantom = new IonizationSD("PHANTOM");
-    sdmgr->AddNewDetector(ionisd_phantom);
+    IonizationSD* ionisd_bgo = new IonizationSD("BGO");
+    sdmgr->AddNewDetector(ionisd_bgo);
+    crystal_logic_bgo->SetSensitiveDetector(ionisd_bgo);
+
+    // IonizationSD* ionisd_phantom = new IonizationSD("PHANTOM");
+    // sdmgr->AddNewDetector(ionisd_phantom);
 
     if (phantom_ == "sensitivity") {
       nema_sensitivity_ = new NEMASensitivity();
@@ -187,21 +193,21 @@ namespace nexus
       G4LogicalVolume *phantom_logic = nema_sensitivity_->GetLogicalVolume();
       new G4PVPlacement(0, G4ThreeVector(0, 0, 0), phantom_logic, "SENSITIVITY",
                         lab_logic, false, 0, true);
-      phantom_logic->SetSensitiveDetector(ionisd_phantom);
+      // phantom_logic->SetSensitiveDetector(ionisd_phantom);
     } else if (phantom_ == "jaszczak") {
       jas_phantom_ = new JaszczakPhantom();
       jas_phantom_->Construct();
       G4LogicalVolume* phantom_logic = jas_phantom_->GetLogicalVolume();
       new G4PVPlacement(0, G4ThreeVector(0, 0, 0), phantom_logic, "JASZCZAK",
                         lab_logic, false, 0, true);
-      phantom_logic->SetSensitiveDetector(ionisd_phantom);
+      // phantom_logic->SetSensitiveDetector(ionisd_phantom);
     } else if (phantom_ == "necr") {
       nema_necr_ = new NEMANECR();
       nema_necr_->Construct();
       G4LogicalVolume* phantom_logic = nema_necr_->GetLogicalVolume();
       new G4PVPlacement(0, G4ThreeVector(0, 0, 0), phantom_logic, "NECR",
                         lab_logic, false, 0, true);
-      phantom_logic->SetSensitiveDetector(ionisd_phantom);
+      // phantom_logic->SetSensitiveDetector(ionisd_phantom);
     }
   }
 
@@ -212,7 +218,7 @@ namespace nexus
       return cylindrical_shell_->GenerateVertex("OUTER_SURFACE");
     } else if (region == "PHANTOM") {
       if (phantom_ == "sensitivity") return nema_sensitivity_->GenerateVertex("VOLUME");
-      if (phantom_ == "jaszczak") return jas_phantom_->GenerateVertex("JPHANTOM");
+      if (phantom_ == "jaszczak") return jas_phantom_->GenerateVertex("VOLUME");
       if (phantom_ == "necr") return nema_necr_->GenerateVertex("VOLUME");
       else {
         G4ThreeVector vertex(0, 0, 0);

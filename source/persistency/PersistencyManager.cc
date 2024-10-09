@@ -129,6 +129,10 @@ G4bool PersistencyManager::Store(const G4Event* event)
   ihits_ = nullptr;
   hit_map_.clear();
   StoreHits(event->GetHCofThisEvent());
+  G4cout << "EVENTID" << nevt_ << " " << total_energy_ << " " << total_energy_csi_ << " " << total_energy_bgo_ << G4endl;
+  total_energy_bgo_ = 0;
+  total_energy_csi_ = 0;
+  total_energy_ = 0;
   nevt_++;
 
 
@@ -163,37 +167,31 @@ void PersistencyManager::StoreTrajectories(G4TrajectoryContainer* tc)
     }
 
 
-    G4String ini_volume = trj->GetInitialVolume();
-
-    if (mother_id == 1 && trackid < smallest_ids[0]) {
-      if (ini_volume == "WATER_BCKG" || ini_volume == "LAB" || ini_volume == "JASZCZAK" ||
-         (ini_volume.rfind("ROD", 0) == 0) || (ini_volume.rfind("SPHERE", 0) == 0)) {
-           continue;
-      }
+    if (mother_id == 2 && trackid < smallest_ids[0]) {
       smallest_ids[0] = trackid;
       smallest_idx[0] = i;
     }
 
-    // if (mother_id == 3 && trackid < smallest_ids[1]) {
-    //   smallest_ids[1] = trackid;
-    //   smallest_idx[1] = i;
-    // }
-    G4double mass = trj->GetParticleDefinition()->GetPDGMass();
-    G4ThreeVector ini_mom = trj->GetInitialMomentum();
-    G4double energy = sqrt(ini_mom.mag2() + mass*mass);
-    G4ThreeVector final_mom = trj->GetFinalMomentum();
-    float kin_energy = energy - mass;
+    if (mother_id == 3 && trackid < smallest_ids[1]) {
+      smallest_ids[1] = trackid;
+      smallest_idx[1] = i;
+    }
+    // G4double mass = trj->GetParticleDefinition()->GetPDGMass();
+    // G4ThreeVector ini_mom = trj->GetInitialMomentum();
+    // G4double energy = sqrt(ini_mom.mag2() + mass*mass);
+    // G4ThreeVector final_mom = trj->GetFinalMomentum();
+    // float kin_energy = energy - mass;
 
-    G4String creator_proc = trj->GetCreatorProcess().c_str();
-    G4double length = trj->GetTrackLength();
+    // G4String creator_proc = trj->GetCreatorProcess().c_str();
+    // G4double length = trj->GetTrackLength();
 
-    G4ThreeVector ini_xyz = trj->GetInitialPosition();
-    G4double ini_t = trj->GetInitialTime();
+    // G4ThreeVector ini_xyz = trj->GetInitialPosition();
+    // G4double ini_t = trj->GetInitialTime();
 
-    G4ThreeVector final_xyz = trj->GetFinalPosition();
-    G4double final_t = trj->GetFinalTime();
+    // G4ThreeVector final_xyz = trj->GetFinalPosition();
+    // G4double final_t = trj->GetFinalTime();
 
-    G4String final_volume = trj->GetFinalVolume();
+    // G4String final_volume = trj->GetFinalVolume();
     // if ((mother_id == 1) || (strcmp(trj->GetParticleName().c_str(), "opticalphoton") == 0)) {
     // if (kin_energy > 1 * keV) {
     // if ((mother_id == 2 && trackid == smallest_2) || (mother_id == 3 && trackid == smallest_3)) {
@@ -205,30 +203,37 @@ void PersistencyManager::StoreTrajectories(G4TrajectoryContainer* tc)
     //   }
     // if (primary == 1) {
 
-      h5writer_->WriteParticleInfo(nevt_, trackid, trj->GetParticleName().c_str(),
-                                   primary, mother_id,
-                                   (float)ini_xyz.x(), (float)ini_xyz.y(),
-                                   (float)ini_xyz.z(), (float)ini_t,
-                                   (float)final_xyz.x(), (float)final_xyz.y(),
-                                   (float)final_xyz.z(), (float)final_t,
-                                   ini_volume.c_str(), final_volume.c_str(),
-                                   (float)ini_mom.x(), (float)ini_mom.y(),
-                                   (float)ini_mom.z(), (float)final_mom.x(),
-                                   (float)final_mom.y(), (float)final_mom.z(),
-                                   kin_energy, length,
-                                   trj->GetCreatorProcess().c_str(),
-                                   trj->GetFinalProcess().c_str());
+      // h5writer_->WriteParticleInfo(nevt_, trackid, trj->GetParticleName().c_str(),
+      //                              primary, mother_id,
+      //                              (float)ini_xyz.x(), (float)ini_xyz.y(),
+      //                              (float)ini_xyz.z(), (float)ini_t,
+      //                              (float)final_xyz.x(), (float)final_xyz.y(),
+      //                              (float)final_xyz.z(), (float)final_t,
+      //                              ini_volume.c_str(), final_volume.c_str(),
+      //                              (float)ini_mom.x(), (float)ini_mom.y(),
+      //                              (float)ini_mom.z(), (float)final_mom.x(),
+      //                              (float)final_mom.y(), (float)final_mom.z(),
+      //                              kin_energy, length,
+      //                              trj->GetCreatorProcess().c_str(),
+      //                              trj->GetFinalProcess().c_str());
     // }
   }
 
-  // if (smallest_ids[0] == std::numeric_limits<G4int>::max()) {
-      // || smallest_ids[1] == std::numeric_limits<G4int>::max()) {
+  if (smallest_ids[0] == std::numeric_limits<G4int>::max() 
+      || smallest_ids[1] == std::numeric_limits<G4int>::max()) {
     return;
-  // }
+  }
 
-  for (size_t i=0; i<1; ++i) {
+  for (size_t i=0; i<2; ++i) {
     Trajectory* trj = dynamic_cast<Trajectory*>((*tc)[smallest_idx[i]]);
     if (!trj) continue;
+
+    G4String ini_volume = trj->GetInitialVolume();
+
+    if (ini_volume == "WATER_BCKG" || ini_volume == "LAB" || ini_volume == "JASZCZAK" ||
+        (ini_volume.rfind("ROD", 0) == 0) || (ini_volume.rfind("SPHERE", 0) == 0)) {
+          break;
+    }
 
     G4int trackid = trj->GetTrackID();
 
@@ -240,10 +245,7 @@ void PersistencyManager::StoreTrajectories(G4TrajectoryContainer* tc)
     G4ThreeVector final_xyz = trj->GetFinalPosition();
     G4double final_t = trj->GetFinalTime();
 
-    G4String ini_volume = trj->GetInitialVolume();
     G4String final_volume = trj->GetFinalVolume();
-
-
 
     G4double mass = trj->GetParticleDefinition()->GetPDGMass();
     G4ThreeVector ini_mom = trj->GetInitialMomentum();
@@ -261,31 +263,20 @@ void PersistencyManager::StoreTrajectories(G4TrajectoryContainer* tc)
 
     G4String creator_proc = trj->GetCreatorProcess().c_str();
 
-    // if ((mother_id == 1) || (strcmp(trj->GetParticleName().c_str(), "opticalphoton") == 0)) {
-    // if (kin_energy > 1 * keV) {
-    // if ((mother_id == 2 && trackid == smallest_2) || (mother_id == 3 && trackid == smallest_3)) {
-    //   if (mother_id == 2) {
-    //     found_daughter_2 = true;
-    //   }
-    //   if (mother_id == 3) {
-    //     found_daughter_3 = true;
-    //   }
-      h5writer_->WriteParticleInfo(nevt_, trackid, trj->GetParticleName().c_str(),
-                                   primary, mother_id,
-                                   (float)ini_xyz.x(), (float)ini_xyz.y(),
-                                   (float)ini_xyz.z(), (float)ini_t,
-                                   (float)final_xyz.x(), (float)final_xyz.y(),
-                                   (float)final_xyz.z(), (float)final_t,
-                                   ini_volume.c_str(), final_volume.c_str(),
-                                   (float)ini_mom.x(), (float)ini_mom.y(),
-                                   (float)ini_mom.z(), (float)final_mom.x(),
-                                   (float)final_mom.y(), (float)final_mom.z(),
-                                   kin_energy, length,
-                                   trj->GetCreatorProcess().c_str(),
-                                   trj->GetFinalProcess().c_str());
-    // }
-
-
+    h5writer_->WriteParticleInfo(nevt_, trackid, trj->GetParticleName().c_str(),
+                                  primary, mother_id,
+                                  (float)ini_xyz.x(), (float)ini_xyz.y(),
+                                  (float)ini_xyz.z(), (float)ini_t,
+                                  (float)final_xyz.x(), (float)final_xyz.y(),
+                                  (float)final_xyz.z(), (float)final_t,
+                                  ini_volume.c_str(), final_volume.c_str(),
+                                  (float)ini_mom.x(), (float)ini_mom.y(),
+                                  (float)ini_mom.z(), (float)final_mom.x(),
+                                  (float)final_mom.y(), (float)final_mom.z(),
+                                  kin_energy, length,
+                                  trj->GetCreatorProcess().c_str(),
+                                  trj->GetFinalProcess().c_str());
+  
   }
 }
 
@@ -334,7 +325,7 @@ void PersistencyManager::StoreIonizationHits(G4VHitsCollection* hc)
 
   std::string sdname = hits->GetSDname();
 
-  total_energy_ = 0.;
+  // total_energy_ = 0.;
   for (size_t i=0; i<hits->entries(); i++) {
     IonizationHit* hit = dynamic_cast<IonizationHit*>(hits->GetHit(i));
     if (!hit) continue;
@@ -353,11 +344,15 @@ void PersistencyManager::StoreIonizationHits(G4VHitsCollection* hc)
     ihits_->push_back(1);
 
     G4ThreeVector xyz = hit->GetPosition();
-    h5writer_->WriteHitInfo(nevt_, trackid,  ihits_->size() - 1,
-			    xyz[0], xyz[1], xyz[2],
-			    hit->GetTime(), hit->GetEnergyDeposit(),
-			    sdname.c_str());
+    // h5writer_->WriteHitInfo(nevt_, trackid,  ihits_->size() - 1,
+		// 	    xyz[0], xyz[1], xyz[2],
+		// 	    hit->GetTime(), hit->GetEnergyDeposit(),
+		// 	    sdname.c_str());
     total_energy_ += hit->GetEnergyDeposit();
+    if (sdname == "BGO")
+      total_energy_bgo_ += hit->GetEnergyDeposit();
+    if (sdname == "CSI")
+      total_energy_csi_ += hit->GetEnergyDeposit();
   }
 }
 

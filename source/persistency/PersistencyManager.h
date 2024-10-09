@@ -90,6 +90,8 @@ namespace nexus {
 
     int64_t nevt_; ///< Event ID
     G4double total_energy_; ///< Total energy deposited in the event
+    G4double total_energy_csi_;
+    G4double total_energy_bgo_;
     int64_t start_id_; ///< ID for the first event in file
     G4bool first_evt_; ///< true only for the first event of the run
 
