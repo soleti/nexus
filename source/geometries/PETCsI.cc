@@ -70,7 +70,7 @@ namespace nexus
 
     G4double size = 2 * m;
     G4Box *lab_solid =
-        new G4Box("LAB", size / 2., size / 2., size / 2.);
+        new G4Box("LAB", size / 2., size / 2., size);
 
     G4Material *air = G4NistManager::Instance()->FindOrBuildMaterial("G4_AIR");
     G4Material *water = G4NistManager::Instance()->FindOrBuildMaterial("G4_WATER");
@@ -211,7 +211,13 @@ namespace nexus
       cylinder_logic->SetSensitiveDetector(ionisd_phantom);
       cylinder_logic->SetVisAttributes(nexus::LightBlueAlpha());
       pileup_gen_ = new CylinderPointSampler2020(cylinder_phys);
-
+    } else if (phantom_ == "body") {
+      human_body_ = new HumanPhantom();
+      human_body_->Construct();
+      G4LogicalVolume* phantom_logic = human_body_->GetLogicalVolume();
+      new G4PVPlacement(0, G4ThreeVector(0, 0, -45 * cm), phantom_logic, "MIRD_BODY",
+                        lab_logic, false, 0, true);
+      phantom_logic->SetSensitiveDetector(ionisd_phantom);
     }
   }
 
@@ -225,6 +231,7 @@ namespace nexus
       if (phantom_ == "jaszczak") return jas_phantom_->GenerateVertex("JPHANTOM");
       if (phantom_ == "necr") return nema_necr_->GenerateVertex("VOLUME");
       if (phantom_ == "pileup") return pileup_gen_->GenerateVertex("VOLUME");
+      if (phantom_ == "body") return human_body_->GenerateVertex("VOLUME");
       else {
         G4ThreeVector vertex(0, 0, 0);
         return vertex;

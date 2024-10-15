@@ -4,11 +4,11 @@
 /Generator/SingleParticle/region PHANTOM
 
 /Geometry/PETCsI/crystal_length 2
-/Geometry/PETCsI/crystal_material LYSO
+/Geometry/PETCsI/crystal_material CsI
 /Geometry/PETCsI/crystal_width 48 mm
 /Geometry/PETCsI/pet_diameter 80 cm
 /Geometry/PETCsI/pet_length 100.8 cm
-/Geometry/PETCsI/phantom pileup
+/Geometry/PETCsI/phantom body
 /Geometry/PETCsI/mixed false
 
 /run/verbose 1
@@ -27,6 +27,6 @@
 #/Actions/DefaultEventAction/max_energy 1.100 MeV
 
 ### JOB CONTROL
-/nexus/random_seed            2
+/nexus/random_seed            1
 /nexus/persistency/start_id   0
-/nexus/persistency/output_file pileup_lyso
+/nexus/persistency/output_file human

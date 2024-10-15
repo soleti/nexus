@@ -12,6 +12,7 @@
 #include "JaszczakPhantom.h"
 #include "NEMASensitivity.h"
 #include "NEMANECR.h"
+#include "HumanPhantom.h"
 
 class G4GenericMessenger;
 
@@ -38,6 +39,7 @@ namespace nexus {
     JaszczakPhantom* jas_phantom_;
     NEMASensitivity* nema_sensitivity_;
     NEMANECR* nema_necr_;
+    HumanPhantom* human_body_;
 
     // Dimension of the crystals
     G4String crystal_material_;
