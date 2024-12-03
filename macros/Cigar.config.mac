@@ -2,8 +2,8 @@
 /Generator/SingleParticle/min_energy 511 keV
 /Generator/SingleParticle/max_energy 511 keV
 /Generator/SingleParticle/region OUTSIDE
-/Generator/SingleParticle/min_phi 4.
-/Generator/SingleParticle/max_phi 5.5
+#/Generator/SingleParticle/min_phi 3.5
+#/Generator/SingleParticle/max_phi 5.5
 
 #/Generator/Kr83mGenerator/region OUTSIDE
 

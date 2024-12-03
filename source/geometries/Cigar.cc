@@ -133,8 +133,8 @@ namespace nexus {
       cigar_mat_inactive = materials::GAr(pressure_);
       cigar_mat->SetMaterialPropertiesTable(opticalprops::GAr(1. / (68 * eV)));
     } else if (gas_ == "Xe") {
-      cigar_mat = materials::GXe(pressure_);
-      cigar_mat_inactive = materials::GXe(pressure_);
+      cigar_mat = materials::GAr(pressure_);
+      cigar_mat_inactive = materials::GAr(pressure_);
       cigar_mat->SetMaterialPropertiesTable(opticalprops::GXe(pressure_));
     } else {
       G4Exception("[Cigar]", "Construct()",
@@ -150,7 +150,7 @@ namespace nexus {
     // Create cylinder made of steel
     G4Material* steel = G4NistManager::Instance()->FindOrBuildMaterial("G4_STAINLESS-STEEL");
     G4Tubs* steel_solid_vol =
-      new G4Tubs("STEEL", cigar_width_ / 2 + 3 * cm, cigar_width_ / 2 + 3.5 * cm, cigar_length_ / 2 + 10 * cm, 0, 2 * M_PI);
+      new G4Tubs("STEEL", cigar_width_ / 2 + 3.5 * cm, cigar_width_ / 2 + 3.8 * cm, cigar_length_ / 2 + 10 * cm, 0, 2 * M_PI);
     G4LogicalVolume* steel_logic_vol =
       new G4LogicalVolume(steel_solid_vol, steel, "STEEL");
     steel_logic_vol->SetVisAttributes(nexus::DarkGrey());
@@ -236,6 +236,10 @@ namespace nexus {
       fiber_logic->SetVisAttributes(nexus::LightGreenAlpha());
     else if (fiber_type_ == "B2")
       fiber_logic->SetVisAttributes(nexus::LightBlueAlpha());
+
+    IonizationSD* ionization_fibers = new IonizationSD("FIBERS");
+    sdman->AddNewDetector(ionization_fibers);
+    fiber_logic->SetSensitiveDetector(ionization_fibers);
 
     G4int n_fibers = floor(cigar_width_ / fiber_diameter_);
     G4cout << "[Cigar] Box with " << n_fibers << " fibers each side" << G4endl;
@@ -367,7 +371,7 @@ namespace nexus {
 
   G4ThreeVector Cigar::GenerateVertex(const G4String& region) const
   {
-    G4ThreeVector vertex(0.,5 * cm,0.);
+    G4ThreeVector vertex(0.,5.5 * cm,10*cm);
 
     // WORLD
     if (region == "INSIDE_CIGAR") {

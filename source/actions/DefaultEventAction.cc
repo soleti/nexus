@@ -106,12 +106,12 @@ REGISTER_CLASS(DefaultEventAction, G4UserEventAction)
       PersistencyManager* pm = dynamic_cast<PersistencyManager*>
         (G4VPersistencyManager::GetPersistencyManager());
 
-      if (!event->IsAborted() && edep>0) {
+      if (!event->IsAborted() && edep>=0) {
 	pm->InteractingEvent(true);
       } else {
 	pm->InteractingEvent(false);
       }
-      if (!event->IsAborted() && edep > energy_min_ && edep < energy_max_) {
+      if (!event->IsAborted() && edep >= energy_min_ && edep <= energy_max_) {
 	pm->StoreCurrentEvent(true);
       } else {
 	pm->StoreCurrentEvent(false);
