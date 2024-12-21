@@ -746,7 +746,7 @@ namespace opticalprops {
 
     mpt->AddProperty("RINDEX", ri_energy, rIndex);
 
-    // ABSORPTION LENGTH https://arxiv.org/pdf/1402.6694.pdf
+    // ABSORPTION LENGTH https://arxiv.org/pdf/1908.03334
     std::vector<G4double> lab_abs_energy = {
       optPhotMinE_,
       h_Planck * c_light / (7.88e+2 * nm), h_Planck * c_light / (7.71e+2 * nm),
@@ -789,38 +789,39 @@ namespace opticalprops {
     std::vector<G4double> liquido_abs = {5. * m, 5. * m};
     mpt->AddProperty("ABSLENGTH", liquido_abs_e, liquido_abs);
 
-    // EMISSION SPECTRUM
+    // EMISSION SPECTRUM https://arxiv.org/pdf/1908.03334
+
     std::vector<G4double> lab_emission_energy = {
-      h_Planck * c_light / (5.46e+2 * nm), h_Planck * c_light / (5.00e+2 * nm),
-      h_Planck * c_light / (4.66e+2 * nm), h_Planck * c_light / (4.51e+2 * nm),
-      h_Planck * c_light / (4.41e+2 * nm), h_Planck * c_light / (4.22e+2 * nm),
-      h_Planck * c_light / (4.10e+2 * nm), h_Planck * c_light / (4.00e+2 * nm),
-      h_Planck * c_light / (3.93e+2 * nm), h_Planck * c_light / (3.83e+2 * nm),
-      h_Planck * c_light / (3.59e+2 * nm)
+      optPhotMinE_,
+      h_Planck * c_light / (491 * nm), h_Planck * c_light / (421 * nm),
+      h_Planck * c_light / (390 * nm), h_Planck * c_light / (376  * nm),
+      h_Planck * c_light / (369 * nm), h_Planck * c_light / (361 * nm),
+      h_Planck * c_light / (355 * nm), h_Planck * c_light / (348 * nm),
+      optPhotMaxE_
     };
 
     std::vector<G4double> lab_emission_intensity = {
-      7.14e+3, 3.27e+4,
-      1.08e+5, 2.11e+5,
-      2.32e+5, 4.23e+5,
-      3.51e+5, 4.33e+5,
-      2.63e+5, 4.90e+4,
-      1.22e+4
+      0,
+      0.01, 0.08,
+      0.24, 0.39,
+      0.35, 0.43,
+      0.25, 0.02,
+      0
     };
 
     mpt->AddProperty("SCINTILLATIONCOMPONENT1", lab_emission_energy, lab_emission_intensity);
     mpt->AddProperty("ELSPECTRUM"             , lab_emission_energy, lab_emission_intensity, 1);
 
     // CONST PROPERTIES https://www.osti.gov/servlets/purl/1514707
-    mpt->AddConstProperty("SCINTILLATIONYIELD", 11590. / MeV );
+    mpt->AddConstProperty("SCINTILLATIONYIELD1", 11590 / MeV );
     mpt->AddConstProperty("SCINTILLATIONTIMECONSTANT1",   7.63 * ns);
     mpt->AddConstProperty("RESOLUTIONSCALE",    1.0);
     std::vector<G4double> rayleigh_energy = {optPhotMinE_, optPhotMaxE_};
     std::vector<G4double> rayleigh_length = {5. * mm, 5. * mm};
-    mpt->AddProperty("MIEHG", rayleigh_energy, rayleigh_length);
-    mpt->AddConstProperty("MIEHG_FORWARD",0.5);
-    mpt->AddConstProperty("MIEHG_BACKWARD",0.5);
-    mpt->AddConstProperty("MIEHG_FORWARD_RATIO",1);
+    // mpt->AddProperty("MIEHG", rayleigh_energy, rayleigh_length);
+    // mpt->AddConstProperty("MIEHG_FORWARD",0.5);
+    // mpt->AddConstProperty("MIEHG_BACKWARD",0.5);
+    // mpt->AddConstProperty("MIEHG_FORWARD_RATIO",1);
     mpt->AddProperty("RAYLEIGH",rayleigh_energy, rayleigh_length);
     return mpt;
   }
@@ -1853,9 +1854,9 @@ namespace opticalprops {
       h_Planck * c_light / (370. * nm),  optPhotMaxE_
     };
     std::vector<G4double> absLength = {
-      noAbsLength_,  noAbsLength_,
-      3.5 * m,       3.5 * m,
-      noAbsLength_,  noAbsLength_
+      3.5 * m,  3.5 * m,
+      3.5 * m,  3.5 * m,
+      3.5 * m,  3.5 * m
     };
     mpt->AddProperty("ABSLENGTH", abs_energy, absLength);
 
@@ -1958,6 +1959,16 @@ namespace opticalprops {
 
     // WLS Quantum Efficiency
     mpt->AddConstProperty("WLSMEANNUMBERPHOTONS", 0.87);
+
+    std::vector<G4double> emission_energy = {optPhotMinE_, optPhotMaxE_};
+    std::vector<G4double> emission_intensity  = {1., 1.};
+
+    mpt->AddProperty("SCINTILLATIONCOMPONENT1", emission_energy, emission_intensity);
+
+    // CONST PROPERTIES https://www.osti.gov/servlets/purl/1514707
+    mpt->AddConstProperty("SCINTILLATIONYIELD1", 0. / MeV );
+    mpt->AddConstProperty("SCINTILLATIONTIMECONSTANT1",   1 * ns);
+    mpt->AddConstProperty("RESOLUTIONSCALE",    1.0);
 
     return mpt;
   }

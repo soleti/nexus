@@ -202,7 +202,7 @@ void GenericCircularPhotosensor::Construct()
     sensarea_logic_vol->SetVisAttributes(red);
     window_logic_vol  ->SetVisAttributes(nexus::White());
     // case_logic_vol->SetVisAttributes(G4VisAttributes::GetInvisible());
-    case_logic_vol->SetVisAttributes(nexus::Yellow());
+    case_logic_vol->SetVisAttributes(nexus::DarkGreen());
   }
   else {
     window_logic_vol  ->SetVisAttributes(G4VisAttributes::GetInvisible());

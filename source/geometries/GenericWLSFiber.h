@@ -22,6 +22,19 @@ namespace nexus {
   {
 
   public:
+
+
+    GenericWLSFiber(G4String    name,
+                    G4bool      isround,            // "round"  or "square"
+                    G4double    thickness,        // diameter or side
+                    G4double    length,
+                    G4bool      doubleclad,
+                    G4bool      with_coating,
+                    G4Material* coating_material,
+                    G4Material* core_material,
+                    G4bool      visibility,
+                    G4bool      aluminized);
+
     // Constructor for a generic wavelength shifting optical fiber
     GenericWLSFiber(G4String    name,
                     G4bool      isround,            // "round"  or "square"
@@ -74,8 +87,8 @@ namespace nexus {
     G4Material* coating_mat_;
     G4MaterialPropertiesTable* coating_optProp_;
     G4MaterialPropertiesTable* core_optProp_;
-
     G4bool      visibility_;
+    G4bool      aluminized_;
   };
 
 

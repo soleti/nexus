@@ -132,8 +132,12 @@ void SingleParticleGenerator::GeneratePrimaryVertex(G4Event* event)
   // Set random polarization
   if (particle_definition_ == G4OpticalPhoton::Definition()) {
     G4ThreeVector polarization = G4RandomDirection();
+    //  G4ThreeVector polarization(1., 0., 0.);
     particle->SetPolarization(polarization);
   }
+
+  // G4ThreeVector polarization2(0, 1., 0.);
+  // particle->SetPolarization(polarization2);
 
   // Generate an initial position for the particle using the geometry
   G4ThreeVector position = geom_->GenerateVertex(region_);

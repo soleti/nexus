@@ -22,7 +22,7 @@
 #include <G4StepLimiter.hh>
 #include <G4FastSimulationManagerProcess.hh>
 #include <G4PhysicsConstructorFactory.hh>
-
+#include <G4PolarizedCompton.hh>
 
 namespace nexus {
 
@@ -84,6 +84,8 @@ namespace nexus {
     WavelengthShifting* wls = new WavelengthShifting();
     pmanager->AddDiscreteProcess(wls);
 
+      
+
     pmanager = IonizationElectron::Definition()->GetProcessManager();
     if (!pmanager) {
       G4Exception("[NexusPhysics]", "ConstructProcess()", FatalException,
@@ -128,6 +130,19 @@ namespace nexus {
         }
       }
     }
+
+      // G4PolarizedCompton* polarized_compton = new G4PolarizedCompton();
+
+      // auto aParticleIterator = GetParticleIterator();
+      // aParticleIterator->reset();
+      // while ((*aParticleIterator)()) {
+      //   G4ParticleDefinition* particle = aParticleIterator->value();
+
+      //   if (polarized_compton->IsApplicable(*particle)){
+      //     pmanager = particle->GetProcessManager();
+      //     pmanager->AddDiscreteProcess(polarized_compton);
+      //   }
+      // }
 
     // Add photoelectric effect to optical photons
 

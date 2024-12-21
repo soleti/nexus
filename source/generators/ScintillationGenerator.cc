@@ -78,10 +78,7 @@ void ScintillationGenerator::GeneratePrimaryVertex(G4Event* event)
   // and they're are the same in energy.
   G4MaterialPropertyVector* spectrum = mpt->GetProperty("SCINTILLATIONCOMPONENT1");
 
-  if (!spectrum) {
-    G4Exception("[ScintillationGenerator]", "GeneratePrimaryVertex()", FatalException,
-                "Fast time decay constant not defined for this material!");
-  }
+  if (spectrum) {
 
   G4PhysicsOrderedFreeVector* spectrum_integral =
     new G4PhysicsOrderedFreeVector();
@@ -113,6 +110,7 @@ void ScintillationGenerator::GeneratePrimaryVertex(G4Event* event)
       vertex->SetPrimary(particle);
     }
   event->AddPrimaryVertex(vertex);
+  }
 }
 
 void ScintillationGenerator::ComputeCumulativeDistribution(

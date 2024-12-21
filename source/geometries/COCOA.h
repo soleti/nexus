@@ -33,6 +33,7 @@ namespace nexus {
     G4double detector_thickness_;
 
     BoxPointSampler* gamma_plane_;
+    BoxPointSampler* scatterer_volume_;
     // Messenger for the definition of control commands
     G4GenericMessenger* msg_;
 
