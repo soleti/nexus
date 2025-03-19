@@ -1,0 +1,13 @@
+/control/execute macros/physics/DefaultPhysicsList.mac
+
+/nexus/RegisterGeometry KZenChimney
+
+/nexus/RegisterGenerator SingleParticleGenerator
+
+/nexus/RegisterPersistencyManager PersistencyManager
+
+/nexus/RegisterRunAction DefaultRunAction
+/nexus/RegisterEventAction DefaultEventAction
+/nexus/RegisterTrackingAction DefaultTrackingAction
+
+/nexus/RegisterMacro macros/KZenChimney.config.mac
