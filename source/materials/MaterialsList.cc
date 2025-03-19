@@ -180,9 +180,9 @@ namespace materials {
     return mat;
   }
 
-  G4Material* Dodecane() // Dodecane
+  G4Material* MineralOil() // Mineral Oil
   {
-    G4String name = "Dodecane";
+    G4String name = "MineralOil";
 
     // Check whether material exists already in the materials table
     G4Material* mat = G4Material::GetMaterial(name, false);
@@ -193,9 +193,9 @@ namespace materials {
       G4Element* H = nist->FindOrBuildElement("H");
       G4Element* C = nist->FindOrBuildElement("C");
 
-      mat = new G4Material(name, 0.7495*g/cm3, 2, kStateLiquid);
-      mat->AddElement(H, 26);
-      mat->AddElement(C, 12);
+      mat = new G4Material(name, 0.77*g/cm3, 2, kStateLiquid);
+      mat->AddElement(H, 2);
+      mat->AddElement(C, 1);
     }
 
     return mat;
@@ -231,21 +231,16 @@ namespace materials {
     G4String name = "KZenLS";
 
     G4Material *mat = G4Material::GetMaterial(name, false);
-    G4Material *ppo = PPO();
-    G4Material *dodecane = Dodecane();
-    G4Material *pseudocumene = Pseudocumene();
 
     if (mat == 0) {
-      mat = new G4Material("DodecanePseudocumeneMix", 0.7744*g/cm3, 2);
-      mat->AddMaterial(dodecane, 0.7735);
-      mat->AddMaterial(pseudocumene, 0.2265);
+      mat = new G4Material("KZenLS", 0.7744*g/cm3, 3);
 
+      G4double density = 0.78 * g/cm3;
+      G4double PPO_fraction= 1.36*g/(1e3*cm3*density);  // 1.36 g/l
+      mat->AddMaterial(MineralOil(), 0.802 / (1.0+PPO_fraction) );
+      mat->AddMaterial(Pseudocumene(), 0.198 / (1.0+PPO_fraction) );
+      mat->AddMaterial(PPO(), PPO_fraction / (1.0+PPO_fraction) );
 
-      // Now define the final liquid scintillator mix:
-      G4double finalDensity = 0.77592 * g/cm3;
-      G4Material* liquidScintillator = new G4Material("LiquidScintillator", finalDensity, 2);
-      liquidScintillator->AddMaterial(mat, 0.99804);
-      liquidScintillator->AddMaterial(ppo, 0.00196);
     }
 
     return mat;

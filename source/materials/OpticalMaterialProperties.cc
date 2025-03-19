@@ -35,6 +35,30 @@ namespace opticalprops {
     return mpt;
   }
 
+  G4MaterialPropertiesTable* PerfectAbsorber()
+  {
+    G4MaterialPropertiesTable* mpt = new G4MaterialPropertiesTable();
+
+    std::vector<G4double> photEnergy = {optPhotMinE_, optPhotMaxE_};
+
+    // REFRACTIVE INDEX
+    std::vector<G4double> rIndex = {1., 1.};
+    mpt->AddProperty("RINDEX", photEnergy, rIndex);
+    std::vector<G4double> energies = {
+      optPhotMinE_, optPhotMaxE_
+    };
+    std::vector<G4double> efficiency = {
+      1., 1.
+    };
+    std::vector<G4double> reflectivity = {
+      0., 0.
+    };
+    mpt->AddProperty("EFFICIENCY", energies, efficiency);
+    mpt->AddProperty("REFLECTIVITY", energies, reflectivity);
+
+    return mpt;
+  }
+
 
 
   G4MaterialPropertiesTable* FusedSilica()
@@ -720,6 +744,313 @@ namespace opticalprops {
     LXe_mpt->AddProperty("RAYLEIGH", rayleigh_energy, rayleigh_length);
 
     return LXe_mpt;
+  }
+
+  G4double nm2ev(G4double wavelength) {
+    return h_Planck * c_light / wavelength;
+  }
+
+  G4MaterialPropertiesTable* KZenLS()
+  {
+
+    G4MaterialPropertiesTable* mpt = new G4MaterialPropertiesTable();
+
+    // REFRACTIVE INDEX https://arxiv.org/pdf/1105.2101.pdf
+    std::vector<G4double> ri_energy = {
+      nm2ev(800),
+      nm2ev(790),
+      nm2ev(780),
+      nm2ev(770),
+      nm2ev(760),
+      nm2ev(750),
+      nm2ev(740),
+      nm2ev(730),
+      nm2ev(720),
+      nm2ev(710),
+      nm2ev(700),
+      nm2ev(690),
+      nm2ev(680),
+      nm2ev(670),
+      nm2ev(660),
+      nm2ev(650),
+      nm2ev(640),
+      nm2ev(630),
+      nm2ev(620),
+      nm2ev(610),
+      nm2ev(600),
+      nm2ev(590),
+      nm2ev(580),
+      nm2ev(570),
+      nm2ev(560),
+      nm2ev(550),
+      nm2ev(545),
+      nm2ev(540),
+      nm2ev(535),
+      nm2ev(530),
+      nm2ev(525),
+      nm2ev(520),
+      nm2ev(515),
+      nm2ev(510),
+      nm2ev(505),
+      nm2ev(500),
+      nm2ev(495),
+      nm2ev(490),
+      nm2ev(485),
+      nm2ev(480),
+      nm2ev(475),
+      nm2ev(470),
+      nm2ev(465),
+      nm2ev(460),
+      nm2ev(455),
+      nm2ev(450),
+      nm2ev(445),
+      nm2ev(440),
+      nm2ev(435),
+      nm2ev(430),
+      nm2ev(425),
+      nm2ev(420),
+      nm2ev(415),
+      nm2ev(410),
+      nm2ev(400),
+      nm2ev(390),
+      nm2ev(380),
+      nm2ev(370),
+      nm2ev(360),
+      nm2ev(350),
+      nm2ev(340),
+      nm2ev(330),
+      nm2ev(320),
+      nm2ev(310),
+      nm2ev(300),
+      nm2ev(290),
+      nm2ev(280),
+      nm2ev(270),
+      nm2ev(260),
+      nm2ev(250),
+      nm2ev(240),
+      nm2ev(230),
+      nm2ev(220),
+      nm2ev(210),
+      nm2ev(200),
+      nm2ev(100)
+    };
+
+    std::vector<G4double> rIndex = {
+      1.434166908,
+      1.434350848,
+      1.434542298,
+      1.434741616,
+      1.434949040,
+      1.435165405,
+      1.435390949,
+      1.435626268,
+      1.435871959,
+      1.436128616,
+      1.436396956,
+      1.436677694,
+      1.436971545,
+      1.437279463,
+      1.437602401,
+      1.437941194,
+      1.438297033,
+      1.438670993,
+      1.439064384,
+      1.439478636,
+      1.439915299,
+      1.440375924,
+      1.440862298,
+      1.441376567,
+      1.441920877,
+      1.4424,
+      1.4428,
+      1.4432,
+      1.4434,
+      1.4438,
+      1.4441,
+      1.4445,
+      1.4448,
+      1.4452,
+      1.4456,
+      1.4460,
+      1.4462,
+      1.4468,
+      1.4472,
+      1.4476,
+      1.4481,
+      1.4488,
+      1.4493,
+      1.4497,
+      1.4502,
+      1.4507,
+      1.4513,
+      1.4519,
+      1.4525,
+      1.4534,
+      1.4540,
+      1.4548,
+      1.4556,
+      1.4562,
+      1.457837939,
+      1.459627151,
+      1.461581111,
+      1.463721156,
+      1.466072083,
+      1.468662620,
+      1.471527100,
+      1.474705815,
+      1.478247046,
+      1.482208610,
+      1.486660242,
+      1.491686940,
+      1.497392654,
+      1.503905773,
+      1.511386752,
+      1.520036936,
+      1.530112624,
+      1.541943431,
+      1.555958152,
+      1.572721958,
+      1.592991471,
+      1.796,
+    };
+
+    mpt->AddProperty("RINDEX", ri_energy, rIndex);
+
+    // ABSORPTION LENGTH https://arxiv.org/pdf/1402.6694.pdf
+    std::vector<G4double> lab_abs_energy = {
+      nm2ev(800),
+      nm2ev(770),
+      nm2ev(680),
+      nm2ev(650),
+      nm2ev(630),
+      nm2ev(600),
+      nm2ev(590),
+      nm2ev(570),
+      nm2ev(555),
+      nm2ev(540),
+      nm2ev(500),
+      nm2ev(470),
+      nm2ev(446),
+      nm2ev(421),
+      nm2ev(406),
+      nm2ev(400),
+      nm2ev(395),
+      nm2ev(386),
+      nm2ev(380),
+      nm2ev(370),
+      nm2ev(360),
+      nm2ev(355),
+      nm2ev(350),
+      nm2ev(300),
+      nm2ev(200),
+      nm2ev(100)
+    };
+
+    std::vector<G4double> lab_absorption = {
+        0.1e-3 * mm,
+        0.0e3 * mm,
+        5.0e3 * mm,
+        0.0e3 * mm,
+        6.0e3 * mm,
+        5.0e3 * mm,
+        0.0e3 * mm,
+        0.0e3 * mm,
+        0.0e3 * mm,
+        0.0e3 * mm,
+        0.0e3 * mm,
+        8.4e3 * mm,
+        5.8e3 * mm,
+        5.3e3 * mm,
+        5.3e3 * mm,
+        5.0e3 * mm,
+        0.0e3 * mm,
+        2.0e3 * mm,
+        0.0e3 * mm,
+        6.5e3 * mm,
+        650 * mm,
+        75 * mm,
+        27 * mm,
+        1 * mm,
+        1 * mm,
+        1 * mm
+    };
+
+    mpt->AddProperty("ABSLENGTH", lab_abs_energy, lab_absorption);
+
+    // EMISSION SPECTRUM
+    std::vector<G4double> lab_emission_energy = {
+      nm2ev(800),
+      nm2ev(510),
+      nm2ev(500),
+      nm2ev(490),
+      nm2ev(480),
+      nm2ev(470),
+      nm2ev(460),
+      nm2ev(450),
+      nm2ev(438),
+      nm2ev(422),
+      nm2ev(411),
+      nm2ev(403),
+      nm2ev(396),
+      nm2ev(388),
+      nm2ev(383),
+      nm2ev(376),
+      nm2ev(363),
+      nm2ev(360),
+      nm2ev(358),
+      nm2ev(356),
+      nm2ev(354),
+      nm2ev(352),
+      nm2ev(350),
+      nm2ev(347),
+      nm2ev(345),
+      nm2ev(340),
+      nm2ev(335),
+      nm2ev(200),
+      nm2ev(100)
+    };
+
+    std::vector<G4double> lab_emission_intensity = {
+        0,
+        0,
+        1,
+        2,
+        3,
+        4,
+        7,
+        10,
+        19,
+        37,
+        56,
+        74,
+        93,
+        111,
+        130,
+        143,
+        143,
+        130,
+        111,
+        93,
+        74,
+        56,
+        37,
+        19,
+        10,
+        1,
+        0,
+        0,
+        0
+    };
+
+    mpt->AddProperty("SCINTILLATIONCOMPONENT1", lab_emission_energy, lab_emission_intensity);
+
+    // CONST PROPERTIES https://www.osti.gov/servlets/purl/1514707
+    mpt->AddConstProperty("SCINTILLATIONYIELD", 9030.5 / MeV );
+    // mpt->AddConstProperty("SCINTILLATIONYIELD", 0. / MeV );
+    mpt->AddConstProperty("SCINTILLATIONTIMECONSTANT1", 7.63 * ns);
+    mpt->AddConstProperty("RESOLUTIONSCALE", 1.0);
+
+    return mpt;
   }
 
 

@@ -24,6 +24,8 @@ namespace opticalprops {
 
   G4MaterialPropertiesTable* Vacuum();
 
+  G4MaterialPropertiesTable* PerfectAbsorber();
+
   G4MaterialPropertiesTable* GlassEpoxy();
 
   G4MaterialPropertiesTable* FusedSilica();
@@ -50,6 +52,8 @@ namespace opticalprops {
                                  G4double e_lifetime=1000.*ms);
 
   G4MaterialPropertiesTable* LXe();
+
+  G4MaterialPropertiesTable* KZenLS();
 
   G4MaterialPropertiesTable* FakeGrid(G4double pressure=1.*bar,
                                       G4double temperature=STP_Temperature,

@@ -44,7 +44,7 @@ namespace materials {
                                     const std::vector<std::pair<int, double>>& isotopicComposition = {});
 
   G4Material* Pseudocumene();
-  G4Material* Dodecane();
+  G4Material* MineralOil();
   G4Material* PPO();
   G4Material* KZenLS();
 
