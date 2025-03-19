@@ -43,6 +43,11 @@ namespace materials {
 					                          G4double pressure=STP_Pressure,
                                     const std::vector<std::pair<int, double>>& isotopicComposition = {});
 
+  G4Material* Pseudocumene();
+  G4Material* Dodecane();
+  G4Material* PPO();
+  G4Material* KZenLS();
+
   // Liquid xenon
   G4Material* LXe();
 

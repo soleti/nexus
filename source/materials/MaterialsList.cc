@@ -159,6 +159,99 @@ namespace materials {
     return mat;
   }
 
+  G4Material* Pseudocumene() // Pseudocumene
+  {
+    G4String name = "Pseudocumene";
+
+    // Check whether material exists already in the materials table
+    G4Material* mat = G4Material::GetMaterial(name, false);
+
+    if (mat == 0) {
+      G4NistManager* nist = G4NistManager::Instance();
+
+      G4Element* H = nist->FindOrBuildElement("H");
+      G4Element* C = nist->FindOrBuildElement("C");
+
+      mat = new G4Material(name, 0.8761*g/cm3, 2, kStateLiquid);
+      mat->AddElement(H, 12);
+      mat->AddElement(C, 9);
+    }
+
+    return mat;
+  }
+
+  G4Material* Dodecane() // Dodecane
+  {
+    G4String name = "Dodecane";
+
+    // Check whether material exists already in the materials table
+    G4Material* mat = G4Material::GetMaterial(name, false);
+
+    if (mat == 0) {
+      G4NistManager* nist = G4NistManager::Instance();
+
+      G4Element* H = nist->FindOrBuildElement("H");
+      G4Element* C = nist->FindOrBuildElement("C");
+
+      mat = new G4Material(name, 0.7495*g/cm3, 2, kStateLiquid);
+      mat->AddElement(H, 26);
+      mat->AddElement(C, 12);
+    }
+
+    return mat;
+  }
+
+  G4Material* PPO()
+  {
+    G4String name = "PPO";
+
+    G4Material* mat = G4Material::GetMaterial(name, false);
+
+    if (mat == 0) {
+      G4NistManager *nist = G4NistManager::Instance();
+      G4Element *H = nist->FindOrBuildElement("H");
+      G4Element *C = nist->FindOrBuildElement("C");
+      G4Element *O = nist->FindOrBuildElement("O");
+      G4Element *N = nist->FindOrBuildElement("N");
+
+      mat = new G4Material(name, 1.094*g/cm3, 4, kStateSolid);
+      mat->AddElement(H, 11);
+      mat->AddElement(C, 15);
+      mat->AddElement(O, 1);
+      mat->AddElement(N, 1);
+
+    }
+
+    return mat;
+
+  }
+
+  G4Material *KZenLS()
+  {
+    G4String name = "KZenLS";
+
+    G4Material *mat = G4Material::GetMaterial(name, false);
+    G4Material *ppo = PPO();
+    G4Material *dodecane = Dodecane();
+    G4Material *pseudocumene = Pseudocumene();
+
+    if (mat == 0) {
+      mat = new G4Material("DodecanePseudocumeneMix", 0.7744*g/cm3, 2);
+      mat->AddMaterial(dodecane, 0.7735);
+      mat->AddMaterial(pseudocumene, 0.2265);
+
+
+      // Now define the final liquid scintillator mix:
+      G4double finalDensity = 0.77592 * g/cm3;
+      G4Material* liquidScintillator = new G4Material("LiquidScintillator", finalDensity, 2);
+      liquidScintillator->AddMaterial(mat, 0.99804);
+      liquidScintillator->AddMaterial(ppo, 0.00196);
+    }
+
+    return mat;
+  }
+
+
   G4Material* LXe()
   {
     G4String name = "LXe";
