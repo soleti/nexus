@@ -172,8 +172,11 @@ namespace nexus
       }
 
       G4Box *virtual_panel = new G4Box("VIRTUAL_PANEL", panel_size / 2, y_edge / 2 - y_cut / 2, panel_thickness / 2 + fiber_diameter * 2);
-      G4LogicalVolume *vp_logic = new G4LogicalVolume(virtual_panel, ls_material, "VIRTUAL_PANEL");
-      vp_logic->SetVisAttributes(G4VisAttributes::GetInvisible());
+      G4LogicalVolume *vp_logic1 = new G4LogicalVolume(virtual_panel, ls_material, "VIRTUAL_PANEL");
+      vp_logic1->SetVisAttributes(G4VisAttributes::GetInvisible());
+
+      G4LogicalVolume *vp_logic2 = new G4LogicalVolume(virtual_panel, ls_material, "VIRTUAL_PANEL");
+      vp_logic2->SetVisAttributes(G4VisAttributes::GetInvisible());
 
       G4Box *ptfe_panel = new G4Box("PTFE_PANEL", panel_size / 2, y_edge / 2 - y_cut / 2, panel_thickness / 2);
       G4LogicalVolume *ptfe_logic = new G4LogicalVolume(ptfe_panel, ptfe_material, "PTFE_PANEL");
@@ -198,17 +201,26 @@ namespace nexus
       //                     fiber_logic, "FIBER", vp_logic, true, 0, true);
 
       // }
-      new G4PVPlacement(0, G4ThreeVector(0, 0, 0), ptfe_logic, "PTFE_PANEL", vp_logic, false, 0, false);
+      new G4PVPlacement(0, G4ThreeVector(0, 0, 0), ptfe_logic, "PTFE_PANEL", vp_logic1, false, 0, false);
       new G4PVPlacement(pRotz, G4ThreeVector(0, fiber_length + photosensor->GetThickness() / 2, panel_thickness / 2 + fiber_diameter / 2),
-                        photosensor_logic, "FIBERSENSOR", vp_logic,
+                        photosensor_logic, "FIBERSENSOR", vp_logic1,
                         true, 1, true);
       new G4PVPlacement(pRotz, G4ThreeVector(0, fiber_length + photosensor->GetThickness() / 2, -panel_thickness / 2 - fiber_diameter / 2),
-                        photosensor_logic, "FIBERSENSOR", vp_logic,
+                        photosensor_logic, "FIBERSENSOR", vp_logic1,
+                        true, 1, true);
+
+      new G4PVPlacement(0, G4ThreeVector(0, 0, 0), ptfe_logic, "PTFE_PANEL", vp_logic2, false, 0, false);
+
+      new G4PVPlacement(pRot, G4ThreeVector(0, - fiber_length - photosensor->GetThickness() / 2, panel_thickness / 2 + fiber_diameter / 2),
+                        photosensor_logic, "FIBERSENSOR", vp_logic2,
+                        true, 1, true);
+      new G4PVPlacement(pRot, G4ThreeVector(0, - fiber_length - photosensor->GetThickness() / 2, -panel_thickness / 2 - fiber_diameter / 2),
+                        photosensor_logic, "FIBERSENSOR", vp_logic2,
                         true, 1, true);
       new G4PVPlacement(0, G4ThreeVector(x_coord, y_edge / 2 + 0.5 * cm + y_cut / 2, 0),
-                        vp_logic, "VIRTUAL_PANEL", ls_logic, false, 0, false);
+                        vp_logic1, "VIRTUAL_PANEL", ls_logic, false, 0, false);
       new G4PVPlacement(0, G4ThreeVector(x_coord, -y_edge / 2 - 0.5 * cm - y_cut / 2, 0),
-                        vp_logic, "VIRTUAL_PANEL", ls_logic, false, 0, false);
+                        vp_logic2, "VIRTUAL_PANEL", ls_logic, false, 0, false);
     }
 
     // // Black flapper
