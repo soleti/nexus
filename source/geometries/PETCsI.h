@@ -13,6 +13,7 @@
 #include "NEMASensitivity.h"
 #include "NEMANECR.h"
 #include "HumanPhantom.h"
+#include "PETElement.h"
 
 class G4GenericMessenger;
 
@@ -40,6 +41,7 @@ namespace nexus {
     NEMASensitivity* nema_sensitivity_;
     NEMANECR* nema_necr_;
     HumanPhantom* human_body_;
+    // PETElement* monolithic_csi_;
 
     // Dimension of the crystals
     G4String crystal_material_;

@@ -109,7 +109,7 @@ void PETElement::Construct()
                           material,
                           "CRYSTAL");
   crystal_logic->SetVisAttributes(nexus::LightGreenAlpha());
-  this->SetLogicalVolume(crystal_logic);
+  this->SetLogicalVolume(pet_element_logic);
 
 
 

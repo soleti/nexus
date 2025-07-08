@@ -121,7 +121,9 @@ namespace nexus
 
     G4Box *crystal = new G4Box("CRYSTAL", crystal_width_ / 2., crystal_width_ / 2., crystal_length_ / 2);
     G4Box *crystal_bgo = new G4Box("CRYSTAL", crystal_width_ / 2., crystal_width_ / 2., 11.4 * mm);
-
+    G4Box *sipm_board = new G4Box("SIPM_BOARD", crystal_width_ / 2., crystal_width_ / 2., 3 * mm);
+    G4LogicalVolume *sipm_board_logic = new G4LogicalVolume(sipm_board, air, "SIPM_BOARD");
+    sipm_board_logic->SetVisAttributes(nexus::DarkGreen());
     // monolithic_csi_ = new PETElement(crystal_material_, crystal_width_,  crystal_length_);
     // monolithic_csi_->Construct();
     // G4double module_width = monolithic_csi_->GetDimensions().x();
@@ -132,7 +134,18 @@ namespace nexus
     rot->rotateX(90 * deg);
     rot->rotateZ(180 * deg);
 
-    G4int rings = floor(pet_length_ / crystal_width_);
+    G4Tubs *inner_cylinder = new G4Tubs("INNER_CYLINDER",  pet_diameter_ / 2 - 2 * cm, pet_diameter_ / 2 - 1.5*cm, pet_length_ / 2, 0, 2 * M_PI);
+    G4Tubs *inner_cylinder2 = new G4Tubs("INNER_CYLINDER",  pet_diameter_ / 2 - 0.8 * cm, pet_diameter_ / 2 - 0.3*cm, pet_length_ / 2, 0, 2 * M_PI);
+    G4LogicalVolume *inner_cylinder_logic = new G4LogicalVolume(inner_cylinder, air, "INNER_CYLINDER");
+    G4LogicalVolume *inner_cylinder_logic2 = new G4LogicalVolume(inner_cylinder2, air, "INNER_CYLINDER2");
+
+    G4Tubs *outer_cylinder = new G4Tubs("OUTER_CYLINDER",  pet_diameter_ / 2 + 7 * cm, pet_diameter_ / 2 + 7.8 * cm, pet_length_ / 2, 0, 2 * M_PI);
+    G4LogicalVolume *outer_cylinder_logic = new G4LogicalVolume(outer_cylinder, air, "OUTER_CYLINDER");
+    inner_cylinder_logic->SetVisAttributes(nexus::TitaniumGreyAlpha());
+    inner_cylinder_logic2->SetVisAttributes(nexus::TitaniumGreyAlpha());
+    outer_cylinder_logic->SetVisAttributes(nexus::TitaniumGreyAlpha());
+
+    G4int rings = floor(pet_length_ / (crystal_width_ + 2 * mm));
 
     for (G4int iring=0; iring < rings; iring++) {
       for (G4int itheta=0; itheta < angles; itheta++) {
@@ -141,7 +154,9 @@ namespace nexus
 
         G4double y = (pet_diameter_ / 2. + crystal_length_ / 2) * std::cos(theta);
         G4double x = (pet_diameter_ / 2. + crystal_length_ / 2) * std::sin(theta);
-        G4double z = -pet_length_ / 2 + iring * crystal_width_ + crystal_width_ / 2;
+        G4double x_sipm = (pet_diameter_ / 2. + crystal_length_  + 3 * mm) * std::sin(theta);
+        G4double y_sipm = (pet_diameter_ / 2. + crystal_length_  + 3 * mm) * std::cos(theta);
+        G4double z = -pet_length_ / 2 + (iring * crystal_width_ + 2 *mm) + crystal_width_ / 2;
 
         G4cout << "CRYSTAL" << iring*angles + itheta << " " << x << " " << y << " " << z << " " << G4endl;
 
@@ -162,10 +177,13 @@ namespace nexus
           crystal_logic = new G4LogicalVolume(crystal,
                               material,
                               "CSI");
-          crystal_logic->SetVisAttributes(nexus::LightGreenAlpha());
+          crystal_logic->SetVisAttributes(nexus::LightBlue());
           ionisd = new IonizationSD("CSI"+label);
           new G4PVPlacement(G4Transform3D(*rot, G4ThreeVector(x, y, z)),
                   crystal_logic, "CSI"+label, lab_logic,
+                  true, iring*angles + itheta, false);
+          new G4PVPlacement(G4Transform3D(*rot, G4ThreeVector(x_sipm, y_sipm, z)),
+                  sipm_board_logic, "SIPM_BOARD"+label, lab_logic,
                   true, iring*angles + itheta, false);
         }
         sdmgr->AddNewDetector(ionisd);
@@ -175,6 +193,9 @@ namespace nexus
       }
     }
 
+    new G4PVPlacement(0, G4ThreeVector(), inner_cylinder_logic, "INNER_CYLINDER", lab_logic, false, 0, true);
+    new G4PVPlacement(0, G4ThreeVector(), inner_cylinder_logic2, "INNER_CYLINDER2", lab_logic, false, 0, true);
+    new G4PVPlacement(0, G4ThreeVector(), outer_cylinder_logic, "OUTER_CYLINDER", lab_logic, false, 0, true);
     // IonizationSD* ionisd = new IonizationSD("PET");
     // sdmgr->AddNewDetector(ionisd);
     // crystal_logic->SetSensitiveDetector(ionisd);
