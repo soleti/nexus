@@ -1,0 +1,25 @@
+## ----------------------------------------------------------------------------
+## nexus | nexus_NextPrecdr.config.mac
+##
+## Configuration macro to simulate individual particles
+## in a cylindrical xenon volume with copper shell (NextPrecdr).
+##
+## The NEXT Collaboration
+## ----------------------------------------------------------------------------
+
+/run/verbose 1
+/event/verbose 0
+/tracking/verbose 0
+
+/process/em/verbose 0
+
+/control/execute macros/geometries/NextPrecdr.mac
+
+/Generator/SingleParticle/particle gamma
+/Generator/SingleParticle/min_energy 1. MeV
+/Generator/SingleParticle/max_energy 2. MeV
+/Generator/SingleParticle/region SHELL
+
+/control/execute macros/physics/IonizationElectron.mac
+
+/nexus/persistency/output_file nextprecdr.next

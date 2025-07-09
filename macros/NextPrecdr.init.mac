@@ -1,0 +1,22 @@
+## ----------------------------------------------------------------------------
+## nexus | nexus_NextPrecdr.init.mac
+##
+## Initialization macro to simulate individual particles
+## in a cylindrical xenon volume with copper shell (NextPrecdr).
+##
+## The NEXT Collaboration
+## ----------------------------------------------------------------------------
+
+/control/execute macros/physics/DefaultPhysicsList.mac
+
+/nexus/RegisterGeometry NextPrecdr
+
+/nexus/RegisterGenerator SingleParticleGenerator
+
+/nexus/RegisterPersistencyManager PersistencyManager
+
+/nexus/RegisterRunAction DefaultRunAction
+/nexus/RegisterEventAction DefaultEventAction
+/nexus/RegisterTrackingAction DefaultTrackingAction
+
+/nexus/RegisterMacro macros/NextPrecdr.config.mac 

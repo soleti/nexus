@@ -1,0 +1,14 @@
+## ----------------------------------------------------------------------------
+## nexus | NextPrecdr.mac
+##
+## Geometry macro for a cylindrical xenon volume (4m diameter, 4m height)
+## surrounded by a 4 cm copper shell.
+##
+## The NEXT Collaboration
+## ----------------------------------------------------------------------------
+
+/Geometry/NextPrecdr/LXe false
+/Geometry/NextPrecdr/radius 2. m
+/Geometry/NextPrecdr/height 4. m
+/Geometry/NextPrecdr/shell_thickness 4. cm
+/Geometry/NextPrecdr/pressure 15. bar
