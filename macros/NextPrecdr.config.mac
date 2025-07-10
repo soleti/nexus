@@ -16,10 +16,14 @@
 /control/execute macros/geometries/NextPrecdr.mac
 
 /Generator/SingleParticle/particle gamma
-/Generator/SingleParticle/min_energy 1. MeV
-/Generator/SingleParticle/max_energy 2. MeV
-/Generator/SingleParticle/region SHELL
+/Generator/SingleParticle/min_energy 2614.5 keV
+/Generator/SingleParticle/max_energy 2614.5 keV
+/Generator/SingleParticle/region COPPER
 
-/control/execute macros/physics/IonizationElectron.mac
+##### ACTIONS #####
+/Actions/DefaultEventAction/min_energy 0.01 keV
+/Actions/DefaultEventAction/max_energy 2614.6 keV
 
-/nexus/persistency/output_file nextprecdr.next
+
+/nexus/persistency/output_file tl208_precdr.next
+/nexus/persistency/event_type background

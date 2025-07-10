@@ -19,4 +19,4 @@
 /nexus/RegisterEventAction DefaultEventAction
 /nexus/RegisterTrackingAction DefaultTrackingAction
 
-/nexus/RegisterMacro macros/NextPrecdr.config.mac 
+/nexus/RegisterMacro macros/NextPrecdr.config.mac

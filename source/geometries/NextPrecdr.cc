@@ -16,6 +16,7 @@
 
 #include <G4GenericMessenger.hh>
 #include <G4Tubs.hh>
+#include <G4Box.hh>
 #include <G4NistManager.hh>
 #include <G4LogicalVolume.hh>
 #include <G4PVPlacement.hh>
@@ -78,7 +79,6 @@ namespace nexus {
   }
 
 
-
   NextPrecdr::~NextPrecdr()
   {
     delete xenon_vertex_gen_;
@@ -97,6 +97,17 @@ namespace nexus {
     G4double outer_radius = radius_ + shell_thickness_;
     G4double half_height = height_ / 2.;
     G4double cap_thickness = shell_thickness_;
+    // Define the LAB volume (air box) containing everything
+    G4double lab_size = 1.5 * (outer_radius + cap_thickness); // generous margin
+    G4Box* lab_solid = new G4Box(name+"_LAB", lab_size, lab_size, lab_size);
+    G4Material* air = G4NistManager::Instance()->FindOrBuildMaterial("G4_AIR");
+    G4LogicalVolume* lab_logic = new G4LogicalVolume(lab_solid, air, name+"_LAB");
+    // Set a visible color (transparent)
+    lab_logic->SetVisAttributes(G4VisAttributes::GetInvisible());
+
+    // Set the logical volume of the LAB as the main geometry volume
+    GeometryBase::SetLogicalVolume(lab_logic);
+
 
     // Barrel (side shell)
     G4Tubs* shell_barrel = new G4Tubs(name+"_SHELL_BARREL", radius_, outer_radius, half_height, 0., twopi);
@@ -113,6 +124,9 @@ namespace nexus {
     // make it brown
     shell_logic->SetVisAttributes(nexus::CopperBrownAlpha());
 
+    // Place the copper shell at the center of the LAB
+    new G4PVPlacement(0, G4ThreeVector(), shell_logic, name+"_SHELL", lab_logic, false, 0, true);
+
     // Define the xenon volume (inner cylinder)
     G4Tubs* xenon_solid = new G4Tubs(name+"_XENON", 0., radius_, half_height, 0., twopi);
     G4Material* xenon = nullptr;
@@ -124,8 +138,9 @@ namespace nexus {
     // make it blue
     xenon_logic->SetVisAttributes(nexus::LightBlueAlpha());
 
-    // Place the xenon volume inside the copper shell
-    new G4PVPlacement(0, G4ThreeVector(), xenon_logic, name+"_XENON", shell_logic, false, 0, true);
+    // Place the copper shell at the center of the LAB
+    new G4PVPlacement(0, G4ThreeVector(), xenon_logic, name+"_XENON", lab_logic, false, 0, true);
+
 
     // Add a steel plate in the middle of the xenon volume
     G4double plate_thickness = 3 * mm;
@@ -137,8 +152,6 @@ namespace nexus {
     // Place at z=0 (center)
     new G4PVPlacement(0, G4ThreeVector(0., 0., 0.), steel_plate_logic, name+"_STEEL_PLATE", xenon_logic, false, 0, true);
 
-    // Set the logical volume of the copper shell as the main geometry volume
-    GeometryBase::SetLogicalVolume(shell_logic);
 
     // Set the xenon logical volume as an ionization sensitive detector
     IonizationSD* ionizsd = new IonizationSD("/NEXT_PRECDR_XENON");
@@ -150,7 +163,7 @@ namespace nexus {
 
   G4ThreeVector NextPrecdr::GenerateVertex(const G4String& region) const
   {
-    if (region == "SHELL") {
+    if (region == "COPPER") {
       // Compute volumes
       double barrel_vol = CLHEP::pi * (std::pow(radius_ + shell_thickness_, 2) - std::pow(radius_, 2)) * height_;
       double cap_vol = CLHEP::pi * std::pow(radius_ + shell_thickness_, 2) * shell_thickness_;
