@@ -15,15 +15,22 @@
 
 /control/execute macros/geometries/NextPrecdr.mac
 
+
+
 /Generator/SingleParticle/particle gamma
 /Generator/SingleParticle/min_energy 2614.5 keV
 /Generator/SingleParticle/max_energy 2614.5 keV
 /Generator/SingleParticle/region COPPER
 
+#/Generator/IonGenerator/atomic_number 81
+#/Generator/IonGenerator/mass_number 208
+#/Generator/IonGenerator/region CENTER
+
+
 ##### ACTIONS #####
-/Actions/DefaultEventAction/min_energy 0.01 keV
-/Actions/DefaultEventAction/max_energy 2614.6 keV
+/Actions/DefaultEventAction/min_energy 1400 keV
+/Actions/DefaultEventAction/max_energy 1800 keV
 
 
-/nexus/persistency/output_file tl208_precdr.next
+/nexus/persistency/output_file tl208_double_escape_precdr.next
 /nexus/persistency/event_type background

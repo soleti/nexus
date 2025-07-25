@@ -15,6 +15,7 @@
 #include "FactoryBase.h"
 
 #include <G4GenericMessenger.hh>
+#include <G4UserLimits.hh>
 #include <G4Tubs.hh>
 #include <G4Box.hh>
 #include <G4NistManager.hh>
@@ -157,6 +158,8 @@ namespace nexus {
     IonizationSD* ionizsd = new IonizationSD("/NEXT_PRECDR_XENON");
     G4SDManager::GetSDMpointer()->AddNewDetector(ionizsd);
     xenon_logic->SetSensitiveDetector(ionizsd);
+
+    xenon_logic->SetUserLimits(new G4UserLimits(1 * mm));
   }
 
 
