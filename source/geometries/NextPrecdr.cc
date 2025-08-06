@@ -39,6 +39,7 @@ namespace nexus {
   NextPrecdr::NextPrecdr():
     GeometryBase(), liquid_(true), pressure_(STP_Pressure),
     radius_(2.*m), height_(4.*m), shell_thickness_(4.*cm),
+    plate_thickness_(3 * mm),
     xenon_vertex_gen_(nullptr), shell_vertex_gen_(nullptr)
   {
     msg_ = new G4GenericMessenger(this, "/Geometry/NextPrecdr/",
@@ -77,6 +78,7 @@ namespace nexus {
     shell_vertex_gen_ = new CylinderPointSampler(radius_, radius_ + shell_thickness_, height_/2., 0., 2*pi);
     // Endcaps: thin disks at top and bottom
     shell_endcap_vertex_gen_ = new CylinderPointSampler(0., radius_ + shell_thickness_, shell_thickness_/2., 0., 2*pi);
+    surface_plate_vertex_gen_ = new CylinderPointSampler(0, radius_, 0, 0., 2*pi);
   }
 
 
@@ -144,8 +146,7 @@ namespace nexus {
 
 
     // Add a steel plate in the middle of the xenon volume
-    G4double plate_thickness = 3 * mm;
-    G4Tubs* steel_plate_solid = new G4Tubs(name+"_STEEL_PLATE", 0., radius_, plate_thickness/2., 0., twopi);
+    G4Tubs* steel_plate_solid = new G4Tubs(name+"_STEEL_PLATE", 0., radius_, plate_thickness_/2., 0., twopi);
     G4Material* steel = materials::Steel();
     G4LogicalVolume* steel_plate_logic = new G4LogicalVolume(steel_plate_solid, steel, name+"_STEEL_PLATE");
     // Set a visible color (grey)
@@ -184,9 +185,37 @@ namespace nexus {
           v.setZ(v.z() - height_/2. - shell_thickness_/2.); // bottom
         return v;
       }
+    } else if (region == "XENON") {
+      return xenon_vertex_gen_->GenerateVertex(VOLUME);
+    } else if (region == "SURFACE") {
+      // Generate uniformly between barrel, endcaps of the copper shell surface, and cathode surface
+      double barrel_area = 2 * CLHEP::pi * (radius_ + shell_thickness_/2.) * height_;
+      double cap_area = 4 * CLHEP::pi * std::pow(radius_ + shell_thickness_/2., 2);
+      double total_area = barrel_area + cap_area;
+      double r = G4UniformRand();
+      if (r < barrel_area / total_area) {
+        // Barrel surface
+        return shell_vertex_gen_->GenerateVertex(INNER_SURF);
+      } else {
+        G4ThreeVector v = surface_plate_vertex_gen_->GenerateVertex(VOLUME);
+        G4double random_number = G4UniformRand();
+        if (random_number < 0.25) {
+          v.setZ(v.z() - height_/2 - shell_thickness_/2);
+        } else if (random_number < 0.5) {
+          v.setZ(v.z() + height_/2 + shell_thickness_/2);
+        } else if (random_number < 0.75) {
+          v.setZ(v.z() + plate_thickness_ /2);
+        } else {
+          v.setZ(v.z() - plate_thickness_ /2);
+        }
+
+        return v;
+
+      }
+
+    } else {
+      return G4ThreeVector(0, 0, 0);
     }
-    // Default: xenon volume
-    return xenon_vertex_gen_->GenerateVertex(VOLUME);
   }
 
 

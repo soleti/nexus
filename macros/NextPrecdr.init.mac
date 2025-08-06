@@ -11,8 +11,10 @@
 
 /nexus/RegisterGeometry NextPrecdr
 
-/nexus/RegisterGenerator SingleParticleGenerator
-#/nexus/RegisterGenerator IonGenerator
+#/nexus/RegisterGenerator SingleParticleGenerator
+/nexus/RegisterGenerator IonGenerator
+#/nexus/RegisterGenerator Decay0Interface
+#/nexus/RegisterGenerator ElecPositronPairGenerator
 
 /nexus/RegisterPersistencyManager PersistencyManager
 
