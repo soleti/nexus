@@ -38,13 +38,17 @@ namespace nexus {
     G4double radius_;   ///< Inner radius of the xenon cylinder (2m)
     G4double height_;   ///< Height of the xenon cylinder (4m)
     G4double shell_thickness_; ///< Thickness of copper shell (4cm)
-    G4double plate_thickness_; ///< Thickness of the steel plate (3mm)
+    G4double plate_thickness_; ///< Thickness of the cathode plate (3mm)
+    G4double ptfe_thickness_; ///< Thickness of the PTFE light tube (5mm)
 
     /// Vertexes random generator for xenon and shell
     CylinderPointSampler* xenon_vertex_gen_;
     CylinderPointSampler* shell_vertex_gen_;
     CylinderPointSampler* shell_endcap_vertex_gen_;
     CylinderPointSampler* surface_plate_vertex_gen_;
+    CylinderPointSampler* ptfe_barrel_gen_;
+    CylinderPointSampler* cathode_vertex_gen_;
+    CylinderPointSampler* ptfe_endcaps_gen_;
 
     /// Messenger for the definition of control commands
     G4GenericMessenger* msg_;

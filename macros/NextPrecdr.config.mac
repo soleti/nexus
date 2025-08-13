@@ -16,7 +16,6 @@
 /control/execute macros/geometries/NextPrecdr.mac
 
 
-
 #/Generator/SingleParticle/particle gamma
 #/Generator/SingleParticle/min_energy 2614.5 keV
 #/Generator/SingleParticle/max_energy 2614.5 keV
@@ -30,7 +29,7 @@
 
 /Generator/IonGenerator/atomic_number 83
 /Generator/IonGenerator/mass_number 214
-/Generator/IonGenerator/region SURFACE
+/Generator/IonGenerator/region COPPER_ENDCAPS
 
 #/Generator/ElecPositronPair/min_energy 2457.8 keV
 #/Generator/ElecPositronPair/max_energy 2457.8 keV
@@ -42,5 +41,5 @@
 /Actions/DefaultEventAction/max_energy 2700 keV
 
 
-/nexus/persistency/output_file bi214_surface.next
+/nexus/persistency/output_file bi214_copper_endcaps.next
 /nexus/persistency/event_type background

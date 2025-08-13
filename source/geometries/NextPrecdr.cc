@@ -39,8 +39,7 @@ namespace nexus {
   NextPrecdr::NextPrecdr():
     GeometryBase(), liquid_(true), pressure_(STP_Pressure),
     radius_(2.*m), height_(4.*m), shell_thickness_(4.*cm),
-    plate_thickness_(3 * mm),
-    xenon_vertex_gen_(nullptr), shell_vertex_gen_(nullptr)
+    plate_thickness_(3 * mm), ptfe_thickness_(50 * mm)
   {
     msg_ = new G4GenericMessenger(this, "/Geometry/NextPrecdr/",
       "Control commands of geometry NextPrecdr.");
@@ -73,12 +72,13 @@ namespace nexus {
     shell_cmd.SetParameterName("shell_thickness", false);
     shell_cmd.SetRange("shell_thickness>0.");
 
-    // Create vertex generators for xenon and shell
     xenon_vertex_gen_ = new CylinderPointSampler(0., radius_, height_/2., 0., 2*pi);
     shell_vertex_gen_ = new CylinderPointSampler(radius_, radius_ + shell_thickness_, height_/2., 0., 2*pi);
-    // Endcaps: thin disks at top and bottom
     shell_endcap_vertex_gen_ = new CylinderPointSampler(0., radius_ + shell_thickness_, shell_thickness_/2., 0., 2*pi);
-    surface_plate_vertex_gen_ = new CylinderPointSampler(0, radius_, 0, 0., 2*pi);
+    surface_plate_vertex_gen_ = new CylinderPointSampler(0, radius_ - ptfe_thickness_, 0, 0., 2*pi);
+    cathode_vertex_gen_ = new CylinderPointSampler(0, radius_ - ptfe_thickness_, plate_thickness_ / 2, 0., 2*pi);
+    ptfe_barrel_gen_ = new CylinderPointSampler(radius_ - ptfe_thickness_, radius_, height_/2., 0., 2*pi);
+    ptfe_endcaps_gen_ = new CylinderPointSampler(0, radius_ - ptfe_thickness_, ptfe_thickness_ / 2, 0., 2*pi);
   }
 
 
@@ -117,6 +117,19 @@ namespace nexus {
     // Endcaps (top and bottom)
     G4Tubs* shell_cap = new G4Tubs(name+"_SHELL_CAP", 0., outer_radius, cap_thickness/2., 0., twopi);
 
+    // Add PTFE cylinder (liner) inside the shell barrel
+    G4double ptfe_inner_radius = radius_ - ptfe_thickness_;
+    G4double ptfe_outer_radius = radius_;
+    G4Tubs* ptfe_cylinder = new G4Tubs(name+"_PTFE_LINER", ptfe_inner_radius, ptfe_outer_radius, half_height, 0., twopi);
+
+    G4Material* ptfe = G4NistManager::Instance()->FindOrBuildMaterial("G4_TEFLON");
+    G4LogicalVolume* ptfe_logic = new G4LogicalVolume(ptfe_cylinder, ptfe, name+"_PTFE_LINER");
+    // Set a visible color (white, semi-transparent)
+    ptfe_logic->SetVisAttributes(nexus::WhiteAlpha());
+
+    // Place the PTFE liner at the center of the LAB
+    new G4PVPlacement(0, G4ThreeVector(), ptfe_logic, name+"_PTFE_LINER", lab_logic, false, 0, true);
+
     // Union: barrel + top cap
     G4UnionSolid* shell_with_top = new G4UnionSolid(name+"_SHELL_TOP", shell_barrel, shell_cap, 0, G4ThreeVector(0., 0., half_height + cap_thickness/2.));
     // Union: (barrel+top) + bottom cap
@@ -131,7 +144,7 @@ namespace nexus {
     new G4PVPlacement(0, G4ThreeVector(), shell_logic, name+"_SHELL", lab_logic, false, 0, true);
 
     // Define the xenon volume (inner cylinder)
-    G4Tubs* xenon_solid = new G4Tubs(name+"_XENON", 0., radius_, half_height, 0., twopi);
+    G4Tubs* xenon_solid = new G4Tubs(name+"_XENON", 0., radius_ - ptfe_thickness_, half_height, 0., twopi);
     G4Material* xenon = nullptr;
     if (liquid_)
       xenon = G4NistManager::Instance()->FindOrBuildMaterial("G4_lXe");
@@ -145,8 +158,33 @@ namespace nexus {
     new G4PVPlacement(0, G4ThreeVector(), xenon_logic, name+"_XENON", lab_logic, false, 0, true);
 
 
+    // Add PTFE endcaps at the top and bottom of the xenon volume
+    G4Tubs* ptfe_endcap_solid = new G4Tubs(name+"_PTFE_ENDCAP", 0., radius_ - ptfe_thickness_, ptfe_thickness_/2., 0., twopi);
+
+    // Logical volume for PTFE endcap (reuse ptfe material)
+    G4LogicalVolume* ptfe_endcap_logic = new G4LogicalVolume(ptfe_endcap_solid, ptfe, name+"_PTFE_ENDCAP");
+    ptfe_endcap_logic->SetVisAttributes(nexus::WhiteAlpha());
+
+    // Place top PTFE endcap
+    new G4PVPlacement(0,
+                      G4ThreeVector(0., 0., half_height - ptfe_thickness_/2.),
+                      ptfe_endcap_logic,
+                      name+"_PTFE_ENDCAP_TOP",
+                      xenon_logic,
+                      false, 0, true);
+
+    // Place bottom PTFE endcap
+    new G4PVPlacement(0,
+                      G4ThreeVector(0., 0., -half_height + ptfe_thickness_/2.),
+                      ptfe_endcap_logic,
+                      name+"_PTFE_ENDCAP_BOTTOM",
+                      xenon_logic,
+                      false, 1, true);
+
+
+
     // Add a steel plate in the middle of the xenon volume
-    G4Tubs* steel_plate_solid = new G4Tubs(name+"_STEEL_PLATE", 0., radius_, plate_thickness_/2., 0., twopi);
+    G4Tubs* steel_plate_solid = new G4Tubs(name+"_STEEL_PLATE", 0., radius_ - ptfe_thickness_, plate_thickness_/2., 0., twopi);
     G4Material* steel = materials::Steel();
     G4LogicalVolume* steel_plate_logic = new G4LogicalVolume(steel_plate_solid, steel, name+"_STEEL_PLATE");
     // Set a visible color (grey)
@@ -167,27 +205,19 @@ namespace nexus {
 
   G4ThreeVector NextPrecdr::GenerateVertex(const G4String& region) const
   {
-    if (region == "COPPER") {
+    if (region == "COPPER_SHELL") {
       // Compute volumes
-      double barrel_vol = CLHEP::pi * (std::pow(radius_ + shell_thickness_, 2) - std::pow(radius_, 2)) * height_;
-      double cap_vol = CLHEP::pi * std::pow(radius_ + shell_thickness_, 2) * shell_thickness_;
-      double total_shell_vol = barrel_vol + 2 * cap_vol;
-      double r = G4UniformRand();
-      if (r < barrel_vol / total_shell_vol) {
-        // Barrel
-        return shell_vertex_gen_->GenerateVertex(VOLUME);
-      } else {
-        // Endcaps: randomly choose top or bottom
+      return shell_vertex_gen_->GenerateVertex(VOLUME);
+    } else if (region == "COPPER_ENDCAPS") {
         G4ThreeVector v = shell_endcap_vertex_gen_->GenerateVertex(VOLUME);
         if (G4UniformRand() < 0.5)
           v.setZ(v.z() + height_/2. + shell_thickness_/2.); // top
         else
           v.setZ(v.z() - height_/2. - shell_thickness_/2.); // bottom
         return v;
-      }
     } else if (region == "XENON") {
       return xenon_vertex_gen_->GenerateVertex(VOLUME);
-    } else if (region == "SURFACE") {
+    } else if (region == "BARREL_SURFACE") {
       // Generate uniformly between barrel, endcaps of the copper shell surface, and cathode surface
       double barrel_area = 2 * CLHEP::pi * (radius_ + shell_thickness_/2.) * height_;
       double cap_area = 4 * CLHEP::pi * std::pow(radius_ + shell_thickness_/2., 2);
@@ -210,9 +240,29 @@ namespace nexus {
         }
 
         return v;
-
       }
-
+    } else if (region == "PTFE_VOLUME") {
+      return ptfe_barrel_gen_->GenerateVertex(VOLUME);
+    } else if (region == "CATHODE_VOLUME") {
+      return cathode_vertex_gen_->GenerateVertex(VOLUME);
+    } else if (region == "CATHODE_SURFACE") {
+      G4ThreeVector v = surface_plate_vertex_gen_->GenerateVertex(VOLUME);
+      G4double random_number = G4UniformRand();
+      if (random_number < 0.5) {
+        v.setZ(v.z() + plate_thickness_ / 2);
+      } else {
+        v.setZ(v.z() - plate_thickness_ / 2);
+      }
+      return v;
+    } else if (region == "PTFE_ENDCAP") {
+      G4double random_number = G4UniformRand();
+      G4ThreeVector v = ptfe_endcaps_gen_->GenerateVertex(VOLUME);
+      if (random_number < 0.5) {
+        v.setZ(v.z() + height_/2 - ptfe_thickness_ /2);
+      } else {
+        v.setZ(v.z() - height_/2 + ptfe_thickness_ /2);
+      }
+      return v;
     } else {
       return G4ThreeVector(0, 0, 0);
     }

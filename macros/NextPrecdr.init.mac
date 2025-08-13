@@ -23,3 +23,4 @@
 /nexus/RegisterTrackingAction DefaultTrackingAction
 
 /nexus/RegisterMacro macros/NextPrecdr.config.mac
+/nexus/RegisterDelayedMacro macros/physics/Bi214.mac
