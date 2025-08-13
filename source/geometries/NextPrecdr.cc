@@ -206,15 +206,14 @@ namespace nexus {
   G4ThreeVector NextPrecdr::GenerateVertex(const G4String& region) const
   {
     if (region == "COPPER_SHELL") {
-      // Compute volumes
       return shell_vertex_gen_->GenerateVertex(VOLUME);
     } else if (region == "COPPER_ENDCAPS") {
-        G4ThreeVector v = shell_endcap_vertex_gen_->GenerateVertex(VOLUME);
-        if (G4UniformRand() < 0.5)
-          v.setZ(v.z() + height_/2. + shell_thickness_/2.); // top
-        else
-          v.setZ(v.z() - height_/2. - shell_thickness_/2.); // bottom
-        return v;
+      G4ThreeVector v = shell_endcap_vertex_gen_->GenerateVertex(VOLUME);
+      if (G4UniformRand() < 0.5)
+        v.setZ(v.z() + height_/2. + shell_thickness_/2.); // top
+      else
+        v.setZ(v.z() - height_/2. - shell_thickness_/2.); // bottom
+      return v;
     } else if (region == "XENON") {
       return xenon_vertex_gen_->GenerateVertex(VOLUME);
     } else if (region == "BARREL_SURFACE") {
