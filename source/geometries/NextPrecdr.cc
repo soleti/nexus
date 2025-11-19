@@ -198,7 +198,7 @@ namespace nexus {
     G4SDManager::GetSDMpointer()->AddNewDetector(ionizsd);
     xenon_logic->SetSensitiveDetector(ionizsd);
 
-    xenon_logic->SetUserLimits(new G4UserLimits(1 * mm));
+    xenon_logic->SetUserLimits(new G4UserLimits(100 * um));
   }
 
 

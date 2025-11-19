@@ -53,6 +53,7 @@ hsize_t createHitInfoType(bool str)
   }
   H5Tinsert (memtype, "particle_id", HOFFSET (hit_info_t, particle_id), H5T_NATIVE_INT);
   H5Tinsert (memtype, "hit_id", HOFFSET (hit_info_t, hit_id), H5T_NATIVE_INT);
+  H5Tinsert (memtype, "cluster_id", HOFFSET (hit_info_t, cluster_id), H5T_NATIVE_INT);
   return memtype;
 }
 
@@ -166,6 +167,14 @@ hsize_t createStringMapType()
   hsize_t memtype = H5Tcreate (H5T_COMPOUND, sizeof(string_map_t));
   H5Tinsert (memtype, "name"   , HOFFSET(string_map_t, name   ), strtype);
   H5Tinsert (memtype, "name_id" , HOFFSET(string_map_t, name_id ), H5T_NATIVE_INT);
+  return memtype;
+}
+
+hsize_t createClusterCountType()
+{
+  hsize_t memtype = H5Tcreate(H5T_COMPOUND, sizeof(cluster_count_t));
+  H5Tinsert(memtype, "event_id", HOFFSET(cluster_count_t, event_id), H5T_NATIVE_INT64);
+  H5Tinsert(memtype, "cluster_count", HOFFSET(cluster_count_t, cluster_count), H5T_NATIVE_INT);
   return memtype;
 }
 
@@ -344,6 +353,26 @@ void writeStringMap(string_map_t* strmap, hid_t dataset, hid_t memtype, hsize_t 
   hsize_t count[1] = {1};
   H5Sselect_hyperslab(file_space, H5S_SELECT_SET, start, NULL, count, NULL);
   H5Dwrite(dataset, memtype, memspace, file_space, H5P_DEFAULT, strmap);
+  H5Sclose(file_space);
+  H5Sclose(memspace);
+}
+
+void writeClusterCount(cluster_count_t* entry, hid_t dataset, hid_t memtype, hsize_t counter)
+{
+  hid_t memspace, file_space;
+
+  const hsize_t n_dims = 1;
+  hsize_t dims[n_dims] = {1};
+  memspace = H5Screate_simple(n_dims, dims, NULL);
+
+  dims[0] = counter + 1;
+  H5Dset_extent(dataset, dims);
+
+  file_space = H5Dget_space(dataset);
+  hsize_t start[1] = {counter};
+  hsize_t sel_count[1] = {1};
+  H5Sselect_hyperslab(file_space, H5S_SELECT_SET, start, NULL, sel_count, NULL);
+  H5Dwrite(dataset, memtype, memspace, file_space, H5P_DEFAULT, entry);
   H5Sclose(file_space);
   H5Sclose(memspace);
 }

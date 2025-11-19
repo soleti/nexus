@@ -44,8 +44,10 @@ REGISTER_CLASS(PersistencyManager, PersistencyManagerBase)
 PersistencyManager::PersistencyManager():
 PersistencyManagerBase(), msg_(0), output_file_("nexus_out"), ready_(false),
   store_evt_(true), store_steps_(false),
-  interacting_evt_(false), save_ie_numb_(false), event_type_("other"),
-  saved_evts_(0), interacting_evts_(0), pmt_bin_size_(-1), sipm_bin_size_(-1),
+  interacting_evt_(false), save_ie_numb_(false), save_cluster_counts_(true),
+  cluster_count_evt_(0), event_type_("other"),
+  saved_evts_(0), interacting_evts_(0), clustered_evts_(0),
+  pmt_bin_size_(-1), sipm_bin_size_(-1),
   nevt_(0), start_id_(0), first_evt_(true), h5writer_(0),
   str_counter_(0), save_str_(true), particles_(true)
 {
@@ -59,6 +61,8 @@ PersistencyManagerBase(), msg_(0), output_file_("nexus_out"), ready_(false),
                         "True if volume, process... names are saved as strings.");
   msg_->DeclareProperty("save_particles", particles_,
                         "True if particles table is saved.");
+  msg_->DeclareProperty("save_cluster_counts", save_cluster_counts_,
+                        "True if per-event DBSCAN cluster counts are stored.");
 
   init_macro_ = "";
   macros_.clear();
@@ -82,7 +86,7 @@ void PersistencyManager::OpenFile()
   if (!h5writer_) {
     h5writer_ = new HDF5Writer();
     G4String hdf5file = output_file_ + ".h5";
-    h5writer_->Open(hdf5file, store_steps_, save_str_);
+    h5writer_->Open(hdf5file, store_steps_, save_str_, save_cluster_counts_);
     return;
   } else {
     G4Exception("[PersistencyManager]", "OpenFile()",
@@ -106,6 +110,9 @@ G4bool PersistencyManager::Store(const G4Event* event)
   if (interacting_evt_) {
     interacting_evts_++;
   }
+  if (cluster_count_evt_ > 0) {
+    clustered_evts_++;
+  }
 
   if (!store_evt_) {
     TrajectoryMap::Clear();
@@ -114,6 +121,7 @@ G4bool PersistencyManager::Store(const G4Event* event)
         G4RunManager::GetRunManager()->GetUserSteppingAction();
       sa->Reset();
     }
+    cluster_count_evt_ = 0;
     return false;
   }
 
@@ -136,8 +144,12 @@ G4bool PersistencyManager::Store(const G4Event* event)
   ihits_ = nullptr;
   hit_map_.clear();
   StoreHits(event->GetHCofThisEvent());
+  if (save_cluster_counts_) {
+    h5writer_->WriteClusterCount(nevt_, cluster_count_evt_);
+  }
 
   nevt_++;
+  cluster_count_evt_ = 0;
 
   TrajectoryMap::Clear();
   StoreCurrentEvent(true);
@@ -282,7 +294,8 @@ void PersistencyManager::StoreIonizationHits(G4VHitsCollection* hc)
     h5writer_->WriteHitInfo(save_str_, nevt_, trackid,  ihits_->size() - 1,
 			    xyz[0], xyz[1], xyz[2],
 			    hit->GetTime(), hit->GetEnergyDeposit(),
-                            sdname.c_str(), sdname_id);
+                            sdname.c_str(), sdname_id,
+                            hit->GetClusterID());
   }
 }
 
@@ -395,6 +408,10 @@ G4bool PersistencyManager::Store(const G4Run*)
   if (save_ie_numb_) {
     key = "interacting_events";
     h5writer_->WriteRunInfo(key,  std::to_string(interacting_evts_).c_str());
+  }
+  if (save_cluster_counts_) {
+    key = "clustered_events";
+    h5writer_->WriteRunInfo(key, std::to_string(clustered_evts_).c_str());
   }
 
   // Store sensor time binning

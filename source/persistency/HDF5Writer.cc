@@ -20,8 +20,15 @@ using namespace nexus;
 
 
 HDF5Writer::HDF5Writer():
-  file_(0), irun_(0), ismp_(0), ihit_(0),
-  ipart_(0), ipos_(0), istep_(0), istrmap_(0)
+  file_(0), isOpen_(false), firstEvent_(false), clusterCountsEnabled_(false),
+  runTable_(0), snsDataTable_(0), hitInfoTable_(0),
+  particleInfoTable_(0), snsPosTable_(0), stepTable_(0),
+  stringMapTable_(0), clusterCountTable_(0),
+  memtypeRun_(0), memtypeSnsData_(0), memtypeHitInfo_(0),
+  memtypeParticleInfo_(0), memtypeSnsPos_(0), memtypeStep_(0),
+  memtypeStringMap_(0), memtypeClusterCount_(0),
+  irun_(0), ismp_(0), ihit_(0),
+  ipart_(0), ipos_(0), istep_(0), istrmap_(0), iclustercount_(0)
 {
 }
 
@@ -29,9 +36,11 @@ HDF5Writer::~HDF5Writer()
 {
 }
 
-void HDF5Writer::Open(std::string fileName, bool debug, bool save_str)
+void HDF5Writer::Open(std::string fileName, bool debug, bool save_str, bool save_cluster_counts)
 {
   firstEvent_= true;
+  clusterCountsEnabled_ = save_cluster_counts;
+  iclustercount_ = 0;
 
   file_ = H5Fcreate( fileName.c_str(), H5F_ACC_TRUNC,
                       H5P_DEFAULT, H5P_DEFAULT );
@@ -58,6 +67,12 @@ void HDF5Writer::Open(std::string fileName, bool debug, bool save_str)
   std::string sns_pos_table_name = "sns_positions";
   memtypeSnsPos_ = createSensorPosType();
   snsPosTable_ = createTable(group, sns_pos_table_name, memtypeSnsPos_);
+
+  if (clusterCountsEnabled_) {
+    std::string cluster_count_table_name = "cluster_counts";
+    memtypeClusterCount_ = createClusterCountType();
+    clusterCountTable_ = createTable(group, cluster_count_table_name, memtypeClusterCount_);
+  }
 
   if (!save_str) {
     std::string str_map_table_name = "string_map";
@@ -107,7 +122,7 @@ void HDF5Writer::WriteSensorDataInfo(int64_t evt_number, unsigned int sensor_id,
   ismp_++;
 }
 
-void HDF5Writer::WriteHitInfo(bool str, int64_t evt_number, int particle_indx, int hit_indx, float hit_position_x, float hit_position_y, float hit_position_z, float hit_time, float hit_energy, const char* label_str, int label)
+void HDF5Writer::WriteHitInfo(bool str, int64_t evt_number, int particle_indx, int hit_indx, float hit_position_x, float hit_position_y, float hit_position_z, float hit_time, float hit_energy, const char* label_str, int label, int cluster_id)
 {
   hit_info_t trueInfo;
   trueInfo.event_id = evt_number;
@@ -124,6 +139,7 @@ void HDF5Writer::WriteHitInfo(bool str, int64_t evt_number, int particle_indx, i
   }
   trueInfo.particle_id = particle_indx;
   trueInfo.hit_id = hit_indx;
+  trueInfo.cluster_id = cluster_id;
   writeHit(&trueInfo,  hitInfoTable_, memtypeHitInfo_, ihit_);
 
   ihit_++;
@@ -239,4 +255,16 @@ void HDF5Writer::WriteStringMapInfo(const char* name, int name_id)
 
   writeStringMap(&strmap, stringMapTable_, memtypeStringMap_, istrmap_);
   istrmap_++;
+}
+
+void HDF5Writer::WriteClusterCount(int64_t evt_number, int cluster_count)
+{
+  if (!clusterCountsEnabled_)
+    return;
+
+  cluster_count_t entry;
+  entry.event_id = evt_number;
+  entry.cluster_count = cluster_count;
+  writeClusterCount(&entry, clusterCountTable_, memtypeClusterCount_, iclustercount_);
+  iclustercount_++;
 }

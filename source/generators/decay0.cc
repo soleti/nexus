@@ -103,6 +103,12 @@ void decay0::fillInfo() {
     bbNucl_.allFS_.push_back(bbFinalState(2, 5, 2.223, 2));
     bbNucl_.allFS_.push_back(bbFinalState(0, 3, 2.315, 0));
     bbNucl_.allFS_.push_back(bbFinalState(2, 6, 2.400, 2));
+ } else if (nuclideName_ == std::string("Xe124")) {
+    bbNucl_.Qbb_ = 2.864;   // in MeV
+    bbNucl_.Zdbb_ = 52.;
+    bbNucl_.Adbb_ = 124.;
+    bbNucl_.EK_ = 0.0318;   // approximate K-shell binding energy in MeV
+    bbNucl_.allFS_.push_back(bbFinalState(0, 0, 0., 0));
  } else if (nuclideName_ == std::string("Te130")) { // Just put one Nucleide more in.. Irrelevant for NEXT..
                                                     // just test we can put one more.
     bbNucl_.Qbb_ = 2.529;
@@ -171,7 +177,7 @@ void decay0::fillInfo() {
       return;
   }
   this->initSpectrum();
-  if (fsNum_ > 1) {
+  if (nuclideName_ == std::string("Xe136") && fsNum_ > 1) {
     std::cerr << " decay0::fillInfo High (> 819 keV) excited stats of Ba136 have not yet been thoroughly checked " << std::endl;
   }
   ready_ = true;

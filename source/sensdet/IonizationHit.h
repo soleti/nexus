@@ -52,11 +52,15 @@ namespace nexus {
     G4ThreeVector GetPosition();
     void SetPosition(G4ThreeVector);
 
+    G4int GetClusterID() const;
+    void SetClusterID(G4int);
+
   private:
     G4int track_id_;
     G4double time_;
     G4double energy_dep_;
     G4ThreeVector position_;
+    G4int cluster_id_;
   };
 
 
@@ -85,6 +89,9 @@ namespace nexus {
   inline G4ThreeVector IonizationHit::GetPosition() { return position_; }
   inline void IonizationHit::SetPosition(G4ThreeVector xyz)
   { position_ = xyz; }
+
+  inline G4int IonizationHit::GetClusterID() const { return cluster_id_; }
+  inline void IonizationHit::SetClusterID(G4int cluster_id) { cluster_id_ = cluster_id; }
 
 
 } // end namespace nexus

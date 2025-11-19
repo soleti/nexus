@@ -17,9 +17,9 @@ namespace nexus {
 
 
 
-  IonizationHit::IonizationHit(): G4VHit()
-  {
-  }
+  IonizationHit::IonizationHit(): G4VHit(),
+    track_id_(0), time_(0.), energy_dep_(0.), position_(G4ThreeVector()), cluster_id_(-1)
+  {}
 
 
 
@@ -42,6 +42,7 @@ namespace nexus {
     time_       = other.time_;
     energy_dep_ = other.energy_dep_;
     position_   = other.position_;
+    cluster_id_ = other.cluster_id_;
 
     return *this;
   }

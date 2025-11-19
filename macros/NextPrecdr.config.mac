@@ -16,20 +16,20 @@
 /control/execute macros/geometries/NextPrecdr.mac
 
 
-#/Generator/SingleParticle/particle gamma
-#/Generator/SingleParticle/min_energy 2614.5 keV
-#/Generator/SingleParticle/max_energy 2614.5 keV
-#/Generator/SingleParticle/region SURFACE
+#/Generator/SingleParticle/particle e-
+#/Generator/SingleParticle/min_energy 2400 keV
+#/Generator/SingleParticle/max_energy 2500 keV
+#/Generator/SingleParticle/region XENON
 
-#/Generator/Decay0Interface/inputFile none
-#/Generator/Decay0Interface/Xe136DecayMode 1
-#/Generator/Decay0Interface/Ba136FinalState 0
-#/Generator/Decay0Interface/EnergyThreshold 1 keV
-#/Generator/Decay0Interface/region VOLUME
+/Generator/Decay0Interface/inputFile none
+/Generator/Decay0Interface/Xe136DecayMode 1
+/Generator/Decay0Interface/Ba136FinalState 0
+/Generator/Decay0Interface/EnergyThreshold 1 keV
+/Generator/Decay0Interface/region XENON
 
-/Generator/IonGenerator/atomic_number 83
-/Generator/IonGenerator/mass_number 214
-/Generator/IonGenerator/region COPPER_ENDCAPS
+#/Generator/IonGenerator/atomic_number 81
+#/Generator/IonGenerator/mass_number 208
+#/Generator/IonGenerator/region PTFE_ENDCAP
 
 #/Generator/ElecPositronPair/min_energy 2457.8 keV
 #/Generator/ElecPositronPair/max_energy 2457.8 keV
@@ -37,9 +37,10 @@
 
 
 ##### ACTIONS #####
-/Actions/DefaultEventAction/min_energy 2300 keV
-/Actions/DefaultEventAction/max_energy 2700 keV
+/Actions/DefaultEventAction/min_energy 2400 keV
+/Actions/DefaultEventAction/max_energy 2500 keV
 
 
-/nexus/persistency/output_file bi214_copper_endcaps.next
+/nexus/random_seed 2
+/nexus/persistency/output_file  0nubb_40bar_100um.next
 /nexus/persistency/event_type background
